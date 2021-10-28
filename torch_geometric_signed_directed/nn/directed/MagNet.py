@@ -9,7 +9,7 @@ from torch_geometric.typing import OptTensor
 from torch_geometric.nn.conv import MessagePassing
 from torch_geometric.utils import remove_self_loops, add_self_loops
 
-from ...utils.get_magnetic_Laplacian import get_magnetic_Laplacian
+from ...utils.directed.get_magnetic_Laplacian import get_magnetic_Laplacian
 
 class MagNetConv(MessagePassing):
     r"""The magnetic graph convolutional operator from the
