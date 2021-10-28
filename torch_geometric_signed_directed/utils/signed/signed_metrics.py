@@ -1,7 +1,7 @@
 import torch
 import scipy.sparse as sp
 
-from .data_utils import scipy_sparse_to_torch_sparse
+from ..general.data_utils import scipy_sparse_to_torch_sparse
 
 class Prob_Balanced_Ratio_Loss(torch.nn.Module):
     r"""An implementation of the probablistic balanced ratio cut loss function.
