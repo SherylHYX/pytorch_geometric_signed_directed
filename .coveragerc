@@ -1,0 +1,10 @@
+[run]
+source=torch_geometric_signed_directed
+[report]
+exclude_lines =
+    pragma: no cover
+    raise
+    except
+    register_parameter
+    warn
+    pass
