@@ -2,7 +2,7 @@ import numpy as np
 import scipy.sparse as sp
 import torch
 from torch_geometric_signed_directed.nn.directed import (
-    DIGRAC
+    DIGRAC, MagNet
 )
 from torch_geometric_signed_directed.data import (
     DSBM, meta_graph_generation, fix_network
@@ -62,6 +62,24 @@ def test_DIGRAC():
     )
     assert loss1 + loss2 + loss3 + loss4 + loss5 + loss6 + loss7 >= 0
 
+def test_MagNet():
+    """
+    Testing MagNet
+    """
+    num_nodes = 100
+    num_features = 3
+    num_classes = 3
+
+    X, _, _, _, edge_index, edge_weight = \
+        create_mock_data(num_nodes, num_features, num_classes)
+
+    model = MagNet(X.shape[1], K = 1, label_dim=num_classes, layer = 2, \
+                                activation = True, num_filter = 2, dropout=0.5).to(device)  
+    preds = model(X, X, 0.25, edge_index, edge_weight) 
+    
+    assert preds.shape == (
+        num_nodes, num_classes
+    )
     
 def test_DSBM():
     num_nodes = 200
