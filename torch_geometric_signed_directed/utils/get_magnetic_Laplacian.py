@@ -1,19 +1,20 @@
-from copy import copy
 from typing import Optional
 
 import torch
 from torch_scatter import scatter_add
 from torch_sparse import coalesce
-from torch_geometric.utils import add_self_loops, remove_self_loops
+from torch_geometric.utils import add_self_loops, remove_self_loops, to_scipy_sparse_matrix
 from torch_geometric.utils.num_nodes import maybe_num_nodes
 import numpy as np
+from scipy.sparse.linalg import eigsh
 
 
 def get_magnetic_Laplacian(edge_index, edge_weight: Optional[torch.Tensor] = None,
                   normalization: Optional[str] = 'sym',
                   dtype: Optional[int] = None,
                   num_nodes: Optional[int] = None,
-                  q: Optional[float] = 0.25):
+                  q: Optional[float] = 0.25,
+                  return_lambda_max: bool = False):
     r""" Computes the magnetic Laplacian of the graph given by :obj:`edge_index`
     and optional :obj:`edge_weight`.
     Args:
@@ -32,6 +33,7 @@ def get_magnetic_Laplacian(edge_index, edge_weight: Optional[torch.Tensor] = Non
         num_nodes (int, optional): The number of nodes, *i.e.*
             :obj:`max_val + 1` of :attr:`edge_index`. (default: :obj:`None`)
         q (float, optional): The value q in the paper for phase.
+        return_lambda_max (bool, optional): Whether to return the maximum eigenvalue. (default: :obj:`False`)
     """
 
     if normalization is not None:
@@ -80,5 +82,11 @@ def get_magnetic_Laplacian(edge_index, edge_weight: Optional[torch.Tensor] = Non
                                          fill_value=1., num_nodes=num_nodes)
         assert tmp is not None
         edge_weight = tmp
+    if not return_lambda_max:
+        return edge_index, edge_weight.real, edge_weight.imag
+    else:
+        L = to_scipy_sparse_matrix(edge_index, edge_weight, num_nodes)
 
-    return edge_index, edge_weight.real, edge_weight.imag
+        lambda_max = eigsh(L, k=1, which='LM', return_eigenvectors=False)
+        lambda_max = float(lambda_max.real)
+        return edge_index, edge_weight.real, edge_weight.imag, lambda_max

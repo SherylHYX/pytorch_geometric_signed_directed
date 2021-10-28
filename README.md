@@ -6,7 +6,7 @@
 
 *PyTorch Geometric Signed Directed* is a signed and directed extension library for [PyTorch Geometric](https://github.com/pyg-team/pytorch_geometric).
 
-<p align="justify">The library aims to consist of various signed and directed geometric deep learning, embedding, and clustering methods from a variety of published research papers. It is currently under development and welcomes contributions.
+<p align="justify">The library aims to consist of various signed and directed geometric deep learning, embedding, and clustering methods from a variety of published research papers and selected preprints. It is currently under development and we welcome your contribution!
 
 
 --------------------------------------------------------------------------------

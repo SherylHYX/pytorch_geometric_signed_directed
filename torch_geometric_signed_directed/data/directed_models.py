@@ -75,8 +75,8 @@ def fix_network(A, labels):
             G0.remove_nodes_from(remove)
         else:
             flag = False
-    print('After {} iteration(s), we extract lcc with degree at least 2 for each node to have network with {} nodes, compared to {} nodes before.'.format(
-        iter_num, len(keep), A.shape[0]))
+    # print('After {} iteration(s), we extract lcc with degree at least 2 for each node to have network with {} nodes, compared to {} nodes before.'.format(
+        # iter_num, len(keep), A.shape[0]))
     A_new = A[keep][:, keep]
     labels_new = labels[keep]
     return A_new, labels_new
