@@ -12,12 +12,12 @@ from torch_geometric_signed_directed.utils import (
 )
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def create_mock_data(number_of_nodes, num_features, num_classes=3, eta=0.1, p=0.2):
+def create_mock_data(num_nodes, num_features, num_classes=3, eta=0.1, p=0.2):
     """
     Creating a mock feature matrix, edge index and edge weight.
     """
-    (A_p_scipy, A_n_scipy), _ = SSBM(number_of_nodes, num_classes, p, eta)
-    X = torch.FloatTensor(np.random.uniform(-1, 1, (number_of_nodes, num_features))).to(device)
+    (A_p_scipy, A_n_scipy), _ = SSBM(num_nodes, num_classes, p, eta)
+    X = torch.FloatTensor(np.random.uniform(-1, 1, (num_nodes, num_features))).to(device)
     edge_index_p = torch.LongTensor(np.array(A_p_scipy.nonzero())).to(device)
     edge_weight_p = torch.FloatTensor(sp.csr_matrix(A_p_scipy).data).to(device)
     edge_index_n = torch.LongTensor(np.array(A_n_scipy.nonzero())).to(device)
@@ -31,12 +31,12 @@ def test_SSSNET():
     """
     Testing SSSNET
     """
-    number_of_nodes = 100
+    num_nodes = 100
     num_features = 3
     num_classes = 3
 
     X, A_p_scipy, A_n_scipy, edge_index_p, edge_index_n, edge_weight_p, edge_weight_n = \
-        create_mock_data(number_of_nodes, num_features, num_classes)
+        create_mock_data(num_nodes, num_features, num_classes)
 
     loss_func_pbrc = Prob_Balanced_Ratio_Loss(A_p=A_p_scipy, A_n=A_n_scipy)
     loss_func_pbnc = Prob_Balanced_Normalized_Loss(A_p=A_p_scipy, A_n=A_n_scipy)
@@ -54,7 +54,7 @@ def test_SSSNET():
     loss_pbnc = loss_func_pbnc(prob=prob).item()
     unhappy_ratio = Unhappy_ratio(A_p_scipy, A_n_scipy)(prob).item()
     assert prob.shape == (
-        number_of_nodes, num_classes
+        num_nodes, num_classes
     )
     assert unhappy_ratio < 1.1
     assert loss_pbrc >= 0
@@ -70,24 +70,24 @@ def test_SSSNET():
     _, _, _, prob = model(edge_index_p, None,
                 edge_index_n, None, X) 
     assert prob.shape == (
-        number_of_nodes, num_classes
+        num_nodes, num_classes
     )
 
 def test_SSBM():
-    number_of_nodes = 1000
+    num_nodes = 1000
     num_classes = 3
     p = 0.1
     eta = 0.1
-    (A_p, _), labels = SSBM(number_of_nodes, num_classes, p, eta, size_ratio = 1.0, values='gaussian')
-    assert A_p.shape == (number_of_nodes, number_of_nodes)
+    (A_p, _), labels = SSBM(num_nodes, num_classes, p, eta, size_ratio = 1.0, values='gaussian')
+    assert A_p.shape == (num_nodes, num_nodes)
     assert np.max(labels) == num_classes - 1
 
-    (A_p, _), labels = SSBM(number_of_nodes, num_classes, p, eta, size_ratio = 2.0, values='exp')
-    assert A_p.shape == (number_of_nodes, number_of_nodes)
+    (A_p, _), labels = SSBM(num_nodes, num_classes, p, eta, size_ratio = 2.0, values='exp')
+    assert A_p.shape == (num_nodes, num_nodes)
     assert np.max(labels) == num_classes - 1
 
-    (A_p, _), labels = SSBM(number_of_nodes, num_classes, p, eta, size_ratio = 1.5, values='uniform')
-    assert A_p.shape == (number_of_nodes, number_of_nodes)
+    (A_p, _), labels = SSBM(num_nodes, num_classes, p, eta, size_ratio = 1.5, values='uniform')
+    assert A_p.shape == (num_nodes, num_nodes)
     assert np.max(labels) == num_classes - 1
 
 def test_polarized():
