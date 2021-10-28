@@ -65,8 +65,7 @@ class MagNetConv(MessagePassing):
         q: float, 
         normalization: Optional[str],
         lambda_max,
-        dtype: Optional[int] = None,
-        batch: OptTensor = None,
+        dtype: Optional[int] = None
     ):
 
         edge_index, edge_weight = remove_self_loops(edge_index, edge_weight)
@@ -74,10 +73,6 @@ class MagNetConv(MessagePassing):
         edge_index, edge_weight_real, edge_weight_imag = get_magnetic_Laplacian(
             edge_index, edge_weight, normalization, dtype, num_nodes, q
         )
-
-
-        if batch is not None and lambda_max.numel() > 1:
-            lambda_max = lambda_max[batch[edge_index[0]]]
 
         edge_weight_real = (2.0 * edge_weight_real) / lambda_max
         edge_weight_real.masked_fill_(edge_weight_real == float("inf"), 0)
@@ -103,7 +98,6 @@ class MagNetConv(MessagePassing):
         x_imag: torch.FloatTensor, q: float,
         edge_index: torch.LongTensor,
         edge_weight: OptTensor = None,
-        batch: OptTensor = None,
         lambda_max: OptTensor = None,
     ) -> torch.FloatTensor:
         """
@@ -113,14 +107,14 @@ class MagNetConv(MessagePassing):
             * q (float) - Constant q in the paper, related to phase.
             * edge_index (Tensor array) - Edge indices.
             * edge_weight (PyTorch Float Tensor, optional) - Edge weights corresponding to edge indices.
-            * batch (PyTorch Tensor, optional) - Batch labels for each edge.
             * lambda_max (optional, but mandatory if normalization is None) - Largest eigenvalue of Laplacian.
         Return types:
             * out_real, out_imag (PyTorch Float Tensor) - Hidden state tensor for all nodes, with shape (N_nodes, F_out).
         """
         if self.normalization != 'sym' and lambda_max is None:
-            raise ValueError('You need to pass `lambda_max` to `forward() in`'
-                             'case the normalization is non-symmetric.')
+            _, _, _, lambda_max =  get_magnetic_Laplacian(
+            edge_index, edge_weight, None, q=q, return_lambda_max=True
+        )
 
         if lambda_max is None:
             lambda_max = torch.tensor(2.0, dtype=x_real.dtype, device=x_real.device)
@@ -131,8 +125,7 @@ class MagNetConv(MessagePassing):
 
         edge_index, norm_real, norm_imag = self.__norm__(edge_index, x_real.size(self.node_dim),
                                          edge_weight, q, self.normalization,
-                                         lambda_max, dtype=x_real.dtype,
-                                         batch=batch)
+                                         lambda_max, dtype=x_real.dtype)
 
         Tx_0_real_real = x_real
         Tx_0_imag_imag = x_imag
@@ -192,6 +185,7 @@ class MagNetConv(MessagePassing):
         return '{}({}, {}, K={}, normalization={})'.format(
             self.__class__.__name__, self.in_channels, self.out_channels,
             self.weight.size(0), self.normalization)
+
 class complex_relu_layer(nn.Module):
     def __init__(self, ):
         super(complex_relu_layer, self).__init__()
@@ -200,28 +194,26 @@ class complex_relu_layer(nn.Module):
         mask = 1.0*(real >= 0)
         return mask*real, mask*img
 
-    def forward(self, real, img=None):
-        # for torch nn sequential usage
-        # in this case, x_real is a tuple of (real, img)
-        if img == None:
-            img = real[1]
-            real = real[0]
-
+    def forward(self, real, img):
         real, img = self.complex_relu(real, img)
         return real, img
 
 class MagNet(nn.Module):
-    def __init__(self, in_c, num_filter=2, K=2, label_dim=2, activation=False, layer=2, dropout=False):
+    def __init__(self, in_c, num_filter=2, K=2, label_dim=2, activation=False, layer=2, dropout=False, normalization='sym'):
         """
         :param in_c: int, number of input channels.
-        :param hid_c: int, number of hidden channels.
+        :param num_filter: int, number of hidden channels.
         :param K: for cheb series
-        :param L_norm_real, L_norm_imag: normalized laplacian
+        :param label_dim: dimension of labels
+        :param activation: whether to use activation function or not
+        :param dropout: dropout value.
+        :param normalization: normalization for the Laplacian.
         """
         super(MagNet, self).__init__()
 
         chebs = nn.ModuleList()
-        chebs.append(MagNetConv(in_channels=in_c, out_channels=num_filter, K=K))
+        chebs.append(MagNetConv(in_channels=in_c, out_channels=num_filter, K=K, normalization=normalization))
+        self.normalization = normalization
         self.activation = activation
         if self.activation:
             self.complex_relu = complex_relu_layer()

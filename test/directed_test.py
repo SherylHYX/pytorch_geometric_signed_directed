@@ -74,12 +74,21 @@ def test_MagNet():
         create_mock_data(num_nodes, num_features, num_classes)
 
     model = MagNet(X.shape[1], K = 1, label_dim=num_classes, layer = 2, \
+                                activation = True, num_filter = 2, dropout=0.5, normalization=None).to(device)  
+    preds = model(X, X, 0.25, edge_index, edge_weight) 
+    
+    assert preds.shape == (
+        num_nodes, num_classes
+    )
+
+    model = MagNet(X.shape[1], K = 3, label_dim=num_classes, layer = 3, \
                                 activation = True, num_filter = 2, dropout=0.5).to(device)  
     preds = model(X, X, 0.25, edge_index, edge_weight) 
     
     assert preds.shape == (
         num_nodes, num_classes
     )
+    assert model.Chebs[0].__repr__() == 'MagNetConv(3, 2, K=3, normalization=sym)'
     
 def test_DSBM():
     num_nodes = 200
