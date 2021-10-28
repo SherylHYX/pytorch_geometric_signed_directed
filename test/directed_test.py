@@ -51,23 +51,26 @@ def test_DIGRAC():
     _, _, _, prob = model(edge_index, edge_weight, X) 
     loss1 = prob_imbalance_loss(prob, A, num_classes, 'vol_sum', 'sort').item()
     loss2 = prob_imbalance_loss(prob, A, num_classes, 'vol_min', 'std').item()
+    loss3 = prob_imbalance_loss(prob, A, num_classes, 'vol_max', 'std').item()
+    loss4 = prob_imbalance_loss(prob, A, num_classes, 'plain', 'std').item()
+    loss5 = prob_imbalance_loss(prob, A, num_classes, 'vol_sum', 'std').item()
+    loss6 = prob_imbalance_loss(prob, A, num_classes, 'plain', 'naive').item()
     prob_imbalance_loss = Prob_Imbalance_Loss(3)
-    loss3 = prob_imbalance_loss(prob, A, num_classes, 'vol_max', 'sort').item()
-    loss4 = prob_imbalance_loss(prob, A, num_classes, 'plain', 'naive').item()
+    loss7 = prob_imbalance_loss(prob, A, num_classes, 'plain', 'sort').item()
     assert prob.shape == (
         num_nodes, num_classes
     )
-    assert loss1 + loss2 + loss3 + loss4 >= 0
+    assert loss1 + loss2 + loss3 + loss4 + loss5 + loss6 + loss7 >= 0
 
     
 def test_DSBM():
-    num_nodes = 1000
+    num_nodes = 200
     num_classes = 3
-    p = 0.1
+    p = 0.01
     eta = 0.1
     F = meta_graph_generation(F_style='cyclic', K=num_classes, eta=eta, ambient=True, fill_val=0.5)
     assert F.shape == (num_classes, num_classes)
-    F = meta_graph_generation(F_style='path', K=num_classes, eta=eta, ambient=True, fill_val=0.5)
+    F = meta_graph_generation(F_style='path', K=num_classes, eta=0.0, ambient=True, fill_val=0.0)
     assert F.shape == (num_classes, num_classes)
     F = meta_graph_generation(F_style='complete', K=num_classes, eta=eta, ambient=True, fill_val=0.5)
     assert F.shape == (num_classes, num_classes)
