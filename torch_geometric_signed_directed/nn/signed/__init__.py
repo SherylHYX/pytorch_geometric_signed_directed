@@ -1,1 +1,1 @@
-from .SSSNET import *
+from .SSSNET import SIMPA, SSSNET
