@@ -7,8 +7,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: [3.6, 3.9]
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: [3.6] # [3.6, 3.7, 3.8, 3.9]
+        os: [ubuntu-latest] # [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
     - uses: actions/checkout@v2
@@ -46,6 +46,10 @@ jobs:
     - name: Test coverage.
       run: |
         python setup.py test
-        codecov
     - name: Code Coverage
       uses: codecov/codecov-action@v1
+      if: success()
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      run: |
+        codecov
