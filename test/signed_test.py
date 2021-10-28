@@ -60,6 +60,19 @@ def test_SSSNET():
     assert loss_pbrc >= 0
     assert loss_pbnc >= 0
 
+    model = SSSNET(nfeat=num_features,
+                    hidden=16,
+                    nclass=num_classes,
+                    dropout=0.5,
+                    hop=2,
+                    fill_value=0.5,
+                    directed=True).to(device)
+    _, _, _, prob = model(edge_index_p, None,
+                edge_index_n, None, X) 
+    assert prob.shape == (
+        number_of_nodes, num_classes
+    )
+
 def test_SSBM():
     number_of_nodes = 1000
     num_classes = 3
@@ -89,7 +102,7 @@ def test_polarized():
     assert np.max(conflict_groups) == num_com
 
     (A_p, _), _, _ = polarized_ssbm(total_n=total_n, num_com=num_com, N=N, K=K, \
-        p=0.01, eta=0.1, size_ratio=1)
+        p=0.002, eta=0.1, size_ratio=1)
     assert A_p.shape[1] <= total_n
             
 
