@@ -2,13 +2,15 @@ import numpy as np
 import scipy.sparse as sp
 import torch
 from torch_geometric_signed_directed.nn.directed import (
-    DiGCN, DiGCN_IB, DIGRAC, MagNet
+    DiGCN, DiGCN_IB, DIGRAC, MagNet, DGCN
 )
 from torch_geometric_signed_directed.data import (
     DSBM, meta_graph_generation, fix_network
 )
 from torch_geometric_signed_directed.utils import (
-    Prob_Imbalance_Loss, scipy_sparse_to_torch_sparse, get_appr_directed_adj, get_second_directed_adj
+    Prob_Imbalance_Loss, scipy_sparse_to_torch_sparse, 
+    get_appr_directed_adj, get_second_directed_adj,
+    directed_features_in_out
 )
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -24,6 +26,31 @@ def create_mock_data(num_nodes, num_features, num_classes=3, F_style='cyclic', e
     edge_index = torch.LongTensor(np.array(A.nonzero())).to(device)
     edge_weight = torch.FloatTensor(sp.csr_matrix(A).data).to(device)
     return X, A, F, F_data, edge_index, edge_weight
+
+def test_DGCN():
+    """
+    Testing DGCN
+    """
+    num_nodes = 100
+    num_features = 3
+    num_classes = 3
+
+    X, A, _, _, edge_index, edge_weights = \
+        create_mock_data(num_nodes, num_features, num_classes)
+
+    edge_index, edge_in, in_weight, edge_out, out_weight = directed_features_in_out(edge_index, A.shape[0], edge_weights)
+    edge_index = edge_index.to(device)
+    edge_in, in_weight, edge_out, out_weight = edge_in.to(device), in_weight.to(device), edge_out.to(device), out_weight.to(device)
+
+    model = DGCN(num_features, 4, num_classes, 0.5).to(device)
+        
+    preds = model(X, edge_index, edge_in, edge_out, in_weight, out_weight)
+    
+    assert preds.shape == (
+        num_nodes, num_classes
+    )
+
+
 
 def test_DiGCN():
     """
