@@ -1,4 +1,3 @@
-# modified from https://github.com/flyingtango/DiGCN/blob/main/code/get_adj.py
 from typing import Union, Optional, Tuple
 
 import torch
