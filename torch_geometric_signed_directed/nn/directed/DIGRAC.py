@@ -7,7 +7,8 @@ from torch.nn.parameter import Parameter
 from ..general.conv_base import Conv_Base
 
 class DIMPA(torch.nn.Module):
-    r"""The directed mixed-path aggregation model.
+    r"""The directed mixed-path aggregation model from the
+    `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
     Args:
         hop (int): Number of hops to consider.
     """
@@ -31,7 +32,8 @@ class DIMPA(torch.nn.Module):
                 edge_index: torch.FloatTensor, 
                 edge_weight: torch.FloatTensor) -> torch.FloatTensor:
         """
-        Making a forward pass of DIMPA.
+        Making a forward pass of DIMPA from the
+    `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
         Arg types:
             * **x_s** (PyTorch FloatTensor) - Souce hidden representations.
             * **x_t** (PyTorch FloatTensor) - Target hidden representations.
@@ -56,7 +58,8 @@ class DIMPA(torch.nn.Module):
         return feat
 
 class DIGRAC(torch.nn.Module):
-    r"""The directed graph clustering model.
+    r"""The directed graph clustering model from the
+    `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
     Args:
         nfeat (int): Number of features.
         hidden (int): Hidden dimensions of the initial MLP.
@@ -98,7 +101,8 @@ class DIGRAC(torch.nn.Module):
     def forward(self, edge_index: torch.FloatTensor, edge_weight: torch.FloatTensor,
                 features: torch.FloatTensor) -> Tuple[torch.FloatTensor, torch.FloatTensor, torch.LongTensor, torch.FloatTensor]:
         """
-        Making a forward pass of the DIGRAC.
+        Making a forward pass of the DIGRAC from the
+    `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
         Arg types:
             * **edge_index** (PyTorch FloatTensor) - Edge indices.
             * **edge_weight** (PyTorch FloatTensor) - Edge weights.
