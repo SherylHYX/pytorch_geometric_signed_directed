@@ -4,7 +4,8 @@ import torch
 import numpy as np
 
 class Prob_Imbalance_Loss(torch.nn.Module):
-    r"""An implementation of the probablistic imbalance loss function.
+    r"""An implementation of the probablistic imbalance loss function from the
+    `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
     Args:
         F (int or NumPy array, optional): Number of pairwise imbalance socres to consider, or the meta-graph adjacency matrix.
     """
@@ -23,7 +24,8 @@ class Prob_Imbalance_Loss(torch.nn.Module):
 
     def forward(self, P: torch.FloatTensor, A: Union[torch.FloatTensor, torch.sparse_coo_tensor], 
     K: int, normalization: str = 'vol_sum', threshold: str = 'sort') -> torch.FloatTensor:
-        """Making a forward pass of the probablistic imbalance loss function.
+        """Making a forward pass of the probablistic imbalance loss function from the
+    `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
         Args:
             prob: (PyTorch FloatTensor) Prediction probability matrix made by the model
             A: (PyTorch FloatTensor, can be sparse) Adjacency matrix A

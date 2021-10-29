@@ -108,7 +108,8 @@ class MagNetConv(MessagePassing):
         lambda_max: OptTensor = None,
     ) -> torch.FloatTensor:
         """
-        Making a forward pass of the MagNet Convolution layer.
+        Making a forward pass of the MagNet Convolution layer from the
+    `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper
         Arg types:
             * x_real, x_imag (PyTorch Float Tensor) - Node features.
             * edge_index (PyTorch Long Tensor) - Edge indices.
@@ -199,6 +200,9 @@ class MagNetConv(MessagePassing):
             self.weight.size(0), self.normalization)
 
 class complex_relu_layer(nn.Module):
+    """The complex ReLU layer from the
+    `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
+    """
     def __init__(self, ):
         super(complex_relu_layer, self).__init__()
     
@@ -207,11 +211,20 @@ class complex_relu_layer(nn.Module):
         return mask*real, mask*img
 
     def forward(self, real, img):
+        """
+        Making a forward pass of the complex ReLU layer from the
+    `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
+        Arg types:
+            * real, imag (PyTorch Float Tensor) - Node features.
+        Return types:
+            * real, imag (PyTorch Float Tensor) - Node features after complex ReLU.
+        """
         real, img = self.complex_relu(real, img)
         return real, img
 
 class MagNet(nn.Module):
-    r"""The MagNet model for node classification.
+    r"""The MagNet model for node classification from the
+    `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
     Args:
         in_channels (int): Size of each input sample.
         num_filter (int, optional): Number of hidden channels.  Default: 2.
@@ -254,7 +267,8 @@ class MagNet(nn.Module):
     def forward(self, real: torch.FloatTensor, imag: torch.FloatTensor, edge_index: torch.LongTensor, \
         edge_weight: Optional[torch.LongTensor]=None) -> torch.FloatTensor:
         """
-        Making a forward pass of the MagNet node classification model.
+        Making a forward pass of the MagNet node classification model from the
+    `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
         Arg types:
             * real, imag (PyTorch Float Tensor) - Node features.
             * edge_index (PyTorch Long Tensor) - Edge indices.

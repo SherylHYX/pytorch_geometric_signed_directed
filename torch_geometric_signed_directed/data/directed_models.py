@@ -1,12 +1,15 @@
+from typing import Tuple
 import math
 
 import numpy as np
+import scipy.sparse as sp
 import networkx as nx
 import numpy.random as rnd
 
 
-def DSBM(N, K, p, F, size_ratio=1):
-    """A directed stochastic block model graph generator.
+def DSBM(N: int, K: int, p: float, F: np.array, size_ratio: float=1) -> Tuple[sp.spmatrix, np.array]:
+    """A directed stochastic block model graph generator from the
+    `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
     Args:
         N: (int) Number of nodes.
         K: (int) Number of clusters.
@@ -47,16 +50,16 @@ def DSBM(N, K, p, F, size_ratio=1):
     return A, assign
 
 
-def fix_network(A, labels):
-    '''find the largest connected component and then increase the degree of nodes with low degrees
-    Parameters
-    ----------
-    A : scipy sparse adjacency matrix
-    labels : an array of labels of the nodes in the original network
-    Returns
-    -------
-    fixed-degree and connected network, submatrices of A, and subarray of labels
-    '''
+def fix_network(A: sp.spmatrix, labels: np.array) -> Tuple[sp.spmatrix, np.array]:
+    """Find the largest connected component and then increase the degree of nodes with low degrees, from the
+    `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
+    Args:
+        A: (scipy sparse matrix) Adjacency matrix.
+        labels: (numpy array) Node labels.
+    Returns:
+        A: (scipy sparse matrix) Adjacency matrix after fixing degrees and obtaining a connected netework.
+        labels: (numpy array) Node labels after fixing degrees and obtaining a connected netework.
+    """
     G = nx.from_scipy_sparse_matrix(A, create_using=nx.DiGraph)
     largest_cc = max(nx.weakly_connected_components(G))
     A_new = A[list(largest_cc)][:, list(largest_cc)]
@@ -81,7 +84,19 @@ def fix_network(A, labels):
     labels_new = labels[keep]
     return A_new, labels_new
 
-def meta_graph_generation(F_style='cyclic', K=4, eta=0.05, ambient=False, fill_val=0.5):
+def meta_graph_generation(F_style: str='cyclic', K: int=4, eta: float=0.05, \
+    ambient: bool=False, fill_val: float=0.5) -> np.array:
+    """The meta-graph generation function from the
+    `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
+    Args:
+        F_style: (str) Style of the meta-graph: 'cyclic', 'path', 'complete', 'star' or 'multipartite'.
+        K: (int) Number of clusters.
+        eta: (float) Noise parameter, 0 <= eta <= 0.5.
+        ambient: (bool) Whether there are ambient nodes.
+        fill_val: (float) Value to fill in the ambient locations.
+    Returns:
+        F: (NumPy array) The resulting meta-graph adjacency matrix.
+    """
     if eta == 0:
         eta = -1
     F = np.eye(K) * 0.5
