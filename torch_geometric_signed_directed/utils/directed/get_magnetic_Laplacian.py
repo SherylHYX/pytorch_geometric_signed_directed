@@ -16,7 +16,8 @@ def get_magnetic_Laplacian(edge_index, edge_weight: Optional[torch.Tensor] = Non
                   q: Optional[float] = 0.25,
                   return_lambda_max: bool = False):
     r""" Computes the magnetic Laplacian of the graph given by :obj:`edge_index`
-    and optional :obj:`edge_weight`.
+    and optional :obj:`edge_weight` from the
+    `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
     Args:
         edge_index (LongTensor): The edge indices.
         edge_weight (Tensor, optional): One-dimensional edge weights.
