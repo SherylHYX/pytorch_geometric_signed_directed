@@ -4,19 +4,21 @@ import scipy.sparse as sp
 from ..general.data_utils import scipy_sparse_to_torch_sparse
 
 class Prob_Balanced_Ratio_Loss(torch.nn.Module):
-    r"""An implementation of the probablistic balanced ratio cut loss function.
+    r"""An implementation of the probablistic balanced ratio cut loss function from the
+    `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
     Args:
         A_p, A_n (scipy sparse matrices): positive and negative parts of adjacency matrix A.
     """
-    def __init__(self, A_p, A_n):
+    def __init__(self, A_p: sp.spmatrix, A_n: sp.spmatrix):
         super(Prob_Balanced_Ratio_Loss, self).__init__()
         D_p = sp.diags(A_p.transpose().sum(
             axis=0).tolist(), [0]).tocsc()
         mat = D_p - (A_p - A_n)
         self.mat = scipy_sparse_to_torch_sparse(mat)
 
-    def forward(self, prob):
-        """Making a forward pass of the probablistic balanced ratio cut loss function.
+    def forward(self, prob: torch.FloatTensor) -> torch.Tensor:
+        """Making a forward pass of the probablistic balanced ratio cut loss function from the
+    `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
         Args:
             prob: (PyTorch FloatTensor) Prediction probability matrix made by the model
         
@@ -35,11 +37,12 @@ class Prob_Balanced_Ratio_Loss(torch.nn.Module):
         return result
 
 class Prob_Balanced_Normalized_Loss(torch.nn.Module):
-    r"""An implementation of the probablistic balanced normalized cut loss function.
+    r"""An implementation of the probablistic balanced normalized cut loss function from the
+    `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
     Args:
         A_p, A_n (scipy sparse matrices): positive and negative parts of adjacency matrix A.
     """
-    def __init__(self, A_p, A_n):
+    def __init__(self, A_p: sp.spmatrix, A_n: sp.spmatrix):
         super(Prob_Balanced_Normalized_Loss, self).__init__()
         D_p = sp.diags(A_p.transpose().sum(
             axis=0).tolist(), [0]).tocsc()
@@ -49,8 +52,9 @@ class Prob_Balanced_Normalized_Loss(torch.nn.Module):
         mat = D_p - (A_p - A_n)
         self.mat = scipy_sparse_to_torch_sparse(mat)
 
-    def forward(self, prob):
-        """Making a forward pass of the probablistic balanced normalized cut loss function.
+    def forward(self, prob: torch.FloatTensor) -> torch.Tensor:
+        """Making a forward pass of the probablistic balanced normalized cut loss function from the
+    `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
         Args:
             prob: (PyTorch FloatTensor) Prediction probability matrix made by the model
         
@@ -71,11 +75,12 @@ class Prob_Balanced_Normalized_Loss(torch.nn.Module):
         return result
 
 class Unhappy_ratio(torch.nn.Module):
-    r"""A calculation of the ratio of unhappy edges among all edges.
+    r"""A calculation of the ratio of unhappy edges among all edges from the
+    `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
     Args:
         A_p, A_n (scipy sparse matrices): positive and negative parts of adjacency matrix A.
     """
-    def __init__(self, A_p, A_n):
+    def __init__(self, A_p: sp.spmatrix, A_n: sp.spmatrix):
         super(Unhappy_ratio, self).__init__()
         D_p = sp.diags(A_p.transpose().sum(
             axis=0).tolist(), [0]).tocsc()
@@ -83,8 +88,9 @@ class Unhappy_ratio(torch.nn.Module):
         self.mat = scipy_sparse_to_torch_sparse(mat)
         self.num_edges = len((A_p - A_n).nonzero()[0])
 
-    def forward(self, prob):
-        """Making a forward pass of the calculation of the ratio of unhappy edges among all edges.
+    def forward(self, prob: torch.FloatTensor) -> torch.Tensor:
+        """Making a forward pass of the calculation of the ratio of unhappy edges among all edges from the
+    `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
         Args:
             prob: (PyTorch FloatTensor) Prediction probability matrix made by the model
         
