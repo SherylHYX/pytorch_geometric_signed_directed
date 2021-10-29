@@ -2,13 +2,13 @@ import numpy as np
 import scipy.sparse as sp
 import torch
 from torch_geometric_signed_directed.nn.directed import (
-    DIGRAC, MagNet
+    DiGCN, DiGCN_IB, DIGRAC, MagNet
 )
 from torch_geometric_signed_directed.data import (
     DSBM, meta_graph_generation, fix_network
 )
 from torch_geometric_signed_directed.utils import (
-    Prob_Imbalance_Loss, scipy_sparse_to_torch_sparse
+    Prob_Imbalance_Loss, scipy_sparse_to_torch_sparse, get_appr_directed_adj, get_second_directed_adj
 )
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -25,7 +25,48 @@ def create_mock_data(num_nodes, num_features, num_classes=3, F_style='cyclic', e
     edge_weight = torch.FloatTensor(sp.csr_matrix(A).data).to(device)
     return X, A, F, F_data, edge_index, edge_weight
 
+def test_DiGCN():
+    """
+    Testing DiGCN
+    """
+    num_nodes = 100
+    num_features = 3
+    num_classes = 3
 
+    X, _, _, _, edge_index, edge_weights = \
+        create_mock_data(num_nodes, num_features, num_classes)
+
+    edge_index1, edge_weights1 = get_appr_directed_adj(0.1, edge_index, X.shape[0],
+        X.dtype, edge_weights)
+    edge_index1 = edge_index1.to(device)
+    edge_weights1 = edge_weights1.to(device)
+    
+
+    model = DiGCN(num_features, 4, num_classes,
+                    0.5).to(device)
+        
+    preds = model(X, edge_index1, edge_weights1)
+    
+    assert preds.shape == (
+        num_nodes, num_classes
+    )
+    assert model.conv1.__repr__() == 'DIGCNConv(3, 4)'
+
+    edge_index2, edge_weights2 = get_second_directed_adj(edge_index, X.shape[0], X.dtype, edge_weights)
+    edge_index2 = edge_index2.to(device)
+    edge_weights2 = edge_weights2.to(device)
+    edge_index = (edge_index1, edge_index2)
+    edge_weights = (edge_weights1, edge_weights2)
+    del edge_index2, edge_weights2
+
+    model = DiGCN_IB(num_features, 4, num_classes,
+                    0.5).to(device)
+    preds = model(X, edge_index, edge_weights)
+    
+    assert preds.shape == (
+        num_nodes, num_classes
+    )
+    
 
 
 def test_DIGRAC():
@@ -42,7 +83,7 @@ def test_DIGRAC():
 
     prob_imbalance_loss = Prob_Imbalance_Loss(F)
 
-    model = DIGRAC(nfeat=num_features,
+    model = DIGRAC(num_features=num_features,
                     hidden=8,
                     nclass=num_classes,
                     dropout=0.5,
