@@ -73,17 +73,17 @@ def test_MagNet():
     X, _, _, _, edge_index, edge_weight = \
         create_mock_data(num_nodes, num_features, num_classes)
 
-    model = MagNet(X.shape[1], K = 1, label_dim=num_classes, layer = 2, \
+    model = MagNet(X.shape[1], K = 1, q = 0.1, label_dim=num_classes, layer = 2, \
                                 activation = True, num_filter = 2, dropout=0.5, normalization=None).to(device)  
-    preds = model(X, X, 0.25, edge_index, edge_weight) 
+    preds = model(X, X, edge_index, edge_weight) 
     
     assert preds.shape == (
         num_nodes, num_classes
     )
 
-    model = MagNet(X.shape[1], K = 3, label_dim=num_classes, layer = 3, \
+    model = MagNet(X.shape[1], K = 3, label_dim=num_classes, layer = 3, trainable_q = True, \
                                 activation = True, num_filter = 2, dropout=0.5).to(device)  
-    preds = model(X, X, 0.25, edge_index, edge_weight) 
+    preds = model(X, X, edge_index, edge_weight) 
     
     assert preds.shape == (
         num_nodes, num_classes

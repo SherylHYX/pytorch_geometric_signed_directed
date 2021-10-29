@@ -20,6 +20,8 @@ class MagNetConv(MessagePassing):
         in_channels (int): Size of each input sample.
         out_channels (int): Size of each output sample.
         K (int): Chebyshev filter size :math:`K`.
+        q (float, optional): Initial value of the phase parameter, 0 <= q <= 0.25. Default: 0.25.
+        trainable_q (bool, optional): whether to set q to be trainable or not. (default: :obj:`False`)
         normalization (str, optional): The normalization scheme for the magnetic
             Laplacian (default: :obj:`sym`):
             1. :obj:`None`: No normalization
@@ -33,8 +35,8 @@ class MagNetConv(MessagePassing):
             :class:`torch_geometric.nn.conv.MessagePassing`.
     """
 
-    def __init__(self, in_channels, out_channels, K, normalization='sym',
-                 bias=True, **kwargs):
+    def __init__(self, in_channels:int, out_channels:int, K:int, q:float, trainable_q:bool,
+                 normalization:str='sym', bias:bool=True, **kwargs):
         kwargs.setdefault('aggr', 'add')
         super(MagNetConv, self).__init__(**kwargs)
 
@@ -44,6 +46,11 @@ class MagNetConv(MessagePassing):
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.normalization = normalization
+        self.trainable_q = trainable_q
+        if trainable_q:
+            self.q = Parameter(torch.Tensor(1).fill_(q))
+        else:
+            self.q = q
         self.weight = Parameter(torch.Tensor(K, in_channels, out_channels))
 
         if bias:
@@ -95,7 +102,7 @@ class MagNetConv(MessagePassing):
     def forward(
         self,
         x_real: torch.FloatTensor, 
-        x_imag: torch.FloatTensor, q: float,
+        x_imag: torch.FloatTensor, 
         edge_index: torch.LongTensor,
         edge_weight: OptTensor = None,
         lambda_max: OptTensor = None,
@@ -104,16 +111,20 @@ class MagNetConv(MessagePassing):
         Making a forward pass of the MagNet Convolution layer.
         Arg types:
             * x_real, x_imag (PyTorch Float Tensor) - Node features.
-            * q (float) - Constant q in the paper, related to phase.
             * edge_index (Tensor array) - Edge indices.
             * edge_weight (PyTorch Float Tensor, optional) - Edge weights corresponding to edge indices.
             * lambda_max (optional, but mandatory if normalization is None) - Largest eigenvalue of Laplacian.
         Return types:
             * out_real, out_imag (PyTorch Float Tensor) - Hidden state tensor for all nodes, with shape (N_nodes, F_out).
         """
+        if self.trainable_q:
+            self.q = Parameter(torch.clamp(self.q, 0, 0.25))
+
         if self.normalization != 'sym' and lambda_max is None:
+            if self.trainable_q:
+                raise RuntimeError('Cannot train q while not calculating maximum eigenvalue of Laplacian!')
             _, _, _, lambda_max =  get_magnetic_Laplacian(
-            edge_index, edge_weight, None, q=q, return_lambda_max=True
+            edge_index, edge_weight, None, q=self.q, return_lambda_max=True
         )
 
         if lambda_max is None:
@@ -123,8 +134,9 @@ class MagNetConv(MessagePassing):
                                       device=x_real.device)
         assert lambda_max is not None
 
+        
         edge_index, norm_real, norm_imag = self.__norm__(edge_index, x_real.size(self.node_dim),
-                                         edge_weight, q, self.normalization,
+                                         edge_weight, self.q, self.normalization,
                                          lambda_max, dtype=x_real.dtype)
 
         Tx_0_real_real = x_real
@@ -199,36 +211,49 @@ class complex_relu_layer(nn.Module):
         return real, img
 
 class MagNet(nn.Module):
-    def __init__(self, in_c, num_filter=2, K=2, label_dim=2, activation=False, layer=2, dropout=False, normalization='sym'):
-        """
-        :param in_c: int, number of input channels.
-        :param num_filter: int, number of hidden channels.
-        :param K: for cheb series
-        :param label_dim: dimension of labels
-        :param activation: whether to use activation function or not
-        :param dropout: dropout value.
-        :param normalization: normalization for the Laplacian.
-        """
+    r"""The MagNet model for node classification.
+    Args:
+        in_channels (int): Size of each input sample.
+        num_filter (int, optional): Number of hidden channels.  Default: 2.
+        K (int, optional): Order of the Chebyshev polynomial.  Default: 2.
+        q (float, optional): Initial value of the phase parameter, 0 <= q <= 0.25. Default: 0.25.
+        label_dim (int, optional): Number of output classes.  Default: 2.
+        activation (bool, optional): whether to use activation function or not. (default: :obj:`False`)
+        trainable_q (bool, optional): whether to set q to be trainable or not. (default: :obj:`False`)
+        layer (int, optional): Number of MagNetConv layers. Deafult: 2.
+        dropout (float, optional): Dropout value. (default: :obj:`False`)
+        normalization (str, optional): The normalization scheme for the magnetic
+            Laplacian (default: :obj:`sym`):
+            1. :obj:`None`: No normalization
+            :math:`\mathbf{L} = \mathbf{D} - \mathbf{A} Hadamard \exp(i \Theta^{(q)})`
+            2. :obj:`"sym"`: Symmetric normalization
+            :math:`\mathbf{L} = \mathbf{I} - \mathbf{D}^{-1/2} \mathbf{A}
+            \mathbf{D}^{-1/2} Hadamard \exp(i \Theta^{(q)})`
+    """
+    def __init__(self, in_channels:int, num_filter:int=2, q:float=0.25, K:int=2, label_dim:int=2, \
+        activation:bool=False, trainable_q:bool=False, layer:int=2, dropout:float=False, normalization:str='sym'):
         super(MagNet, self).__init__()
 
         chebs = nn.ModuleList()
-        chebs.append(MagNetConv(in_channels=in_c, out_channels=num_filter, K=K, normalization=normalization))
+        chebs.append(MagNetConv(in_channels=in_channels, out_channels=num_filter, K=K, \
+            q=q, trainable_q=trainable_q, normalization=normalization))
         self.normalization = normalization
         self.activation = activation
         if self.activation:
             self.complex_relu = complex_relu_layer()
 
         for _ in range(1, layer):
-            chebs.append(MagNetConv(in_channels=num_filter, out_channels=num_filter, K=K))
+            chebs.append(MagNetConv(in_channels=num_filter, out_channels=num_filter, K=K,\
+                q=q, trainable_q=trainable_q, normalization=normalization))
 
         self.Chebs = chebs
 
         self.Conv = nn.Conv1d(2*num_filter, label_dim, kernel_size=1)        
         self.dropout = dropout
 
-    def forward(self, real, imag, q, edge_index, edge_weight):
+    def forward(self, real, imag, edge_index, edge_weight):
         for cheb in self.Chebs:
-            real, imag = cheb(real, imag, q, edge_index, edge_weight)
+            real, imag = cheb(real, imag, edge_index, edge_weight)
             if self.activation:
                 real, imag = self.complex_relu(real, imag)
 
