@@ -105,7 +105,7 @@ class DGCNConv(MessagePassing):
 
     def message_and_aggregate(self, adj_t: SparseTensor, x: Tensor) -> Tensor:
         return matmul(adj_t, x, reduce=self.aggr)
-        
+
 
 class DGCN(torch.nn.Module):
     r"""An implementation of the DGCN node classification model from `Directed Graph Convolutional Network" 
@@ -115,11 +115,21 @@ class DGCN(torch.nn.Module):
         filter_num (int): Hidden dimention.
         out_dim (int): Output dimension.
         dropout (float, optional): Dropout value. Default: None.
+        improved (bool, optional): If set to :obj:`True`, the layer computes
+            :math:`\mathbf{\hat{A}}` as :math:`\mathbf{A} + 2\mathbf{I}`.
+            (default: :obj:`False`)
+        cached (bool, optional): If set to :obj:`True`, the layer will cache
+            the computation of :math:`\mathbf{\hat{D}}^{-1/2} \mathbf{\hat{A}}
+            \mathbf{\hat{D}}^{-1/2}` on first execution, and will use the
+            cached version for further executions.
+            This parameter should only be set to :obj:`True` in transductive
+            learning scenarios. (default: :obj:`False`)
     """
-    def __init__(self, input_dim: int, filter_num: int, out_dim: int, dropout: Optional[float]=None):
+    def __init__(self, input_dim: int, filter_num: int, out_dim: int, dropout: Optional[float]=None, \
+        improved: bool = False, cached: bool = False):
         super(DGCN, self).__init__()
         self.dropout = dropout
-        self.dgconv = DGCNConv()
+        self.dgconv = DGCNConv(improved=improved, cached=cached)
         self.Conv = nn.Conv1d(filter_num*3, out_dim, kernel_size=1)
 
         self.lin1 = torch.nn.Linear(input_dim,    filter_num,   bias=False)

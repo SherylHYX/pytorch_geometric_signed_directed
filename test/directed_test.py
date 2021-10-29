@@ -1,8 +1,10 @@
 import numpy as np
 import scipy.sparse as sp
 import torch
+from torch_sparse import SparseTensor
+
 from torch_geometric_signed_directed.nn.directed import (
-    DiGCN, DiGCN_IB, DIGRAC, MagNet, DGCN
+    DiGCN, DiGCN_IB, DIGRAC, MagNet, DGCN, DGCNConv
 )
 from torch_geometric_signed_directed.data import (
     DSBM, meta_graph_generation, fix_network
@@ -49,6 +51,33 @@ def test_DGCN():
     assert preds.shape == (
         num_nodes, num_classes
     )
+
+    edge_index, edge_in, in_weight, edge_out, out_weight = directed_features_in_out(edge_index, A.shape[0], None)
+    edge_index = edge_index.to(device)
+    edge_in, in_weight, edge_out, out_weight = edge_in.to(device), in_weight.to(device), edge_out.to(device), out_weight.to(device)
+
+    model = DGCN(num_features, 4, num_classes, 0.0, True, True).to(device)
+        
+    preds = model(X, edge_index, edge_in, edge_out, in_weight, out_weight)
+    
+    assert preds.shape == (
+        num_nodes, num_classes
+    )
+
+    x = torch.randn(4, 16)
+    edge_index = torch.tensor([[0, 0, 0, 1, 2, 3], [1, 2, 3, 0, 0, 0]])
+    row, col = edge_index
+    value = torch.rand(row.size(0))
+    adj2 = SparseTensor(row=row, col=col, value=value, sparse_sizes=(4, 4))
+    adj1 = adj2.set_value(None)
+
+    conv = DGCNConv()
+    out1 = conv(x, edge_index)
+    assert out1.size() == (4, 16)
+    assert torch.allclose(conv(x, adj1.t()), out1, atol=1e-6)
+    out2 = conv(x, edge_index, value)
+    assert out2.size() == (4, 16)
+    assert torch.allclose(conv(x, adj2.t()), out2, atol=1e-6)
 
 
 

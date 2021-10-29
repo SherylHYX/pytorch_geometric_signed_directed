@@ -1,7 +1,6 @@
 [![CI](https://github.com/SherylHYX/pytorch_geometric_signed_directed/actions/workflows/main.yml/badge.svg)](https://github.com/SherylHYX/pytorch_geometric_signed_directed/actions/workflows/main.yml)
-[![codecov](https://codecov.io/gh/SherylHYX/pytorch_geometric_signed_directed/branch/main/graph/badge.svg?token=HZ4N607OBJ)](https://codecov.io/gh/SherylHYX/pytorch_geometric_signed_directed)
+[![codecov](https://codecov.io/gh/SherylHYX/pytorch_geometric_signed_directed/branch/main/graph/badge.svg?token=441OFDGWRB)](https://codecov.io/gh/SherylHYX/pytorch_geometric_signed_directed)
 [![Documentation Status](https://readthedocs.org/projects/pytorch-geometric-signed-directed/badge/?version=latest)](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/?badge=latest)
-[![BCH compliance](https://bettercodehub.com/edge/badge/SherylHYX/pytorch_geometric_signed_directed?branch=main&token=4780381faf1dfd39fa49d2d1a66857ae603f3f7a)](https://bettercodehub.com/)
 
 
 *PyTorch Geometric Signed Directed* is a signed and directed extension library for [PyTorch Geometric](https://github.com/pyg-team/pytorch_geometric).
@@ -34,7 +33,11 @@ more to come...
 
 * **[DiGCN](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/DiGCN.py)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
 
+* **[DiGCN_IB](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/DiGCN.py)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
+
 * **[DIGRAC](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/DIGRAC.py)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
+
+* **[DGCN](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/DGCN.py)** from Tong *et al.*: [Directed Graph Convolutional Network.](https://arxiv.org/pdf/2004.13970.pdf) (ArXiv 2020)
 
 
 <details>
@@ -53,6 +56,8 @@ more to come...
 * **[DIGCNConv](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/DiGCN.py)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
 
 * **[DIMPA](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/DIGRAC.py)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
+
+* **[DGCNConv](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/DGCN.py)** from Tong *et al.*: [Directed Graph Convolutional Network.](https://arxiv.org/pdf/2004.13970.pdf) (ArXiv 2020)
 
 
 <details>
@@ -106,6 +111,8 @@ more to come...
 * **[get_appr_directed_adj](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/directed/get_adjs_DiGCN.py)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
 
 * **[get_second_directed_adj](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/directed/get_adjs_DiGCN.py)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
+
+* **[directed_features_in_out](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/directed/features_in_out.py)** from Tong *et al.*: [Directed Graph Convolutional Network.](https://arxiv.org/pdf/2004.13970.pdf) (ArXiv 2020)
 
 
 <details>

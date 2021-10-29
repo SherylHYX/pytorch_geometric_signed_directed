@@ -195,6 +195,7 @@ class DiGCN_IB(torch.nn.Module):
         self.ib2 = InceptionBlock(hidden, hidden)
         self.ib3 = InceptionBlock(hidden, num_classes)
         self._dropout = dropout
+        self.reset_parameters()
 
     def reset_parameters(self):
         self.ib1.reset_parameters()
