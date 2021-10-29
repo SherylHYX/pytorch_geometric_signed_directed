@@ -111,7 +111,7 @@ class MagNetConv(MessagePassing):
         Making a forward pass of the MagNet Convolution layer.
         Arg types:
             * x_real, x_imag (PyTorch Float Tensor) - Node features.
-            * edge_index (Tensor array) - Edge indices.
+            * edge_index (PyTorch Long Tensor) - Edge indices.
             * edge_weight (PyTorch Float Tensor, optional) - Edge weights corresponding to edge indices.
             * lambda_max (optional, but mandatory if normalization is None) - Largest eigenvalue of Laplacian.
         Return types:
@@ -251,7 +251,17 @@ class MagNet(nn.Module):
         self.Conv = nn.Conv1d(2*num_filter, label_dim, kernel_size=1)        
         self.dropout = dropout
 
-    def forward(self, real, imag, edge_index, edge_weight):
+    def forward(self, real: torch.FloatTensor, imag: torch.FloatTensor, edge_index: torch.LongTensor, \
+        edge_weight: Optional[torch.LongTensor]=None) -> torch.FloatTensor:
+        """
+        Making a forward pass of the MagNet node classification model.
+        Arg types:
+            * real, imag (PyTorch Float Tensor) - Node features.
+            * edge_index (PyTorch Long Tensor) - Edge indices.
+            * edge_weight (PyTorch Float Tensor, optional) - Edge weights corresponding to edge indices.
+        Return types:
+            * log_prob (PyTorch Float Tensor) - Logarithmic class probabilities for all nodes, with shape (num_nodes, num_classes).
+        """
         for cheb in self.Chebs:
             real, imag = cheb(real, imag, edge_index, edge_weight)
             if self.activation:
