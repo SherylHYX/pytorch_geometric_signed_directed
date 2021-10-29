@@ -61,7 +61,7 @@ class DIGRAC(torch.nn.Module):
     r"""The directed graph clustering model from the
     `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
     Args:
-        nfeat (int): Number of features.
+        num_features (int): Number of features.
         hidden (int): Hidden dimensions of the initial MLP.
         nclass (int): Number of clusters.
         dropout (float): Dropout probability.
@@ -69,14 +69,14 @@ class DIGRAC(torch.nn.Module):
         fill_value (float): Value for added self-loops.
     """
 
-    def __init__(self, nfeat: int, hidden: int, nclass: int, fill_value: float, dropout: float, hop: int):
+    def __init__(self, num_features: int, hidden: int, nclass: int, fill_value: float, dropout: float, hop: int):
         super(DIGRAC, self).__init__()
         nh1 = hidden
         nh2 = hidden
         self._num_clusters = int(nclass)
-        self._w_s0 = Parameter(torch.FloatTensor(nfeat, nh1))
+        self._w_s0 = Parameter(torch.FloatTensor(num_features, nh1))
         self._w_s1 = Parameter(torch.FloatTensor(nh1, nh2))
-        self._w_t0 = Parameter(torch.FloatTensor(nfeat, nh1))
+        self._w_t0 = Parameter(torch.FloatTensor(num_features, nh1))
         self._w_t1 = Parameter(torch.FloatTensor(nh1, nh2))
 
         self._dimpa = DIMPA(hop, fill_value)
