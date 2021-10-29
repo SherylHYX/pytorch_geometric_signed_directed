@@ -9,7 +9,7 @@ import numpy as np
 from scipy.sparse.linalg import eigsh
 
 
-def get_magnetic_Laplacian(edge_index, edge_weight: Optional[torch.Tensor] = None,
+def get_magnetic_Laplacian(edge_index: torch.LongTensor, edge_weight: Optional[torch.Tensor] = None,
                   normalization: Optional[str] = 'sym',
                   dtype: Optional[int] = None,
                   num_nodes: Optional[int] = None,
@@ -19,8 +19,8 @@ def get_magnetic_Laplacian(edge_index, edge_weight: Optional[torch.Tensor] = Non
     and optional :obj:`edge_weight` from the
     `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
     Args:
-        edge_index (LongTensor): The edge indices.
-        edge_weight (Tensor, optional): One-dimensional edge weights.
+        edge_index (PyTorch LongTensor): The edge indices.
+        edge_weight (PyTorch Tensor, optional): One-dimensional edge weights.
             (default: :obj:`None`)
         normalization (str, optional): The normalization scheme for the magnetic
             Laplacian (default: :obj:`sym`):
