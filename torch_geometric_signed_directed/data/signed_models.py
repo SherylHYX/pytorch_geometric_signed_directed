@@ -1,3 +1,4 @@
+from typing import Optional, Tuple
 import random
 import math
 
@@ -6,8 +7,10 @@ import networkx as nx
 import scipy.sparse as sp
 import numpy.random as rnd
 
-def SSBM(n, k, pin, etain, pout=None, size_ratio = 2, etaout=None, values='ones'):
-    """A signed stochastic block model graph generator.
+def SSBM(n: int, k: int, pin: float, etain: float, pout: Optional[float]=None, size_ratio: float = 2, \
+    etaout: Optional[float]=None, values: str='ones') -> Tuple[Tuple[sp.spmatrix, sp.spmatrix], np.array]:
+    """A signed stochastic block model graph generator from the
+    `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
     Args:
         n: (int) Number of nodes.
         k: (int) Number of communities.
@@ -15,7 +18,7 @@ def SSBM(n, k, pin, etain, pout=None, size_ratio = 2, etaout=None, values='ones'
         etain: (float) Noise value within communities.
         pout: (float) Sparsity value between communities.
         etaout: (float) Noise value between communities.
-        size_ratio: The communities have number of nodes multiples of each other, with the largest size_ratio times the number of nodes of the smallest.
+        size_ratio: (float) The communities have number of nodes multiples of each other, with the largest size_ratio times the number of nodes of the smallest.
         values: (string) Edge weight distribution (within community and without sign flip; otherwise weight is negated):
             'ones': Weights are 1.
             'gaussian': Weights are Gaussian, with variance 1 and expectation of 1.#
@@ -132,7 +135,18 @@ def SSBM(n, k, pin, etain, pout=None, size_ratio = 2, etaout=None, values='ones'
 
 
 
-def fill(values='ones'):
+def fill(values: str='ones') -> float:
+    """A filling method for the signed stochastic block model graph generator from the
+    `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
+    Arg:
+        values: (string) Edge weight:
+            'ones': Weights are 1.
+            'gaussian': Weights are Gaussian, with variance 1 and expectation of 1.#
+            'exp': Weights are exponentially distributed, with parameter 1.
+            'uniform: Weights are uniformly distributed between 0 and 1.
+        Returns:
+        value: (float) A filled value.
+    """
     if values == 'ones':
         return float(1)
     elif values == 'gaussian':
@@ -142,23 +156,26 @@ def fill(values='ones'):
     elif values == 'uniform':
         return np.random.uniform()
 
-def polarized_ssbm(total_n=100, num_com=3, N=30, K=2, p=0.1, eta=0.1, size_ratio=1):
-    ''' function to generate polarized ssbm models
-    Parameters
-    ----------
-    total_n : total number of nodes in the polarized network
-    num_com : number of conflicting communities
-    N : an array of labels of the nodes in the original network
-    K : number of sub-communities within a conflicting community
-    p : probability of existence of an edge
-    eta: sign flip probability
-    size_ratio : the size ratio of the largest to the smallest block in SSBM and community size. 1 means uniform sizes. should be at least 1.
-    Returns
-    -------
-    large_A_p and large_A_n : positive and negative parts of the polarized network
-    large_labels : ordered labels of the nodes, with conflicting communities labeled together, cluster 0 is the background
-    conflict_groups: an array indicating which conflicting group the node is in, 0 is background
-    '''
+def polarized_ssbm(total_n: int=100, num_com: int=3, N: int=30, K: int=2, p: float=0.1, eta: float=0.1,\
+    size_ratio: float=1) -> Tuple[Tuple[sp.spmatrix, sp.spmatrix], np.array, np.array]:
+    """A polarized signed stochastic block model graph generator from the
+    `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
+    Args:
+        total_n: (int) Total number of nodes in the polarized network.
+        num_com: (int) Number of conflicting communities.
+        N : (int) Default size of an SSBM community.
+        K : (int) Number of blocks(clusters) within a conflicting community.
+        p : (int) Probability of existence of an edge.
+        eta: (float) Sign flip probability, 0 <= eta <= 0.5.
+        size_ratio: (float) The communities have number of nodes multiples of each other, with the largest size_ratio times the number of nodes of the smallest.
+        
+        Returns:
+        A_p_new, A_n_new : (sp.spmatrix) Positive and negative parts of the polarized network.
+        labels_new : (np.array) Ordered labels of the nodes, with conflicting communities labeled together, 
+            cluster 0 is the ambient cluster.
+        conflict_groups : (np.array) An array indicating which conflicting group the node is in, 0 is ambient.
+
+    """
     select_num = math.floor(total_n*p/4*total_n) # number of links in large_A_p and large_A_n respectively
     # note that we need to add each link twice for the undirected graph
     tuples_full = []

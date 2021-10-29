@@ -9,7 +9,8 @@ from ..general.conv_base import Conv_Base
 
 
 class SIMPA(nn.Module):
-    r"""The signed mixed-path aggregation model.
+    r"""The signed mixed-path aggregation model from the
+    `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
     Args:
         hop (int): Number of hops to consider.
         fill_value (float): Value for added self-loops for the positive part of the adjacency matrix.
@@ -54,7 +55,8 @@ class SIMPA(nn.Module):
                 x_pt: Optional[torch.FloatTensor] = None, x_nt: Optional[torch.FloatTensor] = None) -> Tuple[torch.FloatTensor,
                                                                                                              torch.FloatTensor, torch.LongTensor, torch.FloatTensor]:
         """
-        Making a forward pass of SIMPA.
+        Making a forward pass of SIMPA from the
+    `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
 
         Arg types:
             * **edge_index_p, edge_index_n** (PyTorch FloatTensor) - Edge indices for positive and negative parts.
@@ -145,7 +147,8 @@ class SIMPA(nn.Module):
 
 
 class SSSNET(nn.Module):
-    r"""The signed graph clustering model.
+    r"""The signed graph clustering model from the
+    `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
     Args:
         nfeat (int): Number of features.
         hidden (int): Hidden dimensions of the initial MLP.
@@ -227,7 +230,8 @@ class SSSNET(nn.Module):
                 features: torch.FloatTensor) -> Tuple[torch.FloatTensor,
                                                       torch.FloatTensor, torch.LongTensor, torch.FloatTensor]:
         """
-        Making a forward pass of the SSSNET.
+        Making a forward pass of the SSSNET from the
+    `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
 
         Arg types:
             * **edge_index_p, edge_index_n** (PyTorch FloatTensor) - Edge indices for positive and negative parts.
