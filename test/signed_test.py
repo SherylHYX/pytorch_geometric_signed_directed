@@ -2,7 +2,7 @@ import numpy as np
 import scipy.sparse as sp
 import torch
 from torch_geometric_signed_directed.nn.signed import (
-    SSSNET
+    SSSNET_node_clustering
 )
 from torch_geometric_signed_directed.data import (
     SSBM, polarized_SSBM
@@ -41,7 +41,7 @@ def test_SSSNET():
     loss_func_pbrc = Prob_Balanced_Ratio_Loss(A_p=A_p_scipy, A_n=A_n_scipy)
     loss_func_pbnc = Prob_Balanced_Normalized_Loss(A_p=A_p_scipy, A_n=A_n_scipy)
 
-    model = SSSNET(nfeat=num_features,
+    model = SSSNET_node_clustering(nfeat=num_features,
                     hidden=8,
                     nclass=num_classes,
                     dropout=0.5,
@@ -60,7 +60,7 @@ def test_SSSNET():
     assert loss_pbrc >= 0
     assert loss_pbnc >= 0
 
-    model = SSSNET(nfeat=num_features,
+    model = SSSNET_node_clustering(nfeat=num_features,
                     hidden=16,
                     nclass=num_classes,
                     dropout=0.5,
