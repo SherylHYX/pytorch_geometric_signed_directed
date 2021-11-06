@@ -9,7 +9,7 @@ from torch_geometric_signed_directed.nn.directed import (
     DGCN_node_classification, DGCNConv
 )
 from torch_geometric_signed_directed.data import (
-    DSBM
+    DSBM, DirectedData
 )
 from torch_geometric_signed_directed.utils import (
     Prob_Imbalance_Loss, scipy_sparse_to_torch_sparse, 
@@ -224,3 +224,16 @@ def test_DSBM():
 
     A, _ = DSBM(N=num_nodes, K=num_classes, p=p, F=F, size_ratio=1)
     assert A.shape[1] <= num_nodes
+
+def test_DirectedData():
+    num_nodes = 200
+    num_classes = 3
+    p = 0.01
+    eta = 0.1
+    F = meta_graph_generation(F_style='cyclic', K=num_classes, eta=eta, ambient=True, fill_val=0.5)
+    A, _ = DSBM(N=num_nodes, K=num_classes, p=p, F=F, size_ratio=1)
+    data = DirectedData(A = A)
+    assert data.edge_index[0].max() < num_nodes
+    assert data.edge_weight.max() <= 1
+    data2 = DirectedData(edge_index = data.edge_index)
+    assert data2.A.shape[0] == num_nodes
