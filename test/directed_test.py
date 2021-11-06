@@ -7,12 +7,12 @@ from torch_geometric_signed_directed.nn.directed import (
     DiGCN, DiGCN_IB, DIGRAC, MagNet, DGCN, DGCNConv
 )
 from torch_geometric_signed_directed.data import (
-    DSBM, meta_graph_generation, fix_network
+    DSBM
 )
 from torch_geometric_signed_directed.utils import (
     Prob_Imbalance_Loss, scipy_sparse_to_torch_sparse, 
     get_appr_directed_adj, get_second_directed_adj,
-    directed_features_in_out
+    directed_features_in_out, meta_graph_generation, extract_network
 )
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -23,7 +23,7 @@ def create_mock_data(num_nodes, num_features, num_classes=3, F_style='cyclic', e
     F = meta_graph_generation(F_style, num_classes, eta, False, 0)
     F_data = meta_graph_generation(F_style, num_classes, eta, False, 0.5)
     A, labels = DSBM(N=num_nodes, K=num_classes, p=p, F=F_data, size_ratio=1.5)
-    A, labels = fix_network(A, labels)
+    A, labels = extract_network(A, labels)
     X = torch.FloatTensor(np.random.uniform(-1, 1, (num_nodes, num_features))).to(device)
     edge_index = torch.LongTensor(np.array(A.nonzero())).to(device)
     edge_weight = torch.FloatTensor(sp.csr_matrix(A).data).to(device)
