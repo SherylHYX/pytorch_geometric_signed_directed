@@ -1,4 +1,10 @@
-from .DIGRAC import DIMPA, DIGRAC
-from .MagNet import MagNetConv, MagNet
-from .DiGCN import DiGCN, DiGCN_IB, DIGCNConv
-from .DGCN import DGCN, DGCNConv
+from .complex_relu import complex_relu_layer
+from .DGCN_node_classification import DGCN_node_classification
+from .DGCNConv import DGCNConv
+from .DiGCN_Inception_Block_node_classification import DiGCN_Inception_Block_node_classification
+from .DiGCN_node_classification import DiGCN_node_classification
+from .DiGCNConv import DiGCNConv
+from .DIGRAC_node_clustering import DIGRAC_node_clustering
+from .DIMPA import DIMPA
+from .MagNet_node_classification import MagNet_node_classification
+from .MagNetConv import MagNetConv

@@ -4,7 +4,9 @@ import torch
 from torch_sparse import SparseTensor
 
 from torch_geometric_signed_directed.nn.directed import (
-    DiGCN, DiGCN_IB, DIGRAC, MagNet, DGCN, DGCNConv
+    DiGCN_node_classification, DiGCN_Inception_Block_node_classification, 
+    DIGRAC_node_clustering, MagNet_node_classification, 
+    DGCN_node_classification, DGCNConv
 )
 from torch_geometric_signed_directed.data import (
     DSBM
@@ -44,7 +46,7 @@ def test_DGCN():
     edge_index = edge_index.to(device)
     edge_in, in_weight, edge_out, out_weight = edge_in.to(device), in_weight.to(device), edge_out.to(device), out_weight.to(device)
 
-    model = DGCN(num_features, 4, num_classes, 0.5).to(device)
+    model = DGCN_node_classification(num_features, 4, num_classes, 0.5).to(device)
         
     preds = model(X, edge_index, edge_in, edge_out, in_weight, out_weight)
     
@@ -56,7 +58,7 @@ def test_DGCN():
     edge_index = edge_index.to(device)
     edge_in, in_weight, edge_out, out_weight = edge_in.to(device), in_weight.to(device), edge_out.to(device), out_weight.to(device)
 
-    model = DGCN(num_features, 4, num_classes, 0.0, True, True).to(device)
+    model = DGCN_node_classification(num_features, 4, num_classes, 0.0, True, True).to(device)
         
     preds = model(X, edge_index, edge_in, edge_out, in_weight, out_weight)
     
@@ -98,7 +100,7 @@ def test_DiGCN():
     edge_weights1 = edge_weights1.to(device)
     
 
-    model = DiGCN(num_features, 4, num_classes,
+    model = DiGCN_node_classification(num_features, 4, num_classes,
                     0.5).to(device)
         
     preds = model(X, edge_index1, edge_weights1)
@@ -106,7 +108,7 @@ def test_DiGCN():
     assert preds.shape == (
         num_nodes, num_classes
     )
-    assert model.conv1.__repr__() == 'DIGCNConv(3, 4)'
+    assert model.conv1.__repr__() == 'DiGCNConv(3, 4)'
 
     edge_index2, edge_weights2 = get_second_directed_adj(edge_index, X.shape[0], X.dtype, edge_weights)
     edge_index2 = edge_index2.to(device)
@@ -115,7 +117,7 @@ def test_DiGCN():
     edge_weights = (edge_weights1, edge_weights2)
     del edge_index2, edge_weights2
 
-    model = DiGCN_IB(num_features, 4, num_classes,
+    model = DiGCN_Inception_Block_node_classification(num_features, 4, num_classes,
                     0.5).to(device)
     preds = model(X, edge_index, edge_weights)
     
@@ -139,7 +141,7 @@ def test_DIGRAC():
 
     prob_imbalance_loss = Prob_Imbalance_Loss(F)
 
-    model = DIGRAC(num_features=num_features,
+    model = DIGRAC_node_clustering(num_features=num_features,
                     hidden=8,
                     nclass=num_classes,
                     dropout=0.5,
@@ -170,7 +172,7 @@ def test_MagNet():
     X, _, _, _, edge_index, edge_weight = \
         create_mock_data(num_nodes, num_features, num_classes)
 
-    model = MagNet(X.shape[1], K = 1, q = 0.1, label_dim=num_classes, layer = 2, \
+    model = MagNet_node_classification(X.shape[1], K = 1, q = 0.1, label_dim=num_classes, layer = 2, \
                                 activation = True, num_filter = 2, dropout=0.5, normalization=None).to(device)  
     preds = model(X, X, edge_index, edge_weight) 
     
@@ -178,7 +180,7 @@ def test_MagNet():
         num_nodes, num_classes
     )
 
-    model = MagNet(X.shape[1], K = 3, label_dim=num_classes, layer = 3, trainable_q = True, \
+    model = MagNet_node_classification(X.shape[1], K = 3, label_dim=num_classes, layer = 3, trainable_q = True, \
                                 activation = True, num_filter = 2, dropout=0.5).to(device)  
     preds = model(X, X, edge_index, edge_weight) 
     
