@@ -228,7 +228,7 @@ def test_DSBM():
 def test_DirectedData():
     num_nodes = 200
     num_classes = 3
-    p = 0.01
+    p = 0.1
     eta = 0.1
     F = meta_graph_generation(F_style='cyclic', K=num_classes, eta=eta, ambient=True, fill_val=0.5)
     A, _ = DSBM(N=num_nodes, K=num_classes, p=p, F=F, size_ratio=1)
