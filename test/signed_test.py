@@ -5,10 +5,10 @@ from torch_geometric_signed_directed.nn.signed import (
     SSSNET
 )
 from torch_geometric_signed_directed.data import (
-    SSBM, polarized_ssbm
+    SSBM, polarized_SSBM
 )
 from torch_geometric_signed_directed.utils import (
-    Prob_Balanced_Ratio_Loss, Prob_Balanced_Normalized_Loss, Unhappy_ratio
+    Prob_Balanced_Ratio_Loss, Prob_Balanced_Normalized_Loss, Unhappy_Ratio
 )
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -52,7 +52,7 @@ def test_SSSNET():
                 edge_index_n, edge_weight_n, X) 
     loss_pbrc = loss_func_pbrc(prob=prob).item()
     loss_pbnc = loss_func_pbnc(prob=prob).item()
-    unhappy_ratio = Unhappy_ratio(A_p_scipy, A_n_scipy)(prob).item()
+    unhappy_ratio = Unhappy_Ratio(A_p_scipy, A_n_scipy)(prob).item()
     assert prob.shape == (
         num_nodes, num_classes
     )
@@ -95,13 +95,13 @@ def test_polarized():
     N = 200
     num_com = 3
     K = 2
-    (A_p, _), labels, conflict_groups = polarized_ssbm(total_n=total_n, num_com=num_com, N=N, K=K, \
+    (A_p, _), labels, conflict_groups = polarized_SSBM(total_n=total_n, num_com=num_com, N=N, K=K, \
         p=0.1, eta=0.1, size_ratio=1.5)
     assert A_p.shape == (total_n, total_n)
     assert np.max(labels) == num_com*K
     assert np.max(conflict_groups) == num_com
 
-    (A_p, _), _, _ = polarized_ssbm(total_n=total_n, num_com=num_com, N=N, K=K, \
+    (A_p, _), _, _ = polarized_SSBM(total_n=total_n, num_com=num_com, N=N, K=K, \
         p=0.002, eta=0.1, size_ratio=1)
     assert A_p.shape[1] <= total_n
             
