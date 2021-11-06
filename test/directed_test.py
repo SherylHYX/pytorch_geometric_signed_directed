@@ -229,7 +229,7 @@ def test_DSBM():
     A, labels = DSBM(N=num_nodes, K=num_classes, p=p, F=F, size_ratio=1)
     A, labels = extract_network(A=A, lowest_degree=10)
     assert labels is None
-    assert A is None or A.shape[1] <= num_nodes
+    assert A.shape[1] <= num_nodes
 
 def test_DirectedData():
     num_nodes = 200
