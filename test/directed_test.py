@@ -25,7 +25,7 @@ def create_mock_data(num_nodes, num_features, num_classes=3, F_style='cyclic', e
     F = meta_graph_generation(F_style, num_classes, eta, False, 0)
     F_data = meta_graph_generation(F_style, num_classes, eta, False, 0.5)
     A, labels = DSBM(N=num_nodes, K=num_classes, p=p, F=F_data, size_ratio=1.5)
-    A, labels = extract_network(A, labels)
+    A, labels = extract_network(A=A, labels=labels)
     X = torch.FloatTensor(np.random.uniform(-1, 1, (num_nodes, num_features))).to(device)
     edge_index = torch.LongTensor(np.array(A.nonzero())).to(device)
     edge_weight = torch.FloatTensor(sp.csr_matrix(A).data).to(device)
@@ -222,8 +222,13 @@ def test_DSBM():
     F = meta_graph_generation(F_style='multipartite', K=num_classes, eta=eta, ambient=False, fill_val=0.5)
     assert F.shape == (num_classes, num_classes)
 
-    A, _ = DSBM(N=num_nodes, K=num_classes, p=p, F=F, size_ratio=1)
-    assert A.shape[1] <= num_nodes
+    A, labels = DSBM(N=num_nodes, K=num_classes, p=p, F=F, size_ratio=1)
+    A, labels = extract_network(A, labels, 2)
+    assert A.shape[1] <= num_nodes or A is None
+
+    A, labels = DSBM(N=num_nodes, K=num_classes, p=p, F=F, size_ratio=1)
+    A, labels = extract_network(A=A, lowest_degree=4)
+    assert labels is None
 
 def test_DirectedData():
     num_nodes = 200
