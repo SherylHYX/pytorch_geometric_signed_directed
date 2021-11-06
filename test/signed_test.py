@@ -5,7 +5,7 @@ from torch_geometric_signed_directed.nn.signed import (
     SSSNET_node_clustering
 )
 from torch_geometric_signed_directed.data import (
-    SSBM, polarized_SSBM
+    SSBM, polarized_SSBM, SignedData
 )
 from torch_geometric_signed_directed.utils import (
     Prob_Balanced_Ratio_Loss, Prob_Balanced_Normalized_Loss, Unhappy_Ratio
@@ -104,6 +104,20 @@ def test_polarized():
     (A_p, _), _, _ = polarized_SSBM(total_n=total_n, num_com=num_com, N=N, K=K, \
         p=0.002, eta=0.1, size_ratio=1)
     assert A_p.shape[1] <= total_n
+
+def test_SignedData():
+    num_nodes = 400
+    num_classes = 3
+    p = 0.1
+    eta = 0.1
+    (A_p, A_n), labels = SSBM(num_nodes, num_classes, p, eta, size_ratio = 1.0, values='gaussian')
+    data = SignedData(y=labels, A=(A_p, A_n))
+    assert data.A.shape == (num_nodes, num_nodes)
+    data = SignedData(y=labels, A=A_p-A_n)
+    assert data.y.shape == labels.shape
+    data2 = SignedData(edge_index=data.edge_index)
+    assert data2.A_p.shape == (num_nodes, num_nodes)
+
             
 
 
