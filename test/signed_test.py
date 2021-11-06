@@ -115,7 +115,7 @@ def test_SignedData():
     assert data.A.shape == (num_nodes, num_nodes)
     data = SignedData(y=labels, A=A_p-A_n)
     assert data.y.shape == labels.shape
-    data2 = SignedData(edge_index=data.edge_index)
+    data2 = SignedData(edge_index=data.edge_index, edge_weight=data.edge_weight)
     assert data2.A_p.shape == (num_nodes, num_nodes)
 
             
