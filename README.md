@@ -85,11 +85,11 @@ more to come...
   
 </details>
 
-**Data Loaders and Related Methods**
+**Data Loaders and Classes**
 
-* **[SignedData](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/SignedData.py)** Signed Data Loader Function.
+* **[SignedData](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/SignedData.py)** Signed Data Class.
 
-* **[DirectedData](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/DirectedData.py)** Directed Data Loader Function.
+* **[DirectedData](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/DirectedData.py)** Directed Data Class.
 
 
 <details>
