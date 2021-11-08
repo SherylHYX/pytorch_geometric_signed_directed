@@ -113,8 +113,15 @@ def test_SignedData():
     (A_p, A_n), labels = SSBM(num_nodes, num_classes, p, eta, size_ratio = 1.0, values='gaussian')
     data = SignedData(y=labels, A=(A_p, A_n))
     assert data.A.shape == (num_nodes, num_nodes)
+    assert data.A_p.shape == (num_nodes, num_nodes)
+    assert data.A_n.shape == (num_nodes, num_nodes)
     data = SignedData(y=labels, A=A_p-A_n)
     assert data.y.shape == labels.shape
+    assert data.edge_index_p[0].shape == data.A_p.nonzero()[0].shape
+    assert data.edge_index_n[0].shape == data.A_n.nonzero()[0].shape
+    assert data.edge_weight_p.shape == data.A_p.data.shape
+    assert data.edge_weight_n.shape == data.A_n.data.shape
+    assert data.A.shape == (num_nodes, num_nodes)
     data2 = SignedData(edge_index=data.edge_index, edge_weight=data.edge_weight)
     assert data2.A_p.shape == (num_nodes, num_nodes)
 
