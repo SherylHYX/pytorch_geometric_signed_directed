@@ -124,7 +124,14 @@ def test_SignedData():
     assert data.A.shape == (num_nodes, num_nodes)
     data2 = SignedData(edge_index=data.edge_index, edge_weight=data.edge_weight)
     assert data2.A_p.shape == (num_nodes, num_nodes)
-
+    data2.set_signed_Laplacian_features(k=2*num_classes)
+    assert data2.x.shape == (num_nodes, 2*num_classes)
+    data2.set_spectral_adjacency_reg_features(k=num_classes,normalization='sym')
+    assert data2.x.shape == (num_nodes, num_classes)
+    data2.set_spectral_adjacency_reg_features(k=num_classes,normalization='sym_sep')
+    assert data2.x.shape == (num_nodes, num_classes)
+    data2.set_spectral_adjacency_reg_features(k=num_classes)
+    assert data2.x.shape == (num_nodes, num_classes)
             
 
 
