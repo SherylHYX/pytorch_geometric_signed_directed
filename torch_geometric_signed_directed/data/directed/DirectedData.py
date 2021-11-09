@@ -54,7 +54,7 @@ class DirectedData(Data):
     def set_hermitian_features(self, k:int=2):
         """ create Hermitian feature  (rw normalized)
         inputs:
-        k : (int) Dimension of features. Default is 2.
+        k : (int) Half of the dimension of features. Default is 2.
         """
         A = self.A
         H = (A-A.transpose()) * 1j
