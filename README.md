@@ -17,7 +17,7 @@ In detail, the following signed or directed graph neural networks, as well as re
 
 **Signed Network Models**
 
-* **[SSSNET_node_clustering](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SSSNET_node_clustering.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (Complex Networks 2021)
+* **[SSSNET_node_clustering](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SSSNET_node_clustering.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
 
 
 <details>
@@ -48,7 +48,7 @@ more to come...
   
 **Auxiliary Network Embedding Methods**
 
-* **[SIMPA](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SIMPA.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (Complex Networks 2021)
+* **[SIMPA](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SIMPA.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
 
 * **[MagNetConv](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/MagNetConv.py)** from Zhang *et al.*: [MagNet: A Neural Network for Directed Graphs.](https://arxiv.org/pdf/2102.11391.pdf) (NeurIPS 2021)
 
@@ -70,9 +70,9 @@ more to come...
 
 **Network Generation Methods**
 
-* **[Signed Stochastic Block Model(SSBM)](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/SSBM.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (Complex Networks 2021)
+* **[Signed Stochastic Block Model(SSBM)](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/SSBM.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
 
-* **[Polarized Signed Stochastic Block Model(POL-SSBM)](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/polarized_SSBM.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (Complex Networks 2021)
+* **[Polarized Signed Stochastic Block Model(POL-SSBM)](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/polarized_SSBM.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
 
 * **[Directed Stochastic Block Model(DSBM)](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/DSBM.py)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
 
@@ -102,11 +102,11 @@ more to come...
 
 **Task-Specific Objectives and Evaluation Methods**
 
-* **[Probablistic Balanced Normalized Loss](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/signed/prob_balanced_normalized_loss.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (Complex Networks 2021)
+* **[Probablistic Balanced Normalized Loss](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/signed/prob_balanced_normalized_loss.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
 
-* **[Probablistic Balanced Ratio Loss](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/signed/prob_balanced_ratio_loss.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (Complex Networks 2021)
+* **[Probablistic Balanced Ratio Loss](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/signed/prob_balanced_ratio_loss.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
 
-* **[Unhappy Ratio](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/signed/unhappy_ratio.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (Complex Networks 2021)
+* **[Unhappy Ratio](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/signed/unhappy_ratio.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
 
 * **[Probablistic Imbalance Objective](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/directed/prob_imbalance_loss.py)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
 
