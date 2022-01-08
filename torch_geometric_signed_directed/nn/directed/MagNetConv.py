@@ -40,6 +40,7 @@ class MagNetConv(MessagePassing):
 
         assert K > 0
         assert normalization in [None, 'sym'], 'Invalid normalization'
+        kwargs.setdefault('flow', 'target_to_source')
 
         self.in_channels = in_channels
         self.out_channels = out_channels
