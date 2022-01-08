@@ -25,9 +25,9 @@ def conv_norm_rw(edge_index, fill_value=0.5, edge_weight=None, num_nodes=None,
         assert tmp_edge_weight is not None
         edge_weight = tmp_edge_weight
 
-    row, col = edge_index[0], edge_index[1]
-    deg = scatter_add(edge_weight, col, dim=0, dim_size=num_nodes)
-    deg_inv = deg.pow_(-1)
+    row = edge_index[0]
+    row_deg = scatter_add(edge_weight, row, dim=0, dim_size=num_nodes)
+    deg_inv = row_deg.pow_(-1)
     deg_inv.masked_fill_(deg_inv == float('inf'), 0)
     return edge_index, deg_inv[row] * edge_weight
 
@@ -78,6 +78,7 @@ class Conv_Base(MessagePassing):
                  **kwargs):
 
         kwargs.setdefault('aggr', 'add')
+        kwargs.setdefault('flow', 'target_to_source')
         super(Conv_Base, self).__init__(**kwargs)
 
         self.fill_value = fill_value
