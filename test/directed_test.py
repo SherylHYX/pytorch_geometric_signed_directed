@@ -41,7 +41,9 @@ def test_DGCN():
 
     X, A, _, _, edge_index, edge_weights = \
         create_mock_data(num_nodes, num_features, num_classes)
-
+    edge_index = edge_index.cpu()
+    edge_weights = edge_weights.cpu()
+    
     edge_index, edge_in, in_weight, edge_out, out_weight = directed_features_in_out(edge_index, A.shape[0], edge_weights)
     edge_index = edge_index.to(device)
     edge_in, in_weight, edge_out, out_weight = edge_in.to(device), in_weight.to(device), edge_out.to(device), out_weight.to(device)
@@ -54,6 +56,8 @@ def test_DGCN():
         num_nodes, num_classes
     )
 
+    edge_index = edge_index.cpu()
+    edge_weights = edge_weights.cpu()
     edge_index, edge_in, in_weight, edge_out, out_weight = directed_features_in_out(edge_index, A.shape[0], None)
     edge_index = edge_index.to(device)
     edge_in, in_weight, edge_out, out_weight = edge_in.to(device), in_weight.to(device), edge_out.to(device), out_weight.to(device)
@@ -93,6 +97,8 @@ def test_DiGCN():
 
     X, _, _, _, edge_index, edge_weights = \
         create_mock_data(num_nodes, num_features, num_classes)
+    edge_index = edge_index.cpu()
+    edge_weights = edge_weights.cpu()
 
     edge_index1, edge_weights1 = get_appr_directed_adj(0.1, edge_index, X.shape[0],
         X.dtype, edge_weights)
@@ -110,6 +116,8 @@ def test_DiGCN():
     )
     assert model.conv1.__repr__() == 'DiGCNConv(3, 4)'
 
+    edge_index = edge_index.cpu()
+    edge_weights = edge_weights.cpu()
     edge_index2, edge_weights2 = get_second_directed_adj(edge_index, X.shape[0], X.dtype, edge_weights)
     edge_index2 = edge_index2.to(device)
     edge_weights2 = edge_weights2.to(device)
