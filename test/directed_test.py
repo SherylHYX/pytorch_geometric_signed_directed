@@ -15,7 +15,7 @@ from torch_geometric_signed_directed.utils import (
     Prob_Imbalance_Loss, scipy_sparse_to_torch_sparse, 
     get_appr_directed_adj, get_second_directed_adj,
     directed_features_in_out, meta_graph_generation, extract_network,
-    cal_fast_appr, pred_digcl, drop_feature
+    cal_fast_appr, pred_digcl, drop_feature, fast_appr_power
 )
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -31,6 +31,20 @@ def create_mock_data(num_nodes, num_features, num_classes=3, F_style='cyclic', e
     edge_index = torch.LongTensor(np.array(A.nonzero())).to(device)
     edge_weight = torch.FloatTensor(sp.csr_matrix(A).data).to(device)
     return X, A, F, F_data, edge_index, edge_weight
+
+def test_fast_appr_power():
+    """
+    Testing fast_appr_power()
+    """
+    num_nodes = 100
+    num_features = 3
+    num_classes = 3
+
+    _, A, _, _, _, _ = \
+        create_mock_data(num_nodes, num_features, num_classes)
+    L, _ = fast_appr_power(A, alpha=0.1, max_iter=1,
+                    tol=1e-06, personalize=None)
+    assert L.shape[0] == num_nodes
 
 def test_DGCN():
     """
