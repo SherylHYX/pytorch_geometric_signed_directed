@@ -8,8 +8,8 @@ class DiGCN_node_classification(torch.nn.Module):
     `Digraph Inception Convolutional Networks" 
     <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
     Args:
-        num_features (int): Dimention of input features.
-        hidden (int): Hidden dimention.
+        num_features (int): Dimension of input features.
+        hidden (int): Hidden dimension.
         num_clusters (int): Number of clusters.
         dropout (float): Dropout value.
     """
