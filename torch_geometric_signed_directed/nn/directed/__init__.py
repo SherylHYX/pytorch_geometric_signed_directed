@@ -8,3 +8,4 @@ from .DIGRAC_node_clustering import DIGRAC_node_clustering
 from .DIMPA import DIMPA
 from .MagNet_node_classification import MagNet_node_classification
 from .MagNetConv import MagNetConv
+from .DiGCL import DiGCL

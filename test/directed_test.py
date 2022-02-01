@@ -6,7 +6,7 @@ from torch_sparse import SparseTensor
 from torch_geometric_signed_directed.nn.directed import (
     DiGCN_node_classification, DiGCN_Inception_Block_node_classification, 
     DIGRAC_node_clustering, MagNet_node_classification, 
-    DGCN_node_classification, DGCNConv
+    DGCN_node_classification, DGCNConv, DiGCL
 )
 from torch_geometric_signed_directed.data import (
     DSBM, DirectedData
@@ -14,7 +14,8 @@ from torch_geometric_signed_directed.data import (
 from torch_geometric_signed_directed.utils import (
     Prob_Imbalance_Loss, scipy_sparse_to_torch_sparse, 
     get_appr_directed_adj, get_second_directed_adj,
-    directed_features_in_out, meta_graph_generation, extract_network
+    directed_features_in_out, meta_graph_generation, extract_network,
+    cal_fast_appr, pred_digcl, drop_feature
 )
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -133,6 +134,66 @@ def test_DiGCN():
         num_nodes, num_classes
     )
     
+def test_DiGCL():
+    """
+    Testing DiGCL
+    """
+    num_nodes = 100
+    num_features = 3
+    num_classes = 3
+
+    X, _, _, _, edge_index, edge_weights = \
+        create_mock_data(num_nodes, num_features, num_classes)
+    y = np.zeros((num_nodes))
+    train_index = np.zeros((num_nodes), dtype=bool)
+    curr_ind = 0
+    step_range = int(np.floor(num_nodes/num_classes))
+    for i in range(num_classes):
+        y[curr_ind:curr_ind+step_range] = i
+        train_index[curr_ind: curr_ind+int(step_range/2)] = True
+        curr_ind += step_range
+    y = torch.LongTensor(y).to(device)
+    edge_index = edge_index.to(device)
+    edge_weights = edge_weights.to(device)
+    alpha_1 = 0.1
+    drop_feature_rate_1 = 0.3
+    drop_feature_rate_2 = 0.4
+    hidden = 4
+
+    edge_index_init, edge_weight_init = cal_fast_appr(
+        alpha_1, edge_index, X.shape[0], X.dtype, edge_weight=edge_weights)
+    x = X.to(device)
+    model = DiGCL(in_channels=X.shape[1], out_channels=2*hidden, activation='relu',
+                 num_hidden=2*hidden, num_proj_hidden=hidden,
+                 tau=0.5, k=2).to(device)
+    a = 0.9
+    b = 0.1
+    epochs = 10
+    alpha_2 = a - (a-b)*(1/3*np.log(epochs/(epochs+1)+np.exp(-3)))
+    edge_index_1, edge_weight_1 = cal_fast_appr(
+        alpha_1, edge_index, x.shape[0], x.dtype, edge_weight=edge_weights)
+    edge_index_2, edge_weight_2 = cal_fast_appr(
+        alpha_2, edge_index, x.shape[0], x.dtype, edge_weight=edge_weights)
+    optimizer = torch.optim.Adam(
+        model.parameters(), lr=0.001, weight_decay=0.00001)
+    for _ in range(epochs):
+        x_1 = drop_feature(x, drop_feature_rate_1)
+        x_2 = drop_feature(x, drop_feature_rate_2)
+
+        z1 = model(x_1, edge_index_1, edge_weight_1)
+        z2 = model(x_2, edge_index_2, edge_weight_2)
+
+        loss = model.loss(z1, z2, batch_size=0)
+        loss.backward()
+        optimizer.step()
+    # test
+    model.eval()
+    z = model(x, edge_index_init, edge_weight_init)
+    pred = pred_digcl(z, y, train_index)
+    
+    assert pred.shape == (
+        num_nodes, 
+    )
 
 
 def test_DIGRAC():
