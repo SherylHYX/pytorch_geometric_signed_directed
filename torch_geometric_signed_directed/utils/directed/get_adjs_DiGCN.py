@@ -9,21 +9,19 @@ import scipy.sparse as sp
 
 def fast_appr_power(A, alpha=0.1, max_iter=100,
                     tol=1e-06, personalize=None):
-    """ Calculates PageRank given a csr graph
-
-    Inputs:
-    -------
-    A: a csr graph.
-    p: damping factor
-    max_iter: maximum number of iterations
-    personlize: if not None, should be an array with the size of the nodes
+    r""" Computes the fast pagerank adjacency matrix of the graph from the
+    `Directed Graph Contrastive Learning" 
+    <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
+    Args:
+        A (sp.csr_matrix): Sparse adjacency matrix.
+        alpha (float, optional): alpha used in page rank. Default 0.1.
+        max_iter (int): Maximum number of iterations. Default 100.
+        tol (flot, optional): Tolerance. Default 1e-6.
+        personalize (array, optional): if not None, should be an array with the size of the nodes
                 containing probability distributions.
-                It will be normalized automatically.
-
-    Returns:
-    --------
-    PageRank Scores for the nodes
-
+                It will be normalized automatically. Default None.
+    Return types:
+        PageRank Scores for the nodes.
     """
     # In Moler's algorithm, $G_{ij}$ represents the existences of an edge
     # from node $j$ to $i$, while we have assumed the opposite!
