@@ -177,9 +177,9 @@ def test_DiGCL():
     edge_index_init, edge_weight_init = cal_fast_appr(
         alpha_1, edge_index, X.shape[0], X.dtype, edge_weight=edge_weights)
     x = X.to(device)
-    model = DiGCL(in_channels=X.shape[1], out_channels=2*hidden, activation='relu',
+    model = DiGCL(in_channels=X.shape[1], activation='relu',
                  num_hidden=2*hidden, num_proj_hidden=hidden,
-                 tau=0.5, k=2).to(device)
+                 tau=0.5, num_layers=2).to(device)
     a = 0.9
     b = 0.1
     epochs = 10
@@ -209,9 +209,9 @@ def test_DiGCL():
         num_nodes, 
     )
 
-    model = DiGCL(in_channels=X.shape[1], out_channels=2*hidden, activation='prelu',
+    model = DiGCL(in_channels=X.shape[1], activation='prelu',
                  num_hidden=2*hidden, num_proj_hidden=hidden,
-                 tau=0.5, k=2).to(device)
+                 tau=0.5, num_layers=2).to(device)
     for _ in range(epochs):
         x_1 = drop_feature(x, drop_feature_rate_1)
         x_2 = drop_feature(x, drop_feature_rate_2)
