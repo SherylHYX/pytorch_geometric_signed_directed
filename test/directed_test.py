@@ -195,6 +195,28 @@ def test_DiGCL():
         num_nodes, 
     )
 
+    model = DiGCL(in_channels=X.shape[1], out_channels=2*hidden, activation='prelu',
+                 num_hidden=2*hidden, num_proj_hidden=hidden,
+                 tau=0.5, k=2).to(device)
+    for _ in range(epochs):
+        x_1 = drop_feature(x, drop_feature_rate_1)
+        x_2 = drop_feature(x, drop_feature_rate_2)
+
+        z1 = model(x_1, edge_index_1, edge_weight_1)
+        z2 = model(x_2, edge_index_2, edge_weight_2)
+
+        loss = model.loss(z1, z2, batch_size=16)
+        loss.backward()
+        optimizer.step()
+    # test
+    model.eval()
+    z = model(x, edge_index_init, edge_weight_init)
+    pred = pred_digcl(z, y, train_index)
+    
+    assert pred.shape == (
+        num_nodes, 
+    )
+
 
 def test_DIGRAC():
     """
