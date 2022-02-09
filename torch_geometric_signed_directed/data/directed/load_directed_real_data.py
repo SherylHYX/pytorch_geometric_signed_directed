@@ -9,9 +9,14 @@ import torch
 import numpy as np
 import torch_geometric
 import scipy.sparse as sp
+
 from .DirectedData import DirectedData
+from .node_split import node_class_split
 from torch_geometric.datasets import WebKB
 from torch_geometric.data import Data, InMemoryDataset, download_url
+
+#import sys 
+#sys.path.append('../../pytorch_geometric_signed_directed')
 
 class WikipediaNetwork(InMemoryDataset):
     r"""The code is modified from torch_geometric.datasets.WikipediaNetwork (v1.6.3)
@@ -161,14 +166,25 @@ class WikiCS(InMemoryDataset):
     def __repr__(self):
         return '{}()'.format(self.__class__.__name__)
 
-def load_from_npz(file_name:str) -> torch_geometric.data: 
+def download_npz(file_name:str, root:str) -> torch_geometric.data.Data: 
     """
-    Load a graph from a npz file for unweighted graph cora and citeseer.
+    Load a graph from a npz file for unweighted graph cora_ML and citeseer.
     Args:
-        file_name : str name of the file to load.
+        file_name : str name of the dataset.
+        root : str name of the path to save the dataset.
     Rreturn: torch_geometric.data object
     """
-    with np.load(file_name, allow_pickle=True) as loader:
+    if file_name.lower() == 'citeseer':
+        url = ('https://raw.githubusercontent.com/SherylHYX/pytorch_geometric_signed_directed/'
+               '22038d0d1738a4a8f5e83aa3175912803e7a4a0a/torch_geometric_signed_directed/'
+               'data/dataset/citeseer.npz')
+    elif file_name.lower() == 'cora_ml':
+        url = ('https://raw.githubusercontent.com/SherylHYX/pytorch_geometric_signed_directed/'
+               '22038d0d1738a4a8f5e83aa3175912803e7a4a0a/torch_geometric_signed_directed/'
+               'data/dataset/cora_ml.npz')
+    download_url(url, root)
+
+    with np.load(root+'/'+file_name+'.npz', allow_pickle=True) as loader:
         loader = dict(loader)
         edge_index = loader['adj_indices'].copy()
         adj = sp.csr_matrix((loader['adj_data'], loader['adj_indices'],
@@ -178,12 +194,12 @@ def load_from_npz(file_name:str) -> torch_geometric.data:
         labels = loader.get('labels')
 
     coo = adj.tocoo()
-    values = coo.data
+    values = torch.from_numpy(coo.data)
     indices = np.vstack((coo.row, coo.col))
     indices = torch.from_numpy(indices).long()
     features = torch.from_numpy(features.todense()).float()
     labels = torch.from_numpy(labels).long()
-    data = Data(x=features, edge_index=indices, edge_weight=None, y=labels)
+    data = Data(x=features, edge_index=indices, edge_weight=values, y=labels)
     return data
 
 def load_directed_real_data(dataset: str='WebKB', root:str = './', name:str = 'Texas',
@@ -206,14 +222,20 @@ transform: Optional[Callable] = None, pre_transform: Optional[Callable] = None) 
     if dataset.lower() == 'webkb':
         data = WebKB(root=root, name=name, transform=transform, pre_transform=pre_transform)[0]
     elif dataset.lower() == 'citeseer':
-        data = load_from_npz('./dataset/citeseer.npz')
+        data = download_npz('citeseer',root=root)
+        data = node_class_split(data, train_size_per_class=20, val_size=500)
     elif dataset.lower() == 'cora_ml':
-        data = load_from_npz('./dataset/cora_ml.npz')
+        data = download_npz('cora_ml',root=root)
+        data = node_class_split(data, train_size_per_class=20, val_size=500)
     elif dataset.lower() == 'wikics':
         data = WikiCS(root=root,transform=transform, pre_transform=pre_transform)[0]
     elif dataset.lower() == 'wikipedianetwork':
-    	data = WikipediaNetwork(root=root, name=name, transform=transform, pre_transform=pre_transform)[0]
+        data = WikipediaNetwork(root=root, name=name, transform=transform, pre_transform=pre_transform)[0]
     else:
         raise NameError('Please input the correct data set name instead of {}!'.format(dataset))
-    directed_dataset = DirectedData(x=data.x,edge_index=data.edge_index,y=data.y)
+    directed_dataset = DirectedData(x=data.x,edge_index=data.edge_index,y=data.y,
+                                        train_mask=data.train_mask,val_mask=data.val_mask,test_mask=data.test_mask)
     return directed_dataset
+
+#data=load_directed_real_data('cora_ml')
+#print(data.train_mask.shape,data.val_mask.shape,data.test_mask.shape)
