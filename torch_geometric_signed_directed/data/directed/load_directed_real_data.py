@@ -206,9 +206,9 @@ transform: Optional[Callable] = None, pre_transform: Optional[Callable] = None) 
     if dataset.lower() == 'webkb':
         data = WebKB(root=root, name=name, transform=transform, pre_transform=pre_transform)[0]
     elif dataset.lower() == 'citeseer':
-        data = load_from_npz('torch_geometric_signed_directed/data/dataset/citeseer.npz')
+        data = load_from_npz('./dataset/citeseer.npz')
     elif dataset.lower() == 'cora_ml':
-        data = load_from_npz('torch_geometric_signed_directed/data/dataset/cora_ml.npz')
+        data = load_from_npz('./dataset/cora_ml.npz')
     elif dataset.lower() == 'wikics':
         data = WikiCS(root=root,transform=transform, pre_transform=pre_transform)[0]
     elif dataset.lower() == 'wikipedianetwork':
