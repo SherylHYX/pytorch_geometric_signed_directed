@@ -1,7 +1,7 @@
 from typing import Any
 
 from torch_geometric.typing import OptTensor
-from torch_geometric.utils import to_scipy_sparse_matrix
+from torch_geometric.utils import to_scipy_sparse_matrix, is_undirected
 from torch_geometric.data import Data
 import scipy.sparse as sp
 import numpy as np
@@ -50,6 +50,10 @@ class DirectedData(Data):
     @property
     def A(self) -> sp.spmatrix:
         return self['A'] if 'A' in self._store else None
+    
+    @property
+    def is_directed(self) -> bool:
+        return not is_undirected(self.edge_index)
 
     def set_hermitian_features(self, k:int=2):
         """ create Hermitian feature  (rw normalized)
