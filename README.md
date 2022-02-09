@@ -3,9 +3,15 @@
 [![Documentation Status](https://readthedocs.org/projects/pytorch-geometric-signed-directed/badge/?version=latest)](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/?badge=latest)
 
 
+<p align="center">
+  <img width="90%" src="https://raw.githubusercontent.com/SherylHYX/pytorch_geometric_signed_directed/master/docs/source/_static/img/text_logo.jpg?sanitize=true" />
+</p>
+
+-----------------------------------------------------
+
 *PyTorch Geometric Signed Directed* is a signed and directed extension library for [PyTorch Geometric](https://github.com/pyg-team/pytorch_geometric).
 
-<p align="justify">The library aims to consist of various signed and directed geometric deep learning, embedding, and clustering methods from a variety of published research papers and selected preprints. It is currently under development and we welcome your contribution!
+<p align="justify">The library consists of various signed and directed geometric deep learning, embedding, and clustering methods from a variety of published research papers and selected preprints. It is currently under development and we welcome your contribution!
 
 
 --------------------------------------------------------------------------------
