@@ -91,7 +91,11 @@ more to come...
 
 * **[SignedData](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/SignedData.py)** Signed Data Class.
 
-* **[DirectedData](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/DirectedData.py)** Directed Data Class.
+* **[load_snap_signed_real_data](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/snap_signed_real_data.py)** Data loader for SNAP signed real data.
+
+* **[DirectedData](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/DirectedData.py)** Directed Data Class.
+
+* **[load_directed_real_data](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/load_directed_real_data.py)** Directed real data loader.
 
 
 <details>
