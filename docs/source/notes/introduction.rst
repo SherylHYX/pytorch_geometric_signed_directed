@@ -6,8 +6,3 @@ It builds on open-source deep-learning and graph processing libraries.
 *PyTorch Geometric Signed Directed* consists of various signed and directed geometric deep learning, embedding, and clustering methods from a variety of published research papers and selected preprints. It is currently under development and we welcome your contribution!
 
 
-Data Structures
-=============================
-PyTorch Geometric Signed Directed is designed to provide easy to use data loaders and data generators. 
-
-More details will be shown here.
