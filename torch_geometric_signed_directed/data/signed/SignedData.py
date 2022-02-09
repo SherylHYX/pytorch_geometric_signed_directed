@@ -112,6 +112,10 @@ class SignedData(Data):
     def A_n(self) -> sp.spmatrix:
         return self['A_n'] if 'A_n' in self._store else None
 
+    @property
+    def is_signed(self) -> bool:
+        return len(self.A_p.nonzero()) > 0 and len(self.A_n.nonzero()) > 0
+
     def set_signed_Laplacian_features(self, k: int=2):
         """generate the graph features using eigenvectors of the signed Laplacian matrix.
         Args:
