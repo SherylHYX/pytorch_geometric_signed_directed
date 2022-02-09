@@ -155,8 +155,34 @@ more to come...
 
 --------------------------------------------------------------------------------
 
+Head over to our [documentation](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/) to find out more!
 If you notice anything unexpected, please open an [issue](https://github.com/SherylHYX/pytorch_geometric_signed_directed/issues). If you are missing a specific method, feel free to open a [feature request](https://github.com/SherylHYX/pytorch_geometric_signed_directed/issues).
 
+
+--------------------------------------------------------------------------------
+
+**Installation**
+
+Binaries are provided for Python version >= 3.6.
+
+**PyTorch 1.10.0**
+
+To install the binaries for PyTorch 1.10.0, simply run
+
+```sh
+pip install torch-scatter -f https://data.pyg.org/whl/torch-1.10.0+${CUDA}.html
+pip install torch-sparse -f https://data.pyg.org/whl/torch-1.10.0+${CUDA}.html
+pip install torch-geometric
+pip install torch-geometric-signed-directed
+```
+
+where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu113` depending on your PyTorch installation.
+
+|             | `cpu` | `cu102` | `cu113` |
+|-------------|-------|---------|---------|
+| **Linux**   | ✅    | ✅      | ✅      |
+| **Windows** | ✅    | ✅      | ✅      |
+| **macOS**   | ✅    |         |         |
 
 --------------------------------------------------------------------------------
 
