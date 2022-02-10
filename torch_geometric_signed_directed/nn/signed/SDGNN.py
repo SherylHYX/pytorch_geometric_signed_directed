@@ -92,7 +92,10 @@ class SDGNN(nn.Module):
             self.add_module(f'SDRLayer_{i}', layer)
             self.layers.append(layer)
 
-        self.reset_parameters()        
+        self.reset_parameters()
+
+    def load_dataset(self):
+        pass        
 
 
     def reset_parameters(self):

@@ -189,7 +189,7 @@ class SiGAT(nn.Module):
 
             if neg_num > 0:
                 neg_neig_embs = nodes_embs[neg_neigs, :]
-                loss_pku = -1 * torch.sum(F.logsigmoid(-1 * torch.einsum("nj,j->n",[neg_neig_embs, z1])))
+                loss_pku = -1 * torch.sum(F.logsigmoid(-1 * torch.einsum("nj,j->n", [neg_neig_embs, z1])))
                 C = pos_num // neg_num
                 loss_total += C * loss_pku
 

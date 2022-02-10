@@ -1,5 +1,6 @@
-from typing import Union
-from torch_geometric.typing import PairTensor, Adj
+from typing import Optional, Tuple, Union
+from torch_geometric.typing import (PairTensor, Adj, NoneType, OptPairTensor, OptTensor,
+                                    Size)
 import scipy.sparse as sp
 import torch
 import torch.nn.functional as F
@@ -9,55 +10,15 @@ from torch_geometric.nn.dense.linear import Linear
 from torch_sparse import SparseTensor, matmul
 from torch_geometric.nn.conv import MessagePassing
 from torch_sparse import coalesce
-
-from torch_geometric.utils import (negative_sampling,
+from torch_geometric.utils import (add_self_loops,
+                                   softmax,
+                                   remove_self_loops,
+                                   negative_sampling,
                                    structured_negative_sampling)
 
-class SGCNConv(MessagePassing):
-    r"""The signed graph convolutional operator from the `"Signed Graph
-    Convolutional Network" <https://arxiv.org/abs/1808.06354>`_ paper
+class SNEAConv(MessagePassing):
+    r"""The signed graph attentional layers operator from the `"Learning Signed Network Embedding via Graph Attention" <https://arxiv.org/abs/1808.06354>`_ paper
 
-    .. math::
-        \mathbf{x}_v^{(\textrm{pos})} &= \mathbf{\Theta}^{(\textrm{pos})}
-        \left[ \frac{1}{|\mathcal{N}^{+}(v)|} \sum_{w \in \mathcal{N}^{+}(v)}
-        \mathbf{x}_w , \mathbf{x}_v \right]
-
-        \mathbf{x}_v^{(\textrm{neg})} &= \mathbf{\Theta}^{(\textrm{neg})}
-        \left[ \frac{1}{|\mathcal{N}^{-}(v)|} \sum_{w \in \mathcal{N}^{-}(v)}
-        \mathbf{x}_w , \mathbf{x}_v \right]
-
-    if :obj:`first_aggr` is set to :obj:`True`, and
-
-    .. math::
-        \mathbf{x}_v^{(\textrm{pos})} &= \mathbf{\Theta}^{(\textrm{pos})}
-        \left[ \frac{1}{|\mathcal{N}^{+}(v)|} \sum_{w \in \mathcal{N}^{+}(v)}
-        \mathbf{x}_w^{(\textrm{pos})}, \frac{1}{|\mathcal{N}^{-}(v)|}
-        \sum_{w \in \mathcal{N}^{-}(v)} \mathbf{x}_w^{(\textrm{neg})},
-        \mathbf{x}_v^{(\textrm{pos})} \right]
-
-        \mathbf{x}_v^{(\textrm{neg})} &= \mathbf{\Theta}^{(\textrm{pos})}
-        \left[ \frac{1}{|\mathcal{N}^{+}(v)|} \sum_{w \in \mathcal{N}^{+}(v)}
-        \mathbf{x}_w^{(\textrm{neg})}, \frac{1}{|\mathcal{N}^{-}(v)|}
-        \sum_{w \in \mathcal{N}^{-}(v)} \mathbf{x}_w^{(\textrm{pos})},
-        \mathbf{x}_v^{(\textrm{neg})} \right]
-
-    otherwise.
-    In case :obj:`first_aggr` is :obj:`False`, the layer expects :obj:`x` to be
-    a tensor where :obj:`x[:, :in_channels]` denotes the positive node features
-    :math:`\mathbf{X}^{(\textrm{pos})}` and :obj:`x[:, in_channels:]` denotes
-    the negative node features :math:`\mathbf{X}^{(\textrm{neg})}`.
-
-    Args:
-        in_channels (int or tuple): Size of each input sample, or :obj:`-1` to
-            derive the size from the first input(s) to the forward method.
-            A tuple corresponds to the sizes of source and target
-            dimensionalities.
-        out_channels (int): Size of each output sample.
-        first_aggr (bool): Denotes which aggregation formula to use.
-        bias (bool, optional): If set to :obj:`False`, the layer will not learn
-            an additive bias. (default: :obj:`True`)
-        **kwargs (optional): Additional arguments of
-            :class:`torch_geometric.nn.conv.MessagePassing`.
     """
     def __init__(
         self,
@@ -65,6 +26,7 @@ class SGCNConv(MessagePassing):
         out_channels: int,
         first_aggr: bool,
         bias: bool = True,
+        add_self_loops = True,
         **kwargs
     ):
 
@@ -74,13 +36,13 @@ class SGCNConv(MessagePassing):
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.first_aggr = first_aggr
+        self.add_self_loops = add_self_loops
 
-        if first_aggr:
-            self.lin_b = Linear(2 * in_channels, out_channels, bias)
-            self.lin_u = Linear(2 * in_channels, out_channels, bias)
-        else:
-            self.lin_b = Linear(3 * in_channels, out_channels, bias)
-            self.lin_u = Linear(3 * in_channels, out_channels, bias)
+        self.lin_b = Linear(in_channels, out_channels, bias)
+        self.lin_u = Linear(in_channels, out_channels, bias)
+
+        self.alpha_b = Linear(self.out_channels, 1)
+        self.alpha_u = Linear(self.out_channels, 1)
 
         self.reset_parameters()
 
@@ -91,43 +53,86 @@ class SGCNConv(MessagePassing):
     def forward(self, x: Union[Tensor, PairTensor], pos_edge_index: Adj,
                 neg_edge_index: Adj):
         """"""
+         # propagate_type    e: (x: PairTensor)
 
-        # propagate_type    e: (x: PairTensor)
-        if isinstance(x, Tensor):
-            x: PairTensor = (x, x)
 
         if self.first_aggr:
-            
-            out_b = self.propagate(pos_edge_index, x=x)
-            out_b = self.lin_b(torch.cat([out_b, x[0]], dim=-1))
+            h_b = self.lin_b(x)
+            h_u = self.lin_u(x)
 
-            out_u = self.propagate(neg_edge_index, x=x)
-            out_u = self.lin_u(torch.cat([out_u, x[0]], dim=-1))
+            edge1, _ = remove_self_loops(pos_edge_index)
+            edge, _ = add_self_loops(edge1)
+            edge_p = torch.zeros(edge.size(-1), dtype=torch.long)
+            alpha = self.alpha_b(h_b)
+            alpha1 = alpha
+            alpha2 = alpha
+            # x = torch.stack((h_b, h_b), dim=-1)
+            x1 = h_b
+            x2 = h_b
+            out_b = self.propagate(edge, x1=x1, x2=x2, alpha1=alpha1, alpha2=alpha2, edge_p=edge_p)
+
+            edge1, _ = remove_self_loops(neg_edge_index)
+            edge, _ = add_self_loops(edge1)
+            edge_p = torch.zeros(edge.size(-1), dtype=torch.long)
+            alpha = self.alpha_u(h_u)
+            alpha1 = alpha
+            alpha2 = alpha
+            x1 = h_u
+            x2 = h_u
+            out_u = self.propagate(edge, x1=x1,
+            x2=x2, alpha1=alpha1, alpha2=alpha2, edge_p=edge_p)
 
             return torch.cat([out_b, out_u], dim=-1)
 
         else:
             F_in = self.in_channels
-            out_b1 = self.propagate(pos_edge_index, x=(x[0][..., :F_in], x[1][..., :F_in]))
-            out_b2 = self.propagate(neg_edge_index, x=(x[0][..., F_in:], x[1][..., F_in:]))
-            out_b = torch.cat([out_b1, out_b2, x[0][..., :F_in]], dim=-1)
-            out_b = self.lin_b(out_b)
+            x_b = x[..., :F_in]
+            x_u = x[..., F_in:]
 
-            out_u1 = self.propagate(pos_edge_index, x=(x[0][..., F_in:], x[1][..., F_in:]))
-            out_u2 = self.propagate(neg_edge_index, x=(x[0][..., :F_in], x[1][..., :F_in]))
-            out_u = torch.cat([out_u1, out_u2, x[0][..., F_in:]], dim=-1)
-            out_u = self.lin_u(out_u)
+            edge1, _ = remove_self_loops(pos_edge_index)
+            edge1, _ = add_self_loops(edge1)
+            edge2, _ = remove_self_loops(neg_edge_index)
+            edge = torch.cat([edge1, edge2], dim=-1)
+            edge_p1 = torch.zeros(edge1.size(-1), dtype=torch.long)
+            edge_p2 = torch.ones(edge2.size(-1), dtype=torch.long)
+            edge_p = torch.cat([edge_p1, edge_p2], dim=-1)
+            x1 = self.lin_b(x_b)
+            x2 = self.lin_b(x_u)
+            alpha1 = self.alpha_b(x1)
+            alpha2 = self.alpha_b(x2)
+            out_b = self.propagate(edge, x1=x1, x2=x2, alpha1=alpha1, alpha2=alpha2, edge_p=edge_p)
+            
+            edge1, _ = remove_self_loops(neg_edge_index)
+            edge1, _ = add_self_loops(edge1)
+            edge2, _ = remove_self_loops(pos_edge_index)
+            edge = torch.cat([edge1, edge2], dim=-1)
+
+            edge_p1 = torch.zeros(edge1.size(-1), dtype=torch.long)
+            edge_p2 = torch.ones(edge2.size(-1), dtype=torch.long)
+            edge_p = torch.cat([edge_p1, edge_p2], dim=-1)
+            
+            x1 = self.lin_u(x_u)
+            x2 = self.lin_u(x_b)
+            alpha1 = self.alpha_u(x1)
+            alpha2 = self.alpha_u(x2)
+            
+            out_u = self.propagate(edge, x1=x1, x2=x2, alpha1=alpha1, alpha2=alpha2, edge_p=edge_p)
 
             return torch.cat([out_b, out_u], dim=-1)
 
-    def message(self, x_j: Tensor) -> Tensor:
-        return x_j
+    def message(self, x1_j: Tensor, x2_j: Tensor, alpha1_j: Tensor, alpha2_j: Tensor, edge_p: Tensor, index: Tensor, ptr: OptTensor,
+                size_i: Optional[int]) -> Tensor:
+        alpha = torch.stack([alpha1_j, alpha2_j], dim=-1)
+        x = torch.stack([x1_j, x2_j], dim=-1)
+        alpha = alpha[torch.arange(alpha.size(0)), :, edge_p]
+        x = x[torch.arange(x.size(0)), :, edge_p]
+        alpha = softmax(alpha, index, ptr, size_i)
+        return x * alpha
 
-
-    def message_and_aggregate(self, adj_t: SparseTensor,
-                              x: PairTensor) -> Tensor:
-        adj_t = adj_t.set_value(None, layout=None)
-        return matmul(adj_t, x[0], reduce=self.aggr)
+    # def message_and_aggregate(self, adj_t: SparseTensor,
+    #                           x: PairTensor) -> Tensor:
+    #     adj_t = adj_t.set_value(None, layout=None)
+    #     return matmul(adj_t, x[0], reduce=self.aggr)
 
 
     def __repr__(self) -> str:
@@ -136,7 +141,8 @@ class SGCNConv(MessagePassing):
 
 
 
-class SGCN(nn.Module):
+
+class SNEA(nn.Module):
     r"""The signed graph convolutional network model from the `"Signed Graph
     Convolutional Network" <https://arxiv.org/abs/1808.06354>`_ paper.
     Internally, this module uses the
@@ -167,12 +173,12 @@ class SGCN(nn.Module):
         self.neg_edge_index = edge_index_s[ edge_index_s[:, 2] < 0][:, :2].t()
         self.x = self.create_spectral_features()
 
-        self.conv1 = SGCNConv(in_emb_dim, hidden_emb_dim // 2,
+        self.conv1 = SNEAConv(in_emb_dim, hidden_emb_dim // 2,
                                 first_aggr=True)
         self.convs = torch.nn.ModuleList()
         for i in range(layer_num - 1):
             self.convs.append(
-                SGCNConv(hidden_emb_dim // 2, hidden_emb_dim // 2,
+                SNEAConv(hidden_emb_dim // 2, hidden_emb_dim // 2,
                            first_aggr=False))
 
         self.lin = torch.nn.Linear(2 * hidden_emb_dim, 3)

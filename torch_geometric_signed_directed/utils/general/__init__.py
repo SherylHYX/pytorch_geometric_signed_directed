@@ -1,2 +1,3 @@
 from .scipy_sparse_to_torch_sparse import scipy_sparse_to_torch_sparse
 from .extract_network import extract_network
+from .logistic_function import link_sign_prediction_logistic_function
