@@ -9,14 +9,12 @@ import torch
 import numpy as np
 import torch_geometric
 import scipy.sparse as sp
-
-from .DirectedData import DirectedData
-from .node_split import node_class_split
 from torch_geometric.datasets import WebKB
 from torch_geometric.data import Data, InMemoryDataset, download_url
 
-#import sys 
-#sys.path.append('../../pytorch_geometric_signed_directed')
+from .DirectedData import DirectedData
+from .node_split import node_class_split
+
 
 class WikipediaNetwork(InMemoryDataset):
     r"""The code is modified from torch_geometric.datasets.WikipediaNetwork (v1.6.3)
@@ -203,7 +201,8 @@ def download_npz(file_name:str, root:str) -> torch_geometric.data.Data:
     return data
 
 def load_directed_real_data(dataset: str='WebKB', root:str = './', name:str = 'Texas',
-transform: Optional[Callable] = None, pre_transform: Optional[Callable] = None) -> DirectedData:
+transform: Optional[Callable] = None, pre_transform: Optional[Callable] = None, 
+train_size_per_class: Optional[int] = None, val_size_per_class: Optional[int] = None) -> DirectedData:
     """The function for WebKB data downloading and convert to DirectedData object
 
     Args:
