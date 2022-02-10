@@ -1,4 +1,3 @@
-import numpy.typing as npt
 from typing import Optional, Union, List
 
 import torch
