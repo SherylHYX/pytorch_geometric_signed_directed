@@ -5,16 +5,21 @@ import numpy as np
 import torch_geometric
 
 def node_class_split(data: torch_geometric.data.Data, 
-                train_size: Optional[int]=None, val_size: Optional[int]=None,
+                train_size: Optional[int]=None, val_size: Optional[int]=None, test_size: Optional[int]=None,
                 train_size_per_class: Optional[int]=None, val_size_per_class: Optional[int]=None,
+                test_size_per_class: Optional[int]=None,
                 seed: List[int]=[], data_split: int=10) -> torch_geometric.data.Data:
     r""" Train/Val/Test split for node classification tasks.
     Args:
         data (torch_geometric.data.Data, required): The torch_geometric.data.Data object for data split.
         train_size (int ,optional): The size of random splits for the training dataset.
         val_size (int, optional): The size of random splits for the validation dataset.
+        test_size (int, optional): The size of random splits for the validation dataset. 
+                    (Default: None. All nodes not selected for training/validation are used for testing)
         train_size_per_class (int, optional): The size per class of random splits for the training dataset.  
         val_size_per_class (int, optional): The size per class of random splits for the validation dataset.
+        test_size_per_class (int, optional): The size per class of random splits for the testing dataset. 
+                    (Default: None. All nodes not selected for training/validation are used for testing)
         seed (An empty list or a list with the length of data_split, optional): The random seed list for each data split.
         data_split (int, optional): number of splits (Default : 10)
     """
@@ -23,6 +28,8 @@ def node_class_split(data: torch_geometric.data.Data,
     if train_size is None and train_size_per_class is None:
         raise ValueError('Please input the values of train_size or train_size_per_class!')
 
+    if test_size is not None and test_size_per_class is not None:
+        raise Warning('The test_size_per_class will be considered if both test_size and test_size_per_class are given!')
     if val_size is not None and val_size_per_class is not None:
         raise Warning('The val_size_per_class will be considered if both val_size and val_size_per_class are given!')
     if train_size is not None and train_size_per_class is not None:
@@ -39,8 +46,8 @@ def node_class_split(data: torch_geometric.data.Data,
     for _ in range(data_split):
         random_state = np.random.RandomState(seed)
         train_indices, val_indices, test_indices = get_train_val_test_split(
-            random_state, labels, train_size_per_class, val_size_per_class, None, 
-            train_size, val_size, None)
+            random_state, labels, train_size_per_class, val_size_per_class, test_size_per_class, 
+            train_size, val_size, test_size)
 
         train_mask = np.zeros((labels.shape[0], 1), dtype=int)
         train_mask[train_indices, 0] = 1
@@ -99,10 +106,10 @@ def sample_per_class(random_state: np.random.RandomState, labels: List[int], num
 
 def get_train_val_test_split(random_state:np.random.RandomState,
                              labels:List[int],
-                             train_size_per_class:int=None, val_size_per_class:int=None,
-                             test_size_per_class:int=None,
-                             train_size:int=None, val_size:int=None, 
-                             test_size:int=None) -> Union[List[int],List[int],List[int]]:
+                             train_size_per_class: Optional[int]=None, val_size_per_class: Optional[int]=None,
+                             test_size_per_class: Optional[int]=None,
+                             train_size: Optional[int]=None, val_size: Optional[int]=None, 
+                             test_size: Optional[int]=None) -> Union[List[int],List[int],List[int]]:
     r"""This function is obtained from https://github.com/flyingtango/DiGCN/blob/main/code/Citation.py
     Get train/validation/test splits based on the input setting. 
     Args:
