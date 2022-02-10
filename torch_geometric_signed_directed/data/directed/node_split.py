@@ -43,8 +43,8 @@ def node_class_split(data: torch_geometric.data.Data,
     labels = data.y.numpy()
     masks = {}
     masks['train'], masks['val'], masks['test'] = [], [] , []
-    for _ in range(data_split):
-        random_state = np.random.RandomState(seed)
+    for i in range(data_split):
+        random_state = np.random.RandomState(seed[i])
         train_indices, val_indices, test_indices = get_train_val_test_split(
             random_state, labels, train_size_per_class, val_size_per_class, test_size_per_class, 
             train_size, val_size, test_size)

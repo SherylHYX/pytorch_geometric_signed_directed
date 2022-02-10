@@ -235,6 +235,3 @@ train_size_per_class: Optional[int] = None, val_size_per_class: Optional[int] = 
     directed_dataset = DirectedData(x=data.x,edge_index=data.edge_index,y=data.y,
                                         train_mask=data.train_mask,val_mask=data.val_mask,test_mask=data.test_mask)
     return directed_dataset
-
-#data=load_directed_real_data('cora_ml')
-#print(data.train_mask.shape,data.val_mask.shape,data.test_mask.shape)
