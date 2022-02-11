@@ -27,14 +27,14 @@ def test_directed_datasets():
     directed_dataset = load_directed_real_data(dataset='cora_ml', root='./tmp_data/', pre_transform=T.GCNNorm(), transform=T.ToUndirected())
     assert isinstance(directed_dataset, DirectedData)
     assert not directed_dataset.is_directed
-    assert (directed_dataset.edge_weight, torch.Tensor)
+    assert isinstance(directed_dataset.edge_weight, torch.Tensor)
     directed_dataset = load_directed_real_data(dataset='citeseer', root='./tmp_data/', pre_transform=T.GCNNorm(), transform=T.ToUndirected())
     assert isinstance(directed_dataset, DirectedData)
     assert not directed_dataset.is_directed
     directed_dataset = load_directed_real_data(dataset='wikics', root='./tmp_data/', pre_transform=T.GCNNorm(), transform=T.ToUndirected())
     assert isinstance(directed_dataset, DirectedData)
     assert not directed_dataset.is_directed
-    assert (directed_dataset.edge_weight, torch.Tensor)
+    assert isinstance(directed_dataset.edge_weight, torch.Tensor)
     return
 
 def test_link_split():
