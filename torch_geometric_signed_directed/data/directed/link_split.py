@@ -19,6 +19,12 @@ def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List
         edge_pairs (List[Tuple]): The edge list. each element in the list is an edge tuple.
         task (str): The evaluation task: all (three-class link prediction); direction (direction prediction); existence (existence prediction) 
         rs (np.random.RandomState): The randomstate for edge selection.
+    Returns:
+        new_edge_pairs (List): A list of edges.
+        labels (List): The labels for new_edge_pairs. 
+                       If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
+                       If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists).
+                       If task == 'all': 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist).
     """
     labels = np.zeros(len(edge_pairs), dtype=np.int32)
     new_edge_pairs = np.array(edge_pairs)
@@ -72,6 +78,16 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
         size (int, optional): The size of the input graph. If none, the graph size is the maximum index of nodes plus 1 (Default: None).
         task (str, optional): The evaluation task: all (three-class link prediction); direction (direction prediction); existence (existence prediction). (Default: 'direction')
         seed (int, optional): The random seed for dataset generation (Default: 0).
+
+    Return:
+        datasets: A dict include training/validation/testing splits of edges and labels.
+                  For split index i:
+                      datasets[i]['graph'] (torch.LongTensor): the observed edge list after removing edges for validation and testing.
+                      datasets[i]['train'/'val'/'testing']['edges'] (List): the edge list for training/validation/testing.
+                      datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges.
+                          If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
+                          If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists).
+                          If task == 'all': 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist).
     """
     edge_index = data.edge_index
     row, col = edge_index[0], edge_index[1]
@@ -99,8 +115,8 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
         raise ValueError("There are no enough edges to be removed for validation/testing. Please use a smaller prob_test or prob_val.")
 
     rs = np.random.RandomState(seed)
+    datasets = {}
     for ind in range(splits):
-        datasets = {}
         rs.shuffle(nmst)
 
         ids_test = nmst[:len_test]+neg_edges[:len_test]
@@ -136,14 +152,14 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
         datasets[ind]['graph'] = torch.from_numpy(oberved_edges.T).long()
 
         datasets[ind]['train'] = {}
-        datasets[ind]['train']['pairs'] = ids_train
+        datasets[ind]['train']['edges'] = ids_train
         datasets[ind]['train']['label'] = labels_train
 
-        datasets[ind]['validate'] = {}
-        datasets[ind]['validate']['pairs'] = ids_val
-        datasets[ind]['validate']['label'] = labels_val
+        datasets[ind]['val'] = {}
+        datasets[ind]['val']['edges'] = ids_val
+        datasets[ind]['val']['label'] = labels_val
 
         datasets[ind]['test'] = {}
-        datasets[ind]['test']['pairs'] = ids_test
+        datasets[ind]['test']['edges'] = ids_test
         datasets[ind]['test']['label'] = labels_test
     return datasets

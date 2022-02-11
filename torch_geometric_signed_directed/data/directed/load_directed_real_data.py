@@ -93,7 +93,9 @@ class WikipediaNetwork(InMemoryDataset):
 
         data = Data(x=x, edge_index=edge_index, y=y, train_mask=train_mask,
                     val_mask=val_mask, test_mask=test_mask)
+
         data = data if self.pre_transform is None else self.pre_transform(data)
+
         torch.save(self.collate([data]), self.processed_paths[0])
 
     def __repr__(self):
@@ -164,45 +166,90 @@ class WikiCS(InMemoryDataset):
     def __repr__(self):
         return '{}()'.format(self.__class__.__name__)
 
-def download_npz(file_name:str, root:str) -> torch_geometric.data.Data: 
-    """
-    Load a graph from a npz file for unweighted graph cora_ML and citeseer.
-    Args:
-        file_name : str name of the dataset.
-        root : str name of the path to save the dataset.
-    Rreturn: torch_geometric.data object
-    """
-    if file_name.lower() == 'citeseer':
-        url = ('https://raw.githubusercontent.com/SherylHYX/pytorch_geometric_signed_directed/'
-               '22038d0d1738a4a8f5e83aa3175912803e7a4a0a/torch_geometric_signed_directed/'
-               'data/dataset/citeseer.npz')
-    elif file_name.lower() == 'cora_ml':
-        url = ('https://raw.githubusercontent.com/SherylHYX/pytorch_geometric_signed_directed/'
-               '22038d0d1738a4a8f5e83aa3175912803e7a4a0a/torch_geometric_signed_directed/'
-               'data/dataset/cora_ml.npz')
-    download_url(url, root)
+class Cora_ml(InMemoryDataset):
+    def __init__(self, root, transform=None, pre_transform=None):
+        super().__init__(root, transform, pre_transform)
+        self.data, self.slices = torch.load(self.processed_paths[0])
+    url = ('https://github.com/SherylHYX/pytorch_geometric_signed_directed/raw/main/datasets/cora_ml.npz')
+    @property
+    def raw_file_names(self):
+        return ['cora_ml.npz']
 
-    with np.load(root+'/'+file_name+'.npz', allow_pickle=True) as loader:
-        loader = dict(loader)
-        edge_index = loader['adj_indices'].copy()
-        adj = sp.csr_matrix((loader['adj_data'], loader['adj_indices'],
-                           loader['adj_indptr']), shape=loader['adj_shape'])
-        features = sp.csr_matrix((loader['attr_data'], loader['attr_indices'],
-                           loader['attr_indptr']), shape=loader['attr_shape'])
-        labels = loader.get('labels')
+    @property
+    def processed_file_names(self):
+        return ['cora_ml.pt']
 
-    coo = adj.tocoo()
-    values = torch.from_numpy(coo.data)
-    indices = np.vstack((coo.row, coo.col))
-    indices = torch.from_numpy(indices).long()
-    features = torch.from_numpy(features.todense()).float()
-    labels = torch.from_numpy(labels).long()
-    data = Data(x=features, edge_index=indices, edge_weight=values, y=labels)
-    return data
+    def download(self):
+        download_url(self.url, self.raw_dir)
+
+    def process(self):
+        with np.load(self.raw_dir+'/cora_ml.npz', allow_pickle=True) as loader:
+            loader = dict(loader)
+            edge_index = loader['adj_indices'].copy()
+            adj = sp.csr_matrix((loader['adj_data'], loader['adj_indices'],
+                               loader['adj_indptr']), shape=loader['adj_shape'])
+            features = sp.csr_matrix((loader['attr_data'], loader['attr_indices'],
+                               loader['attr_indptr']), shape=loader['attr_shape'])
+            labels = loader.get('labels')
+
+        coo = adj.tocoo()
+        values = torch.from_numpy(coo.data)
+        indices = np.vstack((coo.row, coo.col))
+        indices = torch.from_numpy(indices).long()
+        features = torch.from_numpy(features.todense()).float()
+        labels = torch.from_numpy(labels).long()
+        data = Data(x=features, edge_index=indices, edge_weight=values, y=labels)
+        data = node_class_split(data, train_size_per_class=20, val_size=500)
+
+        if self.pre_transform is not None:
+            data_list = self.pre_transform([data])
+
+        data, slices = self.collate([data])
+        torch.save((data, slices), self.processed_paths[0])
+
+class Citeseer(InMemoryDataset):
+    def __init__(self, root, transform=None, pre_transform=None):
+        super().__init__(root, transform, pre_transform)
+        self.data, self.slices = torch.load(self.processed_paths[0])
+    url = ('https://github.com/SherylHYX/pytorch_geometric_signed_directed/raw/main/datasets/citeseer.npz')
+    @property
+    def raw_file_names(self):
+        return ['citeseer.npz']
+
+    @property
+    def processed_file_names(self):
+        return ['citeseer.pt']
+
+    def download(self):
+        download_url(self.url, self.raw_dir)
+
+    def process(self):
+        with np.load(self.raw_dir+'/citeseer.npz', allow_pickle=True) as loader:
+            loader = dict(loader)
+            edge_index = loader['adj_indices'].copy()
+            adj = sp.csr_matrix((loader['adj_data'], loader['adj_indices'],
+                               loader['adj_indptr']), shape=loader['adj_shape'])
+            features = sp.csr_matrix((loader['attr_data'], loader['attr_indices'],
+                               loader['attr_indptr']), shape=loader['attr_shape'])
+            labels = loader.get('labels')
+
+        coo = adj.tocoo()
+        values = torch.from_numpy(coo.data)
+        indices = np.vstack((coo.row, coo.col))
+        indices = torch.from_numpy(indices).long()
+        features = torch.from_numpy(features.todense()).float()
+        labels = torch.from_numpy(labels).long()
+        data = Data(x=features, edge_index=indices, edge_weight=values, y=labels)
+        data = node_class_split(data, train_size_per_class=20, val_size=500)
+
+        if self.pre_transform is not None:
+            data_list = self.pre_transform([data])
+
+        data, slices = self.collate([data])
+        torch.save((data, slices), self.processed_paths[0])
 
 def load_directed_real_data(dataset: str='WebKB', root:str = './', name:str = 'Texas',
-transform: Optional[Callable] = None, pre_transform: Optional[Callable] = None, 
-train_size_per_class: Optional[int] = None, val_size_per_class: Optional[int] = None) -> DirectedData:
+                            transform: Optional[Callable] = None, pre_transform: Optional[Callable] = None) -> DirectedData:
     """The function for WebKB data downloading and convert to DirectedData object
 
     Args:
@@ -221,11 +268,11 @@ train_size_per_class: Optional[int] = None, val_size_per_class: Optional[int] = 
     if dataset.lower() == 'webkb':
         data = WebKB(root=root, name=name, transform=transform, pre_transform=pre_transform)[0]
     elif dataset.lower() == 'citeseer':
-        data = download_npz('citeseer',root=root)
-        data = node_class_split(data, train_size_per_class=20, val_size=500)
+        data = Citeseer(root=root, transform=transform, pre_transform=pre_transform)[0]
+        datas = node_class_split(data, train_size_per_class=20, val_size=500)
     elif dataset.lower() == 'cora_ml':
-        data = download_npz('cora_ml',root=root)
-        data = node_class_split(data, train_size_per_class=20, val_size=500)
+        data = Cora_ml(root=root, transform=transform, pre_transform=pre_transform)[0]
+        datas = node_class_split(data, train_size_per_class=20, val_size=500)
     elif dataset.lower() == 'wikics':
         data = WikiCS(root=root,transform=transform, pre_transform=pre_transform)[0]
     elif dataset.lower() == 'wikipedianetwork':

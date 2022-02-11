@@ -1,27 +1,30 @@
-from typing import Optional, Union, List
+from typing import Optional, Union, List, Tuple
 
 import torch
 import numpy as np
 import torch_geometric
 
 def node_class_split(data: torch_geometric.data.Data, 
-                train_size: Optional[int]=None, val_size: Optional[int]=None, test_size: Optional[int]=None,
-                train_size_per_class: Optional[int]=None, val_size_per_class: Optional[int]=None,
-                test_size_per_class: Optional[int]=None,
+                train_size: Union[int,float]=None, val_size: Union[int,float]=None, test_size: Union[int,float]=None,
+                train_size_per_class: Union[int,float]=None, val_size_per_class: Union[int,float]=None,
+                test_size_per_class: Union[int,float]=None,
                 seed: List[int]=[], data_split: int=10) -> torch_geometric.data.Data:
     r""" Train/Val/Test split for node classification tasks.
     Args:
         data (torch_geometric.data.Data, required): The torch_geometric.data.Data object for data split.
-        train_size (int ,optional): The size of random splits for the training dataset.
-        val_size (int, optional): The size of random splits for the validation dataset.
-        test_size (int, optional): The size of random splits for the validation dataset. 
+        train_size (int or float, optional): The size of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
+        val_size (int or float, optional): The size of random splits for the validation dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
+        test_size (int or float, optional): The size of random splits for the validation dataset. If the input is a float number, the ratio of nodes in each class will be sampled. 
                     (Default: None. All nodes not selected for training/validation are used for testing)
-        train_size_per_class (int, optional): The size per class of random splits for the training dataset.  
-        val_size_per_class (int, optional): The size per class of random splits for the validation dataset.
-        test_size_per_class (int, optional): The size per class of random splits for the testing dataset. 
+        train_size_per_class (int or float, optional): The size per class of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.  
+        val_size_per_class (int or float, optional): The size per class of random splits for the validation dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
+        test_size_per_class (int or float, optional): The size per class of random splits for the testing dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
                     (Default: None. All nodes not selected for training/validation are used for testing)
         seed (An empty list or a list with the length of data_split, optional): The random seed list for each data split.
         data_split (int, optional): number of splits (Default : 10)
+
+    Return:
+        data (torch_geometric.data.Data): The torch_geometric.data.Data object includes train_mask, val_mask and test_mask.
     """
     if val_size is None and val_size_per_class is None:
         raise ValueError('Please input the values of val_size or val_size_per_class!')
@@ -77,7 +80,7 @@ def node_class_split(data: torch_geometric.data.Data,
     data.test_mask  = torch.cat(masks['test'], axis=-1)
     return data
 
-def sample_per_class(random_state: np.random.RandomState, labels: List[int], num_examples_per_class: int, 
+def sample_per_class(random_state: np.random.RandomState, labels: List[int], num_examples_per_class: Union[int,float], 
                         forbidden_indices: Optional[List[int]]=None) -> List[int]:
     r"""This function is modified from https://github.com/flyingtango/DiGCN/blob/main/code/Citation.py
     Sample a set of nodes per class.
@@ -86,6 +89,8 @@ def sample_per_class(random_state: np.random.RandomState, labels: List[int], num
         labels (List[int]): Node labels array.
         num_examples_per_class (int): Number of nodes per class. 
         forbidden_indices (List[int]): Nodes to be avoided when selection.
+    Return:
+        selection (List): A list of node indices to be selected.
     """
     num_samples = labels.shape[0]
     num_classes = labels.max()+1
@@ -99,17 +104,27 @@ def sample_per_class(random_state: np.random.RandomState, labels: List[int], num
                     sample_indices_per_class[class_index].append(sample_index)
 
     # get specified number of indices for each class
-    return np.concatenate(
-        [random_state.choice(sample_indices_per_class[class_index], num_examples_per_class, replace=False)
-         for class_index in range(len(sample_indices_per_class))
-         ])
+    if isinstance(num_examples_per_class, int):
+        return np.concatenate(
+            [random_state.choice(sample_indices_per_class[class_index], num_examples_per_class, replace=False)
+            for class_index in range(len(sample_indices_per_class))
+            ])
+    elif isinstance(num_examples_per_class, float):
+        selection = []
+        values, counts = np.unique(labels, return_counts=True)
+        for class_index, count in zip(values, counts):
+            size = int(num_examples_per_class*count)
+            selection.extend(random_state.choice(sample_indices_per_class[class_index], size, replace=False))
+        return selection
+    else:
+        raise TypeError("Please input a float or int number for the parameter num_examples_per_class.")
 
 def get_train_val_test_split(random_state:np.random.RandomState,
                              labels:List[int],
-                             train_size_per_class: Optional[int]=None, val_size_per_class: Optional[int]=None,
-                             test_size_per_class: Optional[int]=None,
-                             train_size: Optional[int]=None, val_size: Optional[int]=None, 
-                             test_size: Optional[int]=None) -> Union[List[int],List[int],List[int]]:
+                             train_size_per_class: Union[int,float]=None, val_size_per_class: Union[int,float]=None,
+                             test_size_per_class: Union[int,float]=None,
+                             train_size: Union[int,float]=None, val_size: Union[int,float]=None, 
+                             test_size: Union[int,float]=None) -> Tuple[List[int],List[int],List[int]]:
     r"""This function is obtained from https://github.com/flyingtango/DiGCN/blob/main/code/Citation.py
     Get train/validation/test splits based on the input setting. 
     Args:
@@ -122,6 +137,10 @@ def get_train_val_test_split(random_state:np.random.RandomState,
         val_size_per_class (int, optional): The size per class of random splits for the validation dataset.
         test_size_per_class (int, optional): The size per class of random splits for the testing dataset. 
                     (Default: None. All nodes not selected for training/validation are used for testing)
+    Returns:
+        train_indices (List): A List includes the node indices for training.
+        val_indices (List): A List includes the node indices for validation.
+        test_indices (List): A List includes the node indices for testing.
     """
     num_samples = labels.shape[0]
     remaining_indices = list(range(num_samples))
@@ -145,16 +164,24 @@ def get_train_val_test_split(random_state:np.random.RandomState,
             random_state, labels, train_size_per_class)
     else:
         # select train examples with no respect to class distribution
-        train_indices = random_state.choice(
-            remaining_indices, train_size, replace=False)
+        if isinstance(train_size, int):
+            train_indices = random_state.choice(remaining_indices, train_size, replace=False)
+        elif isinstance(train_size, float):
+            train_indices = random_state.choice(remaining_indices, int(train_size*len(remaining_indices)), replace=False)
+        else:
+            raise TypeError("Please input a float or int number for the parameter train_size.")
 
     if val_size_per_class is not None:
         val_indices = sample_per_class(
             random_state, labels, val_size_per_class, forbidden_indices=train_indices)
     else:
         remaining_indices = np.setdiff1d(remaining_indices, train_indices)
-        val_indices = random_state.choice(
-            remaining_indices, val_size, replace=False)
+        if isinstance(val_size, int):
+            val_indices = random_state.choice(remaining_indices, val_size, replace=False)
+        elif isinstance(val_size, float):
+            val_indices = random_state.choice(remaining_indices, int(val_size*len(remaining_indices)), replace=False)
+        else:
+            raise TypeError("Please input a float or int number for the parameter val_size.")
 
     forbidden_indices = np.concatenate((train_indices, val_indices))
     if test_size_per_class is not None:
@@ -162,8 +189,12 @@ def get_train_val_test_split(random_state:np.random.RandomState,
                                         forbidden_indices=forbidden_indices)
     elif test_size is not None:
         remaining_indices = np.setdiff1d(remaining_indices, forbidden_indices)
-        test_indices = random_state.choice(
-            remaining_indices, test_size, replace=False)
+        if isinstance(test_size, int):
+            test_indices = random_state.choice(remaining_indices, test_size, replace=False)
+        elif isinstance(test_size, float):
+            test_indices = random_state.choice(remaining_indices, int(test_size*len(remaining_indices)), replace=False)
+        else:
+            raise TypeError("Please input a float or int number for the parameter test_size.")
     else:
         test_indices = np.setdiff1d(remaining_indices, forbidden_indices)
 
