@@ -21,4 +21,5 @@ transform: Optional[Callable] = None, pre_filter: Optional[Callable] = None) -> 
 	"""
 	data = SNAPDataset(root=root,name=name, transform=transform, pre_filter=pre_filter)[0]
 	signed_dataset = SignedData(x=data.x,edge_index=data.edge_index,y=data.y)
+	signed_dataset.inherit_attributes(data)
 	return signed_dataset

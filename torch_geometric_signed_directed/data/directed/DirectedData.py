@@ -34,12 +34,11 @@ class DirectedData(Data):
                  edge_attr=edge_attr, y=y,
                  pos=pos, **kwargs)
         if A is None:
-            A = to_scipy_sparse_matrix(edge_index, edge_attr)
+            A = to_scipy_sparse_matrix(edge_index, edge_weight)
         else:
-            edge_weight = FloatTensor(A.data)
             edge_index = LongTensor(np.array(A.nonzero()))
         self.A = A
-        self.edge_weight = edge_weight
+        self.edge_weight = FloatTensor(A.data)
         self.edge_index = edge_index
         
 
@@ -70,4 +69,9 @@ class DirectedData(Data):
         scaler = StandardScaler().fit(features_SVD)
         features_SVD = scaler.transform(features_SVD)
         self.x = features_SVD
+
+    def inherit_attributes(self, data:Data): 
+        for k in data.to_dict().keys():
+            if k not in self.to_dict().keys():
+                setattr(self, k, getattr(data, k))
 
