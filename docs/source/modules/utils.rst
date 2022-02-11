@@ -26,6 +26,14 @@ Task-Specific Objectives and Evaluation Methods
 Utilities and Preprocessing Methods
 --------------
 
+.. automodule:: torch_geometric_signed_directed.utils.directed.directed_link_split
+    :members:
+    :undoc-members:
+
+.. automodule:: torch_geometric_signed_directed.utils.general.node_split
+    :members:
+    :undoc-members:
+
 .. automodule:: torch_geometric_signed_directed.utils.directed.features_in_out
     :members:
     :undoc-members:
