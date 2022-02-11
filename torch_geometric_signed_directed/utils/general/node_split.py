@@ -125,7 +125,7 @@ def get_train_val_test_split(random_state:np.random.RandomState,
                              test_size_per_class: Union[int,float]=None,
                              train_size: Union[int,float]=None, val_size: Union[int,float]=None, 
                              test_size: Union[int,float]=None) -> Tuple[List[int],List[int],List[int]]:
-    r"""This function is obtained from https://github.com/flyingtango/DiGCN/blob/main/code/Citation.py
+    r"""This function is modified from https://github.com/flyingtango/DiGCN/blob/main/code/Citation.py
     Get train/validation/test splits based on the input setting. 
     Args:
         random_state (np.random.RandomState): Numpy random state for random selection.

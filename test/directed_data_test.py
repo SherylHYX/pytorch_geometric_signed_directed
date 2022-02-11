@@ -2,7 +2,8 @@ import torch
 import numpy as np
 import torch_geometric.transforms as T
 
-from torch_geometric_signed_directed.data import load_directed_real_data, DirectedData, link_class_split, node_class_split
+from torch_geometric_signed_directed.data import load_directed_real_data, DirectedData
+from torch_geometric_signed_directed.utils import directed_link_class_split, node_class_split
 
 def test_directed_datasets():
     """
@@ -52,7 +53,7 @@ def test_link_split():
     """
     directed_dataset = load_directed_real_data(dataset='WebKB', root='./tmp_data/', name='Texas')
     edges = directed_dataset.edge_index.T.tolist()
-    datasets = link_class_split(directed_dataset, prob_val = 0.15, prob_test = 0.05, task = 'direction')
+    datasets = directed_link_class_split(directed_dataset, prob_val = 0.15, prob_test = 0.05, task = 'direction')
     assert len(list(datasets.keys())) == 10
     for i in datasets:
         for e, l in zip(datasets[i]['train']['edges'], datasets[i]['train']['label']):
@@ -61,7 +62,7 @@ def test_link_split():
             else:
                 assert ([e[1],e[0]] in edges)
 
-    datasets = link_class_split(directed_dataset, prob_val = 0.15, prob_test = 0.05, task = 'existence')
+    datasets = directed_link_class_split(directed_dataset, prob_val = 0.15, prob_test = 0.05, task = 'existence')
     assert len(list(datasets.keys())) == 10
     for i in datasets:
         for e, l in zip(datasets[i]['val']['edges'], datasets[i]['val']['label']):
@@ -69,7 +70,7 @@ def test_link_split():
                 assert ([e[0],e[1]] in edges)
             else:
                 assert not ([e[0],e[1]] in edges)
-    datasets = link_class_split(directed_dataset, prob_val = 0.15, prob_test = 0.05, task = 'all')
+    datasets = directed_link_class_split(directed_dataset, prob_val = 0.15, prob_test = 0.05, task = 'all')
     for i in datasets:
         for e, l in zip(datasets[i]['test']['edges'], datasets[i]['test']['label']):
             if l == 0:
@@ -101,7 +102,7 @@ def test_node_split():
     assert torch.sum(data.val_mask) == 10*3*num_classes
     assert torch.sum(data.test_mask) == 20*3*num_classes
 
-    classes, counts = np.unique(directed_dataset.y, return_counts=True)
+    _, counts = np.unique(directed_dataset.y, return_counts=True)
     data = node_class_split(directed_dataset, train_size_per_class = 0.1, val_size_per_class = 0.2, test_size_per_class = 0.3, data_split=3)
     assert data.train_mask.shape[-1] == 3
     train_size = np.sum([int(c*0.1) for c in counts])

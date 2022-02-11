@@ -7,13 +7,12 @@ from torch_sparse import coalesce
 
 import torch
 import numpy as np
-import torch_geometric
 import scipy.sparse as sp
 from torch_geometric.datasets import WebKB
 from torch_geometric.data import Data, InMemoryDataset, download_url
 
 from .DirectedData import DirectedData
-from .node_split import node_class_split
+from ...utils.general import node_class_split
 
 
 class WikipediaNetwork(InMemoryDataset):
@@ -185,7 +184,6 @@ class Cora_ml(InMemoryDataset):
     def process(self):
         with np.load(self.raw_dir+'/cora_ml.npz', allow_pickle=True) as loader:
             loader = dict(loader)
-            edge_index = loader['adj_indices'].copy()
             adj = sp.csr_matrix((loader['adj_data'], loader['adj_indices'],
                                loader['adj_indptr']), shape=loader['adj_shape'])
             features = sp.csr_matrix((loader['attr_data'], loader['attr_indices'],
@@ -226,7 +224,6 @@ class Citeseer(InMemoryDataset):
     def process(self):
         with np.load(self.raw_dir+'/citeseer.npz', allow_pickle=True) as loader:
             loader = dict(loader)
-            edge_index = loader['adj_indices'].copy()
             adj = sp.csr_matrix((loader['adj_data'], loader['adj_indices'],
                                loader['adj_indptr']), shape=loader['adj_shape'])
             features = sp.csr_matrix((loader['attr_data'], loader['attr_indices'],

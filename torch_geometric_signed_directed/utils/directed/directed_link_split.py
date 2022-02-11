@@ -1,4 +1,4 @@
-from typing import Optional, Union, List, Tuple
+from typing import Union, List, Tuple
 
 import torch
 import scipy
@@ -6,7 +6,6 @@ import numpy as np
 import networkx as nx
 from networkx.algorithms import tree
 import torch_geometric
-from torch_geometric.data import Data
 from torch_geometric.utils import negative_sampling, to_undirected
 from scipy.sparse import coo_matrix
 
@@ -65,7 +64,7 @@ def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List
         labels[neg_half] = -1
     return new_edge_pairs[labels >= 0], labels[labels >= 0]
 
-def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=10, prob_test:float= 0.15, 
+def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=10, prob_test:float= 0.15, 
                      prob_val:float= 0.05, task:str= 'direction', seed:int= 0) -> dict:
     r"""
     Get train/val/test dataset for the link prediction task.
