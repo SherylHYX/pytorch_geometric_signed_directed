@@ -8,6 +8,16 @@ def seed_set_split(data: torch_geometric.data.Data,
                 train_size: Union[int,float]=None,
                 train_size_per_class: Union[int,float]=None, 
                 seed: List[int]=[]) -> torch_geometric.data.Data:
+    r""" Select a subset from the training set
+    Args:
+        data (torch_geometric.data.Data or DirectedData, required): The data object for data split.
+        train_size (int or float, optional): The size of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
+        train_size_per_class (int or float, optional): The size per class of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.  
+        seed (An empty list or a list with the length of data_split, optional): The random seed list for each data split.
+
+    Return:
+        data (torch_geometric.data.Data or DirectedData): The data object includes seed_mask.
+    """
     data_split = data.train_mask.shape[1]
     if len(seed) == 0:
         seed=list(range(data_split))
