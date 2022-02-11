@@ -96,6 +96,9 @@ more to come...
 
 **Data Loaders and Classes**
 
+
+* **[load_directed_real_data](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/load_directed_real_data.py)** to load directed real-world data sets.
+
 * **[SignedData](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/SignedData.py)** Signed Data Class.
 
 * **[load_snap_signed_real_data](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/snap_signed_real_data.py)** Data loader for SNAP signed real data.
@@ -133,6 +136,11 @@ more to come...
 </details>
 
 **Utilities and Preprocessing Methods**
+
+* **[node_split](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/general/node_split.py)** to split nodes into training set etc..
+
+* **[directed_link_split](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/directed/directed_link_split.py)** to split directed edges into training set etc..
+
 
 * **[get_magnetic_Laplacian](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/directed/get_magnetic_Laplacian.py)** from Zhang *et al.*: [MagNet: A Neural Network for Directed Graphs.](https://arxiv.org/pdf/2102.11391.pdf) (NeurIPS 2021)
 
