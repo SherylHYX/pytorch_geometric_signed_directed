@@ -202,7 +202,7 @@ class Cora_ml(InMemoryDataset):
         data = node_class_split(data, train_size_per_class=20, val_size=500)
 
         if self.pre_transform is not None:
-            data_list = self.pre_transform([data])
+            data = self.pre_transform([data])
 
         data, slices = self.collate([data])
         torch.save((data, slices), self.processed_paths[0])
@@ -243,7 +243,7 @@ class Citeseer(InMemoryDataset):
         data = node_class_split(data, train_size_per_class=20, val_size=500)
 
         if self.pre_transform is not None:
-            data_list = self.pre_transform([data])
+            data = self.pre_transform([data])
 
         data, slices = self.collate([data])
         torch.save((data, slices), self.processed_paths[0])
@@ -269,10 +269,10 @@ def load_directed_real_data(dataset: str='WebKB', root:str = './', name:str = 'T
         data = WebKB(root=root, name=name, transform=transform, pre_transform=pre_transform)[0]
     elif dataset.lower() == 'citeseer':
         data = Citeseer(root=root, transform=transform, pre_transform=pre_transform)[0]
-        datas = node_class_split(data, train_size_per_class=20, val_size=500)
+        data = node_class_split(data, train_size_per_class=20, val_size=500)
     elif dataset.lower() == 'cora_ml':
         data = Cora_ml(root=root, transform=transform, pre_transform=pre_transform)[0]
-        datas = node_class_split(data, train_size_per_class=20, val_size=500)
+        data = node_class_split(data, train_size_per_class=20, val_size=500)
     elif dataset.lower() == 'wikics':
         data = WikiCS(root=root,transform=transform, pre_transform=pre_transform)[0]
     elif dataset.lower() == 'wikipedianetwork':
