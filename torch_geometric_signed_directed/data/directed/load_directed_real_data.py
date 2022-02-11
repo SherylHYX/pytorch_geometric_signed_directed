@@ -278,4 +278,7 @@ def load_directed_real_data(dataset: str='WebKB', root:str = './', name:str = 'T
         raise NameError('Please input the correct data set name instead of {}!'.format(dataset))
     directed_dataset = DirectedData(x=data.x,edge_index=data.edge_index,y=data.y,
                                         train_mask=data.train_mask,val_mask=data.val_mask,test_mask=data.test_mask)
+    for k in data.to_dict().keys():
+        if k not in ['x','y','edge_index','train_mask','val_mask','test_mask']:
+            setattr(directed_dataset, k, getattr(data, k))
     return directed_dataset
