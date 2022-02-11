@@ -31,14 +31,10 @@ def seed_set_split(data: torch_geometric.data.Data,
     labels = data.y.cpu().numpy()
     for i in range(data_split):
         random_state = np.random.RandomState(seed[i])
-        forbidden_indices = ((data.val_mask[:,i] > 0).nonzero().cpu().tolist() + 
-                             (data.test_mask[:,i] > 0).nonzero().cpu().tolist())
         remaining_indices = (data.train_mask[:,i] > 0).nonzero().cpu().tolist()
-        forbidden_indices = sum(forbidden_indices, [])
         remaining_indices = sum(remaining_indices, [])
-        
         if train_size_per_class is not None:
-            train_indices = sample_per_class(random_state, labels, train_size_per_class, forbidden_indices=forbidden_indices)
+            train_indices = sample_per_class(random_state, labels, train_size_per_class, force_indices=remaining_indices)
         else:
             # select train examples with no respect to class distribution
             if isinstance(train_size, int):
@@ -50,7 +46,7 @@ def seed_set_split(data: torch_geometric.data.Data,
         seed_mask = np.zeros((labels.shape[0], 1), dtype=int)
         seed_mask[train_indices, 0] = 1
         masks.append(torch.from_numpy(seed_mask).bool())
-
+    
     data.seed_mask = torch.cat(masks, axis=-1) 
     return data
 
@@ -127,7 +123,7 @@ def node_class_split(data: torch_geometric.data.Data,
     return data
 
 def sample_per_class(random_state: np.random.RandomState, labels: List[int], num_examples_per_class: Union[int,float], 
-                        forbidden_indices: Optional[List[int]]=None) -> List[int]:
+                        forbidden_indices: Optional[List[int]]=None, force_indices: Optional[List[int]]=None) -> List[int]:
     r"""This function is modified from https://github.com/flyingtango/DiGCN/blob/main/code/Citation.py
     Sample a set of nodes per class.
     Args:
@@ -135,6 +131,7 @@ def sample_per_class(random_state: np.random.RandomState, labels: List[int], num
         labels (List[int]): Node labels array.
         num_examples_per_class (int): Number of nodes per class. 
         forbidden_indices (List[int]): Nodes to be avoided when selection.
+        force_indices (List[int]): Node list to be selected.
     Return:
         selection (List): A list of node indices to be selected.
     """
@@ -146,7 +143,8 @@ def sample_per_class(random_state: np.random.RandomState, labels: List[int], num
     for class_index in range(num_classes):
         for sample_index in range(num_samples):
             if labels[sample_index] == class_index:
-                if forbidden_indices is None or sample_index not in forbidden_indices:
+                if ((forbidden_indices is None or sample_index not in forbidden_indices)
+                        and (force_indices is None or sample_index in force_indices)):
                     sample_indices_per_class[class_index].append(sample_index)
 
     # get specified number of indices for each class
@@ -157,7 +155,10 @@ def sample_per_class(random_state: np.random.RandomState, labels: List[int], num
             ])
     elif isinstance(num_examples_per_class, float):
         selection = []
-        values, counts = np.unique(labels, return_counts=True)
+        if force_indices is None:
+            values, counts = np.unique(labels, return_counts=True)
+        else:
+            values, counts = np.unique(labels[force_indices], return_counts=True)
         for class_index, count in zip(values, counts):
             size = int(num_examples_per_class*count)
             selection.extend(random_state.choice(sample_indices_per_class[class_index], size, replace=False))
