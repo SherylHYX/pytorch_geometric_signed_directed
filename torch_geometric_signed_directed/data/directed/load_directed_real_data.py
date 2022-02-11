@@ -200,7 +200,7 @@ class Cora_ml(InMemoryDataset):
         data = node_class_split(data, train_size_per_class=20, val_size=500)
 
         if self.pre_transform is not None:
-            data = self.pre_transform([data])
+            data = self.pre_transform(data)
 
         data, slices = self.collate([data])
         torch.save((data, slices), self.processed_paths[0])
@@ -240,7 +240,7 @@ class Citeseer(InMemoryDataset):
         data = node_class_split(data, train_size_per_class=20, val_size=500)
 
         if self.pre_transform is not None:
-            data = self.pre_transform([data])
+            data = self.pre_transform(data)
 
         data, slices = self.collate([data])
         torch.save((data, slices), self.processed_paths[0])

@@ -18,31 +18,19 @@ def test_directed_datasets():
     directed_dataset = load_directed_real_data(dataset='WebKB', root='./tmp_data/', name='Wisconsin')
     assert isinstance(directed_dataset, DirectedData)
     assert directed_dataset.is_directed
-    directed_dataset = load_directed_real_data(dataset='cora_ml', root='./tmp_data/')
-    assert isinstance(directed_dataset, DirectedData)
-    assert directed_dataset.is_directed
-    directed_dataset = load_directed_real_data(dataset='citeseer', root='./tmp_data/')
-    assert isinstance(directed_dataset, DirectedData)
-    assert directed_dataset.is_directed
-    directed_dataset = load_directed_real_data(dataset='wikics', root='./tmp_data/')
-    assert isinstance(directed_dataset, DirectedData)
-    assert directed_dataset.is_directed
     directed_dataset = load_directed_real_data(dataset='wikipedianetwork', root='./tmp_data/', name='chameleon')
     assert isinstance(directed_dataset, DirectedData)
     assert directed_dataset.is_directed
-    directed_dataset = load_directed_real_data(dataset='wikipedianetwork', root='./tmp_data/', name='squirrel')
-    assert isinstance(directed_dataset, DirectedData)
-    assert directed_dataset.is_directed
-    directed_dataset = load_directed_real_data(dataset='wikipedianetwork', root='./tmp_data/', name='squirrel', pre_transform=T.KNNGraph(k=6), transform=T.ToUndirected())
+    directed_dataset = load_directed_real_data(dataset='wikipedianetwork', root='./tmp_data/', name='squirrel', pre_transform=T.GCNNorm(), transform=T.ToUndirected())
     assert isinstance(directed_dataset, DirectedData)
     assert not directed_dataset.is_directed
-    directed_dataset = load_directed_real_data(dataset='cora_ml', root='./tmp_data/', pre_transform=T.KNNGraph(k=6), transform=T.ToUndirected())
+    directed_dataset = load_directed_real_data(dataset='cora_ml', root='./tmp_data/', pre_transform=T.GCNNorm(), transform=T.ToUndirected())
     assert isinstance(directed_dataset, DirectedData)
     assert not directed_dataset.is_directed
-    directed_dataset = load_directed_real_data(dataset='citeseer', root='./tmp_data/', pre_transform=T.KNNGraph(k=6), transform=T.ToUndirected())
+    directed_dataset = load_directed_real_data(dataset='citeseer', root='./tmp_data/', pre_transform=T.GCNNorm(), transform=T.ToUndirected())
     assert isinstance(directed_dataset, DirectedData)
     assert not directed_dataset.is_directed
-    directed_dataset = load_directed_real_data(dataset='wikics', root='./tmp_data/', pre_transform=T.KNNGraph(k=6), transform=T.ToUndirected())
+    directed_dataset = load_directed_real_data(dataset='wikics', root='./tmp_data/', pre_transform=T.GCNNorm(), transform=T.ToUndirected())
     assert isinstance(directed_dataset, DirectedData)
     assert not directed_dataset.is_directed
     return
@@ -95,6 +83,7 @@ def test_node_split():
     assert torch.sum(data.test_mask) == 45
 
     directed_dataset = load_directed_real_data(dataset='cora_ml', root='./tmp_data/')
+    assert directed_dataset.is_directed
     num_classes = len(np.unique(directed_dataset.y))
     data = node_class_split(directed_dataset, train_size_per_class = 5, val_size_per_class = 10, test_size_per_class = 20, data_split=3)
     assert data.train_mask.shape[-1] == 3
