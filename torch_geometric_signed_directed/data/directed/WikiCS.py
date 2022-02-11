@@ -32,7 +32,7 @@ class WikiCS(InMemoryDataset):
 
     @property
     def processed_file_names(self):
-        return 'data.pt'
+        return 'wikics.pt'
 
     def download(self):
         for name in self.raw_file_names:

@@ -6,7 +6,7 @@ from ...utils.general import node_class_split
 from .WikiCS import WikiCS
 from .WikipediaNetwork import WikipediaNetwork
 from .citation import Cora_ml, Citeseer
-
+from .Telegram import Telegram
 
 def load_directed_real_data(dataset: str='WebKB', root:str = './', name:str = 'Texas',
                             transform: Optional[Callable] = None, pre_transform: Optional[Callable] = None) -> DirectedData:
@@ -37,6 +37,8 @@ def load_directed_real_data(dataset: str='WebKB', root:str = './', name:str = 'T
         data = WikiCS(root=root,transform=transform, pre_transform=pre_transform)[0]
     elif dataset.lower() == 'wikipedianetwork':
         data = WikipediaNetwork(root=root, name=name, transform=transform, pre_transform=pre_transform)[0]
+    elif dataset.lower() == 'telegram':
+        data = Telegram(root=root, transform=transform, pre_transform=pre_transform)[0]
     else:
         raise NameError('Please input the correct data set name instead of {}!'.format(dataset))
     directed_dataset = DirectedData(x=data.x,edge_index=data.edge_index,y=data.y,

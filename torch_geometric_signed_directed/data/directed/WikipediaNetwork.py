@@ -50,7 +50,7 @@ class WikipediaNetwork(InMemoryDataset):
 
     @property
     def processed_file_names(self):
-        return 'data.pt'
+        return 'wikipedianetwork.pt'
 
     def download(self):
         for f in self.raw_file_names[:2]:
