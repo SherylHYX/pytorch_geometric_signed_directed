@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Union, List, Optional
 
 from torch_geometric.typing import OptTensor
 from torch_geometric.utils import to_scipy_sparse_matrix, is_undirected
@@ -7,6 +7,8 @@ import scipy.sparse as sp
 import numpy as np
 from torch import FloatTensor, LongTensor
 from sklearn.preprocessing import StandardScaler
+
+from ...utils.general.node_split import node_class_split
 
 class DirectedData(Data):
     r"""A data object describing a homogeneous directed graph.
@@ -25,22 +27,24 @@ class DirectedData(Data):
         pos (Tensor, optional): Node position matrix with shape
             :obj:`[num_nodes, num_dimensions]`. (default: :obj:`None`)
         A (sp.spmatrix, optional): SciPy sparse adjacency matrix. (default: :obj:`None`)
+        init_data (Data, optional): Initial data object, whose attributes will be inherited. (default: :obj:`None`)
         **kwargs (optional): Additional attributes.
     """
     def __init__(self, x: OptTensor = None, edge_index: OptTensor = None,
                 edge_attr: OptTensor = None, edge_weight: OptTensor = None, y: OptTensor = None,
-                pos: OptTensor = None, A: sp.spmatrix = None, **kwargs):
+                pos: OptTensor = None, A: sp.spmatrix = None, init_data: Optional[Data]=None, **kwargs):
         super().__init__(x=x, edge_index=edge_index,
                  edge_attr=edge_attr, y=y,
                  pos=pos, **kwargs)
         if A is None:
-            A = to_scipy_sparse_matrix(edge_index, edge_attr)
+            A = to_scipy_sparse_matrix(edge_index, edge_weight)
         else:
-            edge_weight = FloatTensor(A.data)
             edge_index = LongTensor(np.array(A.nonzero()))
         self.A = A
-        self.edge_weight = edge_weight
+        self.edge_weight = FloatTensor(A.data)
         self.edge_index = edge_index
+        if init_data is not None:
+            self.inherit_attributes(init_data)
         
 
     @property
@@ -70,4 +74,36 @@ class DirectedData(Data):
         scaler = StandardScaler().fit(features_SVD)
         features_SVD = scaler.transform(features_SVD)
         self.x = features_SVD
+
+    def inherit_attributes(self, data:Data): 
+        for k in data.to_dict().keys():
+            if k not in self.to_dict().keys():
+                setattr(self, k, getattr(data, k))
+
+    def node_split(self, train_size: Union[int,float]=None, val_size: Union[int,float]=None, 
+                test_size: Union[int,float]=None, seed_size: Union[int,float]=None,
+                train_size_per_class: Union[int,float]=None, val_size_per_class: Union[int,float]=None,
+                test_size_per_class: Union[int,float]=None, seed_size_per_class: Union[int,float]=None, 
+                seed: List[int]=[], data_split: int=10):
+        r""" Train/Val/Test/Seed split for node classification tasks.
+        Args:
+            data (torch_geometric.data.Data or DirectedData, required): The data object for data split.
+            train_size (int or float, optional): The size of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
+            val_size (int or float, optional): The size of random splits for the validation dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
+            test_size (int or float, optional): The size of random splits for the validation dataset. If the input is a float number, the ratio of nodes in each class will be sampled. 
+                        (Default: None. All nodes not selected for training/validation are used for testing)
+            seed_size (int or float, optional): The size of random splits for the seed nodes within the training set. If the input is a float number, the ratio of nodes in each class will be sampled.
+            train_size_per_class (int or float, optional): The size per class of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.  
+            val_size_per_class (int or float, optional): The size per class of random splits for the validation dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
+            test_size_per_class (int or float, optional): The size per class of random splits for the testing dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
+                        (Default: None. All nodes not selected for training/validation are used for testing)
+            seed_size_per_class (int or float, optional): The size per class of random splits for seed nodes within the training set. If the input is a float number, the ratio of nodes in each class will be sampled.  
+            seed (An empty list or a list with the length of data_split, optional): The random seed list for each data split.
+            data_split (int, optional): number of splits (Default : 10)
+
+        """
+        self = node_class_split(self, train_size=train_size, val_size=val_size, 
+        test_size=test_size, seed_size=seed_size, train_size_per_class=train_size_per_class,
+        val_size_per_class=val_size_per_class, test_size_per_class=test_size_per_class,
+        seed_size_per_class=seed_size_per_class, seed=seed, data_split=data_split)
 

@@ -1,11 +1,18 @@
 [![CI](https://github.com/SherylHYX/pytorch_geometric_signed_directed/actions/workflows/main.yml/badge.svg)](https://github.com/SherylHYX/pytorch_geometric_signed_directed/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/SherylHYX/pytorch_geometric_signed_directed/branch/main/graph/badge.svg?token=441OFDGWRB)](https://codecov.io/gh/SherylHYX/pytorch_geometric_signed_directed)
 [![Documentation Status](https://readthedocs.org/projects/pytorch-geometric-signed-directed/badge/?version=latest)](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/?badge=latest)
+[![PyPI Version](https://badge.fury.io/py/torch-geometric-signed-directed.svg)](https://pypi.python.org/pypi/torch-geometric-signed-directed)
 
 
-*PyTorch Geometric Signed Directed* is a signed and directed extension library for [PyTorch Geometric](https://github.com/pyg-team/pytorch_geometric).
+<p align="center">
+  <img width="90%" src="https://raw.githubusercontent.com/SherylHYX/pytorch_geometric_signed_directed/master/docs/source/_static/img/text_logo.jpg?sanitize=true" />
+</p>
 
-<p align="justify">The library aims to consist of various signed and directed geometric deep learning, embedding, and clustering methods from a variety of published research papers and selected preprints. It is currently under development and we welcome your contribution!
+-----------------------------------------------------
+
+*PyTorch Geometric Signed Directed* is a signed and directed extension library for [PyTorch Geometric](https://github.com/pyg-team/pytorch_geometric). It follows the package structure in [PyTorch Geometric Temporal](https://github.com/benedekrozemberczki/pytorch_geometric_temporal).
+
+<p align="justify">The library consists of various signed and directed geometric deep learning, embedding, and clustering methods from a variety of published research papers and selected preprints. It is currently under development and we welcome your contribution!
 
 
 --------------------------------------------------------------------------------
@@ -89,6 +96,9 @@ more to come...
 
 **Data Loaders and Classes**
 
+
+* **[load_directed_real_data](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/load_directed_real_data.py)** to load directed real-world data sets.
+
 * **[SignedData](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/SignedData.py)** Signed Data Class.
 
 * **[load_snap_signed_real_data](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/snap_signed_real_data.py)** Data loader for SNAP signed real data.
@@ -127,6 +137,11 @@ more to come...
 
 **Utilities and Preprocessing Methods**
 
+* **[node_split](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/general/node_split.py)** to split nodes into training set etc..
+
+* **[directed_link_split](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/directed/directed_link_split.py)** to split directed edges into training set etc..
+
+
 * **[get_magnetic_Laplacian](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/directed/get_magnetic_Laplacian.py)** from Zhang *et al.*: [MagNet: A Neural Network for Directed Graphs.](https://arxiv.org/pdf/2102.11391.pdf) (NeurIPS 2021)
 
 * **[get_appr_directed_adj](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/directed/get_adjs_DiGCN.py)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
@@ -149,8 +164,34 @@ more to come...
 
 --------------------------------------------------------------------------------
 
+Head over to our [documentation](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/) to find out more!
 If you notice anything unexpected, please open an [issue](https://github.com/SherylHYX/pytorch_geometric_signed_directed/issues). If you are missing a specific method, feel free to open a [feature request](https://github.com/SherylHYX/pytorch_geometric_signed_directed/issues).
 
+
+--------------------------------------------------------------------------------
+
+**Installation**
+
+Binaries are provided for Python version >= 3.6.
+
+**PyTorch 1.10.0**
+
+To install the binaries for PyTorch 1.10.0, simply run
+
+```sh
+pip install torch-scatter -f https://data.pyg.org/whl/torch-1.10.0+${CUDA}.html
+pip install torch-sparse -f https://data.pyg.org/whl/torch-1.10.0+${CUDA}.html
+pip install torch-geometric
+pip install torch-geometric-signed-directed
+```
+
+where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu113` depending on your PyTorch installation.
+
+|             | `cpu` | `cu102` | `cu113` |
+|-------------|-------|---------|---------|
+| **Linux**   | ✅    | ✅      | ✅      |
+| **Windows** | ✅    | ✅      | ✅      |
+| **macOS**   | ✅    |         |         |
 
 --------------------------------------------------------------------------------
 
@@ -164,3 +205,4 @@ $ python setup.py test
 **License**
 
 - [MIT License](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/master/LICENSE)
+
