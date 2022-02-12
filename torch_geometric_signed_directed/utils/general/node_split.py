@@ -4,6 +4,52 @@ import torch
 import numpy as np
 import torch_geometric
 
+def seed_set_split(data: torch_geometric.data.Data,
+                train_size: Union[int,float]=None,
+                train_size_per_class: Union[int,float]=None, 
+                seed: List[int]=[]) -> torch_geometric.data.Data:
+    r""" Select a subset from the training set
+    Args:
+        data (torch_geometric.data.Data or DirectedData, required): The data object for data split.
+        train_size (int or float, optional): The size of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
+        train_size_per_class (int or float, optional): The size per class of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.  
+        seed (An empty list or a list with the length of data_split, optional): The random seed list for each data split.
+
+    Return:
+        data (torch_geometric.data.Data or DirectedData): The data object includes seed_mask.
+    """
+    data_split = data.train_mask.shape[1]
+    if len(seed) == 0:
+        seed=list(range(data_split))
+    elif len(seed) != data_split:
+        raise ValueError('Please input the random seed list with the same length of {}!'.format(data_split))
+
+    if train_size is not None and train_size_per_class is not None:
+        raise Warning('The train_size_per_class will be considered if both train_size and val_size_per_class are given!')
+    
+    masks = []
+    labels = data.y.cpu().numpy()
+    for i in range(data_split):
+        random_state = np.random.RandomState(seed[i])
+        remaining_indices = (data.train_mask[:,i] > 0).nonzero().cpu().tolist()
+        remaining_indices = sum(remaining_indices, [])
+        if train_size_per_class is not None:
+            train_indices = sample_per_class(random_state, labels, train_size_per_class, force_indices=remaining_indices)
+        else:
+            # select train examples with no respect to class distribution
+            if isinstance(train_size, int):
+                train_indices = random_state.choice(remaining_indices, train_size, replace=False)
+            elif isinstance(train_size, float):
+                train_indices = random_state.choice(remaining_indices, int(train_size*len(remaining_indices)), replace=False)
+            else:
+                raise TypeError("Please input a float or int number for the parameter train_size.")
+        seed_mask = np.zeros((labels.shape[0], 1), dtype=int)
+        seed_mask[train_indices, 0] = 1
+        masks.append(torch.from_numpy(seed_mask).bool())
+    
+    data.seed_mask = torch.cat(masks, axis=-1) 
+    return data
+
 def node_class_split(data: torch_geometric.data.Data, 
                 train_size: Union[int,float]=None, val_size: Union[int,float]=None, test_size: Union[int,float]=None,
                 train_size_per_class: Union[int,float]=None, val_size_per_class: Union[int,float]=None,
@@ -11,7 +57,7 @@ def node_class_split(data: torch_geometric.data.Data,
                 seed: List[int]=[], data_split: int=10) -> torch_geometric.data.Data:
     r""" Train/Val/Test split for node classification tasks.
     Args:
-        data (torch_geometric.data.Data, required): The torch_geometric.data.Data object for data split.
+        data (torch_geometric.data.Data or DirectedData, required): The data object for data split.
         train_size (int or float, optional): The size of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
         val_size (int or float, optional): The size of random splits for the validation dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
         test_size (int or float, optional): The size of random splits for the validation dataset. If the input is a float number, the ratio of nodes in each class will be sampled. 
@@ -24,7 +70,7 @@ def node_class_split(data: torch_geometric.data.Data,
         data_split (int, optional): number of splits (Default : 10)
 
     Return:
-        data (torch_geometric.data.Data): The torch_geometric.data.Data object includes train_mask, val_mask and test_mask.
+        data (torch_geometric.data.Data or DirectedData): The data object includes train_mask, val_mask and test_mask.
     """
     if val_size is None and val_size_per_class is None:
         raise ValueError('Please input the values of val_size or val_size_per_class!')
@@ -54,26 +100,22 @@ def node_class_split(data: torch_geometric.data.Data,
 
         train_mask = np.zeros((labels.shape[0], 1), dtype=int)
         train_mask[train_indices, 0] = 1
-        train_mask = np.squeeze(train_mask, 1)
+        #train_mask = np.squeeze(train_mask, 1)
         val_mask = np.zeros((labels.shape[0], 1), dtype=int)
         val_mask[val_indices, 0] = 1
-        val_mask = np.squeeze(val_mask, 1)
+        #val_mask = np.squeeze(val_mask, 1)
         test_mask = np.zeros((labels.shape[0], 1), dtype=int)
         test_mask[test_indices, 0] = 1
-        test_mask = np.squeeze(test_mask, 1)
+        #test_mask = np.squeeze(test_mask, 1)
         
         mask = {}
-        mask['train'] = train_mask
-        mask['val'] = val_mask
-        mask['test'] = test_mask
-
-        mask['train'] = torch.from_numpy(mask['train']).bool()
-        mask['val'] = torch.from_numpy(mask['val']).bool()
-        mask['test'] = torch.from_numpy(mask['test']).bool()
+        mask['train'] = torch.from_numpy(train_mask).bool()
+        mask['val'] = torch.from_numpy(val_mask).bool()
+        mask['test'] = torch.from_numpy(test_mask).bool()
     
-        masks['train'].append(mask['train'].unsqueeze(-1))
-        masks['val'].append(mask['val'].unsqueeze(-1))
-        masks['test'].append(mask['test'].unsqueeze(-1))
+        masks['train'].append(mask['train'])#.unsqueeze(-1))
+        masks['val'].append(mask['val'])#.unsqueeze(-1))
+        masks['test'].append(mask['test'])#.unsqueeze(-1))
 
     data.train_mask = torch.cat(masks['train'], axis=-1) 
     data.val_mask   = torch.cat(masks['val'], axis=-1)
@@ -81,7 +123,7 @@ def node_class_split(data: torch_geometric.data.Data,
     return data
 
 def sample_per_class(random_state: np.random.RandomState, labels: List[int], num_examples_per_class: Union[int,float], 
-                        forbidden_indices: Optional[List[int]]=None) -> List[int]:
+                        forbidden_indices: Optional[List[int]]=None, force_indices: Optional[List[int]]=None) -> List[int]:
     r"""This function is modified from https://github.com/flyingtango/DiGCN/blob/main/code/Citation.py
     Sample a set of nodes per class.
     Args:
@@ -89,6 +131,7 @@ def sample_per_class(random_state: np.random.RandomState, labels: List[int], num
         labels (List[int]): Node labels array.
         num_examples_per_class (int): Number of nodes per class. 
         forbidden_indices (List[int]): Nodes to be avoided when selection.
+        force_indices (List[int]): Node list to be selected.
     Return:
         selection (List): A list of node indices to be selected.
     """
@@ -100,7 +143,8 @@ def sample_per_class(random_state: np.random.RandomState, labels: List[int], num
     for class_index in range(num_classes):
         for sample_index in range(num_samples):
             if labels[sample_index] == class_index:
-                if forbidden_indices is None or sample_index not in forbidden_indices:
+                if ((forbidden_indices is None or sample_index not in forbidden_indices)
+                        and (force_indices is None or sample_index in force_indices)):
                     sample_indices_per_class[class_index].append(sample_index)
 
     # get specified number of indices for each class
@@ -111,7 +155,10 @@ def sample_per_class(random_state: np.random.RandomState, labels: List[int], num
             ])
     elif isinstance(num_examples_per_class, float):
         selection = []
-        values, counts = np.unique(labels, return_counts=True)
+        if force_indices is None:
+            values, counts = np.unique(labels, return_counts=True)
+        else:
+            values, counts = np.unique(labels[force_indices], return_counts=True)
         for class_index, count in zip(values, counts):
             size = int(num_examples_per_class*count)
             selection.extend(random_state.choice(sample_indices_per_class[class_index], size, replace=False))
@@ -156,8 +203,6 @@ def get_train_val_test_split(random_state:np.random.RandomState,
         raise Warning('The val_size_per_class will be considered if both val_size and val_size_per_class are given!')
     if train_size is not None and train_size_per_class is not None:
         raise Warning('The train_size_per_class will be considered if both train_size and val_size_per_class are given!')
-
-
 
     if train_size_per_class is not None:
         train_indices = sample_per_class(
