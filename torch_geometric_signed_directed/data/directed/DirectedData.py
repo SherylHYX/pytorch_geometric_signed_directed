@@ -1,4 +1,4 @@
-from typing import Any, Union, List
+from typing import Any, Union, List, Optional
 
 from torch_geometric.typing import OptTensor
 from torch_geometric.utils import to_scipy_sparse_matrix, is_undirected
@@ -27,11 +27,12 @@ class DirectedData(Data):
         pos (Tensor, optional): Node position matrix with shape
             :obj:`[num_nodes, num_dimensions]`. (default: :obj:`None`)
         A (sp.spmatrix, optional): SciPy sparse adjacency matrix. (default: :obj:`None`)
+        init_data (Data, optional): Initial data object, whose attributes will be inherited. (default: :obj:`None`)
         **kwargs (optional): Additional attributes.
     """
     def __init__(self, x: OptTensor = None, edge_index: OptTensor = None,
                 edge_attr: OptTensor = None, edge_weight: OptTensor = None, y: OptTensor = None,
-                pos: OptTensor = None, A: sp.spmatrix = None, **kwargs):
+                pos: OptTensor = None, A: sp.spmatrix = None, init_data: Optional[Data]=None, **kwargs):
         super().__init__(x=x, edge_index=edge_index,
                  edge_attr=edge_attr, y=y,
                  pos=pos, **kwargs)
@@ -42,6 +43,8 @@ class DirectedData(Data):
         self.A = A
         self.edge_weight = FloatTensor(A.data)
         self.edge_index = edge_index
+        if init_data is not None:
+            self.inherit_attributes(init_data)
         
 
     @property

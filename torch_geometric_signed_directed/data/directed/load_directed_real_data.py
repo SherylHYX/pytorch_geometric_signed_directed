@@ -6,6 +6,7 @@ from .WikiCS import WikiCS
 from .WikipediaNetwork import WikipediaNetwork
 from .citation import Cora_ml, Citeseer
 from .Telegram import Telegram
+from .DIGRAC_real_data import DIGRAC_real_data
 
 def load_directed_real_data(dataset: str='WebKB', root:str = './', name:str = 'Texas',
                             transform: Optional[Callable] = None, pre_transform: Optional[Callable] = None,
@@ -53,14 +54,14 @@ def load_directed_real_data(dataset: str='WebKB', root:str = './', name:str = 'T
         data = WikipediaNetwork(root=root, name=name, transform=transform, pre_transform=pre_transform)[0]
     elif dataset.lower() == 'telegram':
         data = Telegram(root=root, transform=transform, pre_transform=pre_transform)[0]
+    elif dataset.lower() in ['blog', 'wikitalk', 'migration'] or dataset.lower()[:8] == 'lead_lag':
+        data = DIGRAC_real_data(name=dataset, root=root, transform=transform, pre_transform=pre_transform)[0]
     else:
         raise NameError('Please input the correct data set name instead of {}!'.format(dataset))
-    directed_dataset = DirectedData(x=data.x,edge_index=data.edge_index,y=data.y,
-                                        train_mask=data.train_mask,val_mask=data.val_mask,test_mask=data.test_mask)
+    directed_dataset = DirectedData(edge_index=data.edge_index, init_data=data)
     if train_size is not None or train_size_per_class is not None:
         directed_dataset.node_split(train_size=train_size, val_size=val_size, 
             test_size=test_size, seed_size=seed_size, train_size_per_class=train_size_per_class,
             val_size_per_class=val_size_per_class, test_size_per_class=test_size_per_class,
             seed_size_per_class=seed_size_per_class, seed=seed, data_split=data_split)
-    directed_dataset.inherit_attributes(data)
     return directed_dataset
