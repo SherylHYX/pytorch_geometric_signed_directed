@@ -59,13 +59,10 @@ def node_class_split(data: torch_geometric.data.Data,
 
         train_mask = np.zeros((labels.shape[0], 1), dtype=int)
         train_mask[train_indices, 0] = 1
-        #train_mask = np.squeeze(train_mask, 1)
         val_mask = np.zeros((labels.shape[0], 1), dtype=int)
         val_mask[val_indices, 0] = 1
-        #val_mask = np.squeeze(val_mask, 1)
         test_mask = np.zeros((labels.shape[0], 1), dtype=int)
         test_mask[test_indices, 0] = 1
-        #test_mask = np.squeeze(test_mask, 1)
         seed_mask = np.zeros((labels.shape[0], 1), dtype=int)
         if len(seed_indices) > 0:
             seed_mask[seed_indices, 0] = 1
@@ -74,11 +71,11 @@ def node_class_split(data: torch_geometric.data.Data,
         mask['train'] = torch.from_numpy(train_mask).bool()
         mask['val'] = torch.from_numpy(val_mask).bool()
         mask['test'] = torch.from_numpy(test_mask).bool()
-        mask['seed'] = torch.from_numpy(train_mask).bool()
+        mask['seed'] = torch.from_numpy(seed_mask).bool()
     
-        masks['train'].append(mask['train'])#.unsqueeze(-1))
-        masks['val'].append(mask['val'])#.unsqueeze(-1))
-        masks['test'].append(mask['test'])#.unsqueeze(-1))
+        masks['train'].append(mask['train'])
+        masks['val'].append(mask['val'])
+        masks['test'].append(mask['test'])
         masks['seed'].append(mask['seed'])
 
     data.train_mask = torch.cat(masks['train'], axis=-1) 
@@ -116,7 +113,7 @@ def sample_per_class(random_state: np.random.RandomState, labels: List[int], num
     if isinstance(num_examples_per_class, int):
         return np.concatenate(
             [random_state.choice(sample_indices_per_class[class_index], num_examples_per_class, replace=False)
-            for class_index in range(len(sample_indices_per_class))
+            for class_index in range(num_classes)
             ])
     elif isinstance(num_examples_per_class, float):
         selection = []
@@ -189,7 +186,7 @@ def get_train_val_test_seed_split(random_state:np.random.RandomState,
     
     if seed_size_per_class is not None:
         seed_indices = sample_per_class(
-            random_state, train_indices, seed_size_per_class)
+            random_state, labels, seed_size_per_class, force_indices=train_indices)
     elif seed_size is not None:
         # select train examples with no respect to class distribution
         if isinstance(seed_size, int):

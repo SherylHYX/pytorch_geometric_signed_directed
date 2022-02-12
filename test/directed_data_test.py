@@ -86,21 +86,22 @@ def test_node_split():
     assert torch.sum(data.train_mask) == 15
     assert torch.sum(data.val_mask) == 30
     assert torch.sum(data.test_mask) == 45
-
+    
     directed_dataset = load_directed_real_data(dataset='cora_ml', root='./tmp_data/')
     assert directed_dataset.is_directed
     num_classes = len(np.unique(directed_dataset.y))
-    data = node_class_split(directed_dataset, train_size_per_class = 20, val_size_per_class = 10, test_size_per_class = 20, data_split=3)
+    data = node_class_split(directed_dataset, train_size_per_class = 20, seed_size_per_class = 0.1, val_size_per_class = 10, test_size_per_class = 20, data_split=3)
     assert data.train_mask.shape[-1] == 3
     assert torch.sum(data.train_mask) == 20*3*num_classes
     assert torch.sum(data.val_mask) == 10*3*num_classes
     assert torch.sum(data.test_mask) == 20*3*num_classes
-    # assert isinstance(data.seed_mask, torch.Tensor)
-    # assert torch.sum(data.seed_mask) == 5*3*num_classes
+    assert torch.sum(data.seed_mask) == 2*3*num_classes
 
-    data = node_class_split(directed_dataset, train_size_per_class = 20, val_size_per_class = 10, test_size_per_class = 20)
-    # assert isinstance(data.seed_mask, torch.Tensor)
-    # assert torch.sum(data.seed_mask) == int(20*3*num_classes*0.1)
+    directed_dataset = load_directed_real_data(dataset='cora_ml', root='./tmp_data/')
+    data = node_class_split(directed_dataset, train_size_per_class = 20, seed_size_per_class = 5, val_size_per_class = 10, test_size_per_class = 20)
+    assert isinstance(data.seed_mask, torch.Tensor)
+    num_classes = len(np.unique(directed_dataset.y))
+    assert torch.sum(data.seed_mask) == 10*5*num_classes
 
     _, counts = np.unique(directed_dataset.y, return_counts=True)
     data = node_class_split(directed_dataset, train_size_per_class = 0.1, val_size_per_class = 0.2, test_size_per_class = 0.3, data_split=3)
