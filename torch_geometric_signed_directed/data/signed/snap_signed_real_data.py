@@ -8,7 +8,6 @@ transform: Optional[Callable] = None, pre_filter: Optional[Callable] = None) -> 
 	"""The function for WebKB data downloading and convert to DirectedData object
 
 	Args:
-		dataset (str, optional) data set name (default: 'WebKB').
 	    root (str, optional) path to save the dataset (default: './').
 	    name (str, required) the name of the subdataset (default: 'Texas').
 		transform (callable, optional): A function/transform that takes in an
@@ -22,4 +21,5 @@ transform: Optional[Callable] = None, pre_filter: Optional[Callable] = None) -> 
 	"""
 	data = SNAPDataset(root=root,name=name, transform=transform, pre_filter=pre_filter)[0]
 	signed_dataset = SignedData(x=data.x,edge_index=data.edge_index,y=data.y)
+	signed_dataset.inherit_attributes(data)
 	return signed_dataset

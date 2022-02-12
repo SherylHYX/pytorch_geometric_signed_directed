@@ -48,9 +48,7 @@ class SignedData(Data):
                  edge_attr=edge_attr, y=y,
                  pos=pos, **kwargs)
         if A is None:
-            if edge_weight is not None:
-                edge_attr = edge_weight
-            A = to_scipy_sparse_matrix(edge_index, edge_attr)
+            A = to_scipy_sparse_matrix(edge_index, edge_weight)
             A = sp.lil_matrix(A)
             A_abs = sp.lil_matrix(abs(A))
             A_p_scipy = (A_abs + A)/2
@@ -73,7 +71,7 @@ class SignedData(Data):
         self.edge_weight_p = FloatTensor(sp.csr_matrix(A_p_scipy).data)
         self.edge_index_n = LongTensor(np.array(A_n_scipy.nonzero()))
         self.edge_weight_n = FloatTensor(sp.csr_matrix(A_n_scipy).data)
-        self.edge_weight = edge_weight
+        self.edge_weight = FloatTensor(self.A.data)
         self.edge_index = edge_index
         self.A_p = A_p_scipy
         self.A_n = A_n_scipy
@@ -233,3 +231,8 @@ class SignedData(Data):
 
         v = v * w  # weight eigenvalues by eigenvectors, since larger eigenvectors are more likely to be informative
         self.x = v
+    
+    def inherit_attributes(self, data:Data): 
+        for k in data.to_dict().keys():
+            if k not in self.to_dict().keys():
+                setattr(self, k, getattr(data, k))
