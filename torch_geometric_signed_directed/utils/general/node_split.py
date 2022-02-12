@@ -10,7 +10,7 @@ def node_class_split(data: torch_geometric.data.Data,
                 train_size_per_class: Union[int,float]=None, val_size_per_class: Union[int,float]=None,
                 test_size_per_class: Union[int,float]=None, seed_size_per_class: Union[int,float]=None, 
                 seed: List[int]=[], data_split: int=10) -> torch_geometric.data.Data:
-    r""" Train/Val/Test split for node classification tasks.
+    r""" Train/Val/Test/Seed split for node classification tasks.
     Args:
         data (torch_geometric.data.Data or DirectedData, required): The data object for data split.
         train_size (int or float, optional): The size of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.

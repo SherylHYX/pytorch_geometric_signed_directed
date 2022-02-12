@@ -10,9 +10,10 @@ from ...utils.general import node_class_split
 
 class Telegram(InMemoryDataset):
     def __init__(self, root: str, transform: Optional[Callable]=None, pre_transform: Optional[Callable]=None):
+        self.url = ('https://github.com/SherylHYX/pytorch_geometric_signed_directed/raw/main/datasets/telegram')
         super().__init__(root, transform, pre_transform)
         self.data, self.slices = torch.load(self.processed_paths[0])
-    url = ('https://github.com/SherylHYX/pytorch_geometric_signed_directed/raw/main/datasets/telegram')
+    
     @property
     def raw_file_names(self):
         return ['telegram_adj.npz', 'telegram_labels.npy']

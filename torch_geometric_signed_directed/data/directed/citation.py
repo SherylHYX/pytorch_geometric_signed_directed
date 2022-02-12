@@ -10,9 +10,10 @@ from ...utils.general import node_class_split
 
 class Cora_ml(InMemoryDataset):
     def __init__(self, root: str, transform: Optional[Callable]=None, pre_transform: Optional[Callable]=None):
+        self.url = ('https://github.com/SherylHYX/pytorch_geometric_signed_directed/raw/main/datasets/cora_ml.npz')
         super().__init__(root, transform, pre_transform)
         self.data, self.slices = torch.load(self.processed_paths[0])
-    url = ('https://github.com/SherylHYX/pytorch_geometric_signed_directed/raw/main/datasets/cora_ml.npz')
+    
     @property
     def raw_file_names(self):
         return ['cora_ml.npz']
@@ -50,9 +51,10 @@ class Cora_ml(InMemoryDataset):
 
 class Citeseer(InMemoryDataset):
     def __init__(self, root: str, transform: Optional[Callable]=None, pre_transform: Optional[Callable]=None):
+        self.url = ('https://github.com/SherylHYX/pytorch_geometric_signed_directed/raw/main/datasets/citeseer.npz')
         super().__init__(root, transform, pre_transform)
         self.data, self.slices = torch.load(self.processed_paths[0])
-    url = ('https://github.com/SherylHYX/pytorch_geometric_signed_directed/raw/main/datasets/citeseer.npz')
+    
     @property
     def raw_file_names(self):
         return ['citeseer.npz']
