@@ -5,7 +5,7 @@ import torch
 
 from torch_geometric_signed_directed.nn.signed import SGCN
 from torch_geometric_signed_directed.datasets import SignedDirectedGraph
-from torch_geometric_signed_directed.utils.general import link_sign_prediction_logistic_function
+from torch_geometric_signed_directed.utils.signed import link_sign_prediction_logistic_function
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str, default='bitcoin_alpha')
@@ -35,7 +35,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 nodes_num = data.num_nodes
 edge_i_list = data.train_edge_index.t().numpy().tolist()
 edge_s_list = data.train_edge_sign.numpy().tolist()
-edge_index_s = [[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)]
+edge_index_s = torch.LongTensor([[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)], device=device)
 
 model = SGCN(nodes_num, edge_index_s, 20, 20, layer_num=2, lamb=5).to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)

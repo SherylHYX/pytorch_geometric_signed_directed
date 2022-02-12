@@ -13,6 +13,7 @@ from torch_sparse import coalesce
 from torch_geometric.utils import (negative_sampling,
                                    structured_negative_sampling)
 
+
 class SGCNConv(MessagePassing):
     r"""The signed graph convolutional operator from the `"Signed Graph
     Convolutional Network" <https://arxiv.org/abs/1808.06354>`_ paper
@@ -43,26 +44,28 @@ class SGCNConv(MessagePassing):
 
     otherwise.
     In case :obj:`first_aggr` is :obj:`False`, the layer expects :obj:`x` to be
-    a tensor where :obj:`x[:, :in_channels]` denotes the positive node features
-    :math:`\mathbf{X}^{(\textrm{pos})}` and :obj:`x[:, in_channels:]` denotes
+    a tensor where :obj:`x[:, :in_dim]` denotes the positive node features
+    :math:`\mathbf{X}^{(\textrm{pos})}` and :obj:`x[:, in_dim:]` denotes
     the negative node features :math:`\mathbf{X}^{(\textrm{neg})}`.
 
     Args:
-        in_channels (int or tuple): Size of each input sample, or :obj:`-1` to
+        in_dim (int or tuple): Size of each input sample, or :obj:`-1` to
             derive the size from the first input(s) to the forward method.
             A tuple corresponds to the sizes of source and target
             dimensionalities.
-        out_channels (int): Size of each output sample.
+        out_dim (int): Size of each output sample.
         first_aggr (bool): Denotes which aggregation formula to use.
         bias (bool, optional): If set to :obj:`False`, the layer will not learn
             an additive bias. (default: :obj:`True`)
         **kwargs (optional): Additional arguments of
             :class:`torch_geometric.nn.conv.MessagePassing`.
+            
     """
+
     def __init__(
         self,
-        in_channels: int,
-        out_channels: int,
+        in_dim: int,
+        out_dim: int,
         first_aggr: bool,
         bias: bool = True,
         **kwargs
@@ -71,16 +74,16 @@ class SGCNConv(MessagePassing):
         kwargs.setdefault('aggr', 'mean')
         super().__init__(**kwargs)
 
-        self.in_channels = in_channels
-        self.out_channels = out_channels
+        self.in_dim = in_dim
+        self.out_dim = out_dim
         self.first_aggr = first_aggr
 
         if first_aggr:
-            self.lin_b = Linear(2 * in_channels, out_channels, bias)
-            self.lin_u = Linear(2 * in_channels, out_channels, bias)
+            self.lin_b = Linear(2 * in_dim, out_dim, bias)
+            self.lin_u = Linear(2 * in_dim, out_dim, bias)
         else:
-            self.lin_b = Linear(3 * in_channels, out_channels, bias)
-            self.lin_u = Linear(3 * in_channels, out_channels, bias)
+            self.lin_b = Linear(3 * in_dim, out_dim, bias)
+            self.lin_u = Linear(3 * in_dim, out_dim, bias)
 
         self.reset_parameters()
 
@@ -97,7 +100,7 @@ class SGCNConv(MessagePassing):
             x: PairTensor = (x, x)
 
         if self.first_aggr:
-            
+
             out_b = self.propagate(pos_edge_index, x=x)
             out_b = self.lin_b(torch.cat([out_b, x[0]], dim=-1))
 
@@ -107,14 +110,18 @@ class SGCNConv(MessagePassing):
             return torch.cat([out_b, out_u], dim=-1)
 
         else:
-            F_in = self.in_channels
-            out_b1 = self.propagate(pos_edge_index, x=(x[0][..., :F_in], x[1][..., :F_in]))
-            out_b2 = self.propagate(neg_edge_index, x=(x[0][..., F_in:], x[1][..., F_in:]))
+            F_in = self.in_dim
+            out_b1 = self.propagate(pos_edge_index, x=(
+                x[0][..., :F_in], x[1][..., :F_in]))
+            out_b2 = self.propagate(neg_edge_index, x=(
+                x[0][..., F_in:], x[1][..., F_in:]))
             out_b = torch.cat([out_b1, out_b2, x[0][..., :F_in]], dim=-1)
             out_b = self.lin_b(out_b)
 
-            out_u1 = self.propagate(pos_edge_index, x=(x[0][..., F_in:], x[1][..., F_in:]))
-            out_u2 = self.propagate(neg_edge_index, x=(x[0][..., :F_in], x[1][..., :F_in]))
+            out_u1 = self.propagate(pos_edge_index, x=(
+                x[0][..., F_in:], x[1][..., F_in:]))
+            out_u2 = self.propagate(neg_edge_index, x=(
+                x[0][..., :F_in], x[1][..., :F_in]))
             out_u = torch.cat([out_u1, out_u2, x[0][..., F_in:]], dim=-1)
             out_u = self.lin_u(out_u)
 
@@ -123,17 +130,14 @@ class SGCNConv(MessagePassing):
     def message(self, x_j: Tensor) -> Tensor:
         return x_j
 
-
     def message_and_aggregate(self, adj_t: SparseTensor,
                               x: PairTensor) -> Tensor:
         adj_t = adj_t.set_value(None, layout=None)
         return matmul(adj_t, x[0], reduce=self.aggr)
 
-
     def __repr__(self) -> str:
-        return (f'{self.__class__.__name__}({self.in_channels}, '
-                f'{self.out_channels}, first_aggr={self.first_aggr})')
-
+        return (f'{self.__class__.__name__}({self.in_dim}, '
+                f'{self.out_dim}, first_aggr={self.first_aggr})')
 
 
 class SGCN(nn.Module):
@@ -144,38 +148,44 @@ class SGCN(nn.Module):
     We have made some modifications to the original model :class:`torch_geometric.nn.SignedGCN` for the uniformity of model inputs.
 
     Args:
-        node_num ([type]): Number of node.
-        edge_index_s (list): The edgelist with sign. (e.g., [[0, 1, -1]] )
-        in_emb_dim (int, optional): Size of each input sample features. Defaults to 64.
-        hidden_emb_dim (int): Size of each hidden embeddings. Defaults to 64.
+        node_num (int, optional): The number of nodes.
+        edge_index_s (LongTensor): The edgelist with sign. (e.g., torch.LongTensor([[0, 1, -1], [0, 2, 1]]) )
+        in_dim (int, optional): Size of each input sample features. Defaults to 64.
+        out_dim (int): Size of each hidden embeddings. Defaults to 64.
         layer_num (int, optional): Number of layers. Defaults to 2.
         lamb (float, optional): Balances the contributions of the overall
             objective. (default: :obj:`5`)
     """
 
-    def __init__(self, node_num, edge_index_s, in_emb_dim: int=64, hidden_emb_dim: int=64, layer_num: int=2, lamb: float=5, device=None):
+    def __init__(
+        self,
+        node_num: int,
+        edge_index_s ,
+        in_dim: int = 64,
+        out_dim: int = 64,
+        layer_num: int = 2,
+        lamb: float = 5
+    ):
         super().__init__()
 
         self.node_num = node_num
-        self.in_emb_dim = in_emb_dim
-        self.hidden_emb_dim = hidden_emb_dim
+        self.in_dim = in_dim
+        self.out_dim = out_dim
         self.lamb = lamb
-        self.device = device
 
-        edge_index_s = torch.LongTensor(edge_index_s, device=device)
-        self.pos_edge_index = edge_index_s[ edge_index_s[:, 2] > 0][:, :2].t()
-        self.neg_edge_index = edge_index_s[ edge_index_s[:, 2] < 0][:, :2].t()
+        self.pos_edge_index = edge_index_s[edge_index_s[:, 2] > 0][:, :2].t()
+        self.neg_edge_index = edge_index_s[edge_index_s[:, 2] < 0][:, :2].t()
         self.x = self.create_spectral_features()
 
-        self.conv1 = SGCNConv(in_emb_dim, hidden_emb_dim // 2,
-                                first_aggr=True)
+        self.conv1 = SGCNConv(in_dim, out_dim // 2,
+                              first_aggr=True)
         self.convs = torch.nn.ModuleList()
         for i in range(layer_num - 1):
             self.convs.append(
-                SGCNConv(hidden_emb_dim // 2, hidden_emb_dim // 2,
-                           first_aggr=False))
+                SGCNConv(out_dim // 2, out_dim // 2,
+                         first_aggr=False))
 
-        self.lin = torch.nn.Linear(2 * hidden_emb_dim, 3)
+        self.lin = torch.nn.Linear(2 * out_dim, 3)
 
         self.reset_parameters()
 
@@ -237,7 +247,6 @@ class SGCN(nn.Module):
         out = (z[i] - z[k]).pow(2).sum(dim=1) - (z[i] - z[j]).pow(2).sum(dim=1)
         return torch.clamp(out, min=0).mean()
 
-
     def discriminate(self, z, edge_index):
         """Given node embeddings :obj:`z`, classifies the link relation
         between node pairs :obj:`edge_index` to be either positive,
@@ -251,7 +260,6 @@ class SGCN(nn.Module):
         value = self.lin(value)
         return torch.log_softmax(value, dim=1)
 
-
     def loss(self):
         z = self.forward()
         nll_loss = self.nll_loss(z, self.pos_edge_index, self.neg_edge_index)
@@ -259,23 +267,26 @@ class SGCN(nn.Module):
         loss_2 = self.neg_embedding_loss(z, self.neg_edge_index)
         return nll_loss + self.lamb * (loss_1 + loss_2)
 
-
     def forward(self):
-        z = torch.tanh(self.conv1(self.x, self.pos_edge_index, self.neg_edge_index))
+        z = torch.tanh(self.conv1(
+            self.x, self.pos_edge_index, self.neg_edge_index))
         for conv in self.convs:
             z = torch.tanh(conv(z, self.pos_edge_index, self.neg_edge_index))
         return z
 
     def create_spectral_features(self):
-        
+
         from sklearn.decomposition import TruncatedSVD
 
-        edge_index = torch.cat([self.pos_edge_index, self.neg_edge_index], dim=1)
+        edge_index = torch.cat(
+            [self.pos_edge_index, self.neg_edge_index], dim=1)
         N = self.node_num
         edge_index = edge_index.to(torch.device('cpu'))
 
-        pos_val = torch.full((self.pos_edge_index.size(1), ), 2, dtype=torch.float)
-        neg_val = torch.full((self.neg_edge_index.size(1), ), 0, dtype=torch.float)
+        pos_val = torch.full(
+            (self.pos_edge_index.size(1), ), 2, dtype=torch.float)
+        neg_val = torch.full(
+            (self.neg_edge_index.size(1), ), 0, dtype=torch.float)
         val = torch.cat([pos_val, neg_val], dim=0)
 
         row, col = edge_index
@@ -290,8 +301,7 @@ class SGCN(nn.Module):
         edge_index = edge_index.detach().numpy()
         val = val.detach().numpy()
         A = sp.coo_matrix((val, edge_index), shape=(N, N))
-        svd = TruncatedSVD(n_components=self.in_emb_dim, n_iter=128)
+        svd = TruncatedSVD(n_components=self.in_dim, n_iter=128)
         svd.fit(A)
         x = svd.components_.T
         return torch.from_numpy(x).to(torch.float).to(self.pos_edge_index.device)
-
