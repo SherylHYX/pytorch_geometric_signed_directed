@@ -4,56 +4,11 @@ import torch
 import numpy as np
 import torch_geometric
 
-def seed_set_split(data: torch_geometric.data.Data,
-                train_size: Union[int,float]=None,
-                train_size_per_class: Union[int,float]=None, 
-                seed: List[int]=[]) -> torch_geometric.data.Data:
-    r""" Select a subset from the training set
-    Args:
-        data (torch_geometric.data.Data or DirectedData, required): The data object for data split.
-        train_size (int or float, optional): The size of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
-        train_size_per_class (int or float, optional): The size per class of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.  
-        seed (An empty list or a list with the length of data_split, optional): The random seed list for each data split.
-
-    Return:
-        data (torch_geometric.data.Data or DirectedData): The data object includes seed_mask.
-    """
-    data_split = data.train_mask.shape[1]
-    if len(seed) == 0:
-        seed=list(range(data_split))
-    elif len(seed) != data_split:
-        raise ValueError('Please input the random seed list with the same length of {}!'.format(data_split))
-
-    if train_size is not None and train_size_per_class is not None:
-        raise Warning('The train_size_per_class will be considered if both train_size and val_size_per_class are given!')
-    
-    masks = []
-    labels = data.y.cpu().numpy()
-    for i in range(data_split):
-        random_state = np.random.RandomState(seed[i])
-        remaining_indices = (data.train_mask[:,i] > 0).nonzero().cpu().tolist()
-        remaining_indices = sum(remaining_indices, [])
-        if train_size_per_class is not None:
-            train_indices = sample_per_class(random_state, labels, train_size_per_class, force_indices=remaining_indices)
-        else:
-            # select train examples with no respect to class distribution
-            if isinstance(train_size, int):
-                train_indices = random_state.choice(remaining_indices, train_size, replace=False)
-            elif isinstance(train_size, float):
-                train_indices = random_state.choice(remaining_indices, int(train_size*len(remaining_indices)), replace=False)
-            else:
-                raise TypeError("Please input a float or int number for the parameter train_size.")
-        seed_mask = np.zeros((labels.shape[0], 1), dtype=int)
-        seed_mask[train_indices, 0] = 1
-        masks.append(torch.from_numpy(seed_mask).bool())
-    
-    data.seed_mask = torch.cat(masks, axis=-1) 
-    return data
-
 def node_class_split(data: torch_geometric.data.Data, 
-                train_size: Union[int,float]=None, val_size: Union[int,float]=None, test_size: Union[int,float]=None,
+                train_size: Union[int,float]=None, val_size: Union[int,float]=None, 
+                test_size: Union[int,float]=None, seed_size: Union[int,float]=None,
                 train_size_per_class: Union[int,float]=None, val_size_per_class: Union[int,float]=None,
-                test_size_per_class: Union[int,float]=None,
+                test_size_per_class: Union[int,float]=None, seed_size_per_class: Union[int,float]=None, 
                 seed: List[int]=[], data_split: int=10) -> torch_geometric.data.Data:
     r""" Train/Val/Test split for node classification tasks.
     Args:
@@ -62,10 +17,12 @@ def node_class_split(data: torch_geometric.data.Data,
         val_size (int or float, optional): The size of random splits for the validation dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
         test_size (int or float, optional): The size of random splits for the validation dataset. If the input is a float number, the ratio of nodes in each class will be sampled. 
                     (Default: None. All nodes not selected for training/validation are used for testing)
+        seed_size (int or float, optional): The size of random splits for the seed nodes within the training set. If the input is a float number, the ratio of nodes in each class will be sampled.
         train_size_per_class (int or float, optional): The size per class of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.  
         val_size_per_class (int or float, optional): The size per class of random splits for the validation dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
         test_size_per_class (int or float, optional): The size per class of random splits for the testing dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
                     (Default: None. All nodes not selected for training/validation are used for testing)
+        seed_size_per_class (int or float, optional): The size per class of random splits for seed nodes within the training set. If the input is a float number, the ratio of nodes in each class will be sampled.  
         seed (An empty list or a list with the length of data_split, optional): The random seed list for each data split.
         data_split (int, optional): number of splits (Default : 10)
 
@@ -77,6 +34,8 @@ def node_class_split(data: torch_geometric.data.Data,
     if train_size is None and train_size_per_class is None:
         raise ValueError('Please input the values of train_size or train_size_per_class!')
 
+    if seed_size is not None and seed_size_per_class is not None:
+        raise Warning('The seed_size_per_class will be considered if both seed_size and seed_size_per_class are given!')
     if test_size is not None and test_size_per_class is not None:
         raise Warning('The test_size_per_class will be considered if both test_size and test_size_per_class are given!')
     if val_size is not None and val_size_per_class is not None:
@@ -91,12 +50,12 @@ def node_class_split(data: torch_geometric.data.Data,
 
     labels = data.y.numpy()
     masks = {}
-    masks['train'], masks['val'], masks['test'] = [], [] , []
+    masks['train'], masks['val'], masks['test'], masks['seed'] = [], [] , [], []
     for i in range(data_split):
         random_state = np.random.RandomState(seed[i])
-        train_indices, val_indices, test_indices = get_train_val_test_split(
-            random_state, labels, train_size_per_class, val_size_per_class, test_size_per_class, 
-            train_size, val_size, test_size)
+        train_indices, val_indices, test_indices, seed_indices = get_train_val_test_seed_split(random_state, 
+        labels, train_size_per_class, val_size_per_class, test_size_per_class, seed_size_per_class,
+        train_size, val_size, test_size, seed_size)
 
         train_mask = np.zeros((labels.shape[0], 1), dtype=int)
         train_mask[train_indices, 0] = 1
@@ -107,19 +66,25 @@ def node_class_split(data: torch_geometric.data.Data,
         test_mask = np.zeros((labels.shape[0], 1), dtype=int)
         test_mask[test_indices, 0] = 1
         #test_mask = np.squeeze(test_mask, 1)
+        seed_mask = np.zeros((labels.shape[0], 1), dtype=int)
+        if len(seed_indices) > 0:
+            seed_mask[seed_indices, 0] = 1
         
         mask = {}
         mask['train'] = torch.from_numpy(train_mask).bool()
         mask['val'] = torch.from_numpy(val_mask).bool()
         mask['test'] = torch.from_numpy(test_mask).bool()
+        mask['seed'] = torch.from_numpy(train_mask).bool()
     
         masks['train'].append(mask['train'])#.unsqueeze(-1))
         masks['val'].append(mask['val'])#.unsqueeze(-1))
         masks['test'].append(mask['test'])#.unsqueeze(-1))
+        masks['seed'].append(mask['seed'])
 
     data.train_mask = torch.cat(masks['train'], axis=-1) 
     data.val_mask   = torch.cat(masks['val'], axis=-1)
     data.test_mask  = torch.cat(masks['test'], axis=-1)
+    data.seed_mask = torch.cat(masks['seed'], axis=-1)
     return data
 
 def sample_per_class(random_state: np.random.RandomState, labels: List[int], num_examples_per_class: Union[int,float], 
@@ -166,12 +131,12 @@ def sample_per_class(random_state: np.random.RandomState, labels: List[int], num
     else:
         raise TypeError("Please input a float or int number for the parameter num_examples_per_class.")
 
-def get_train_val_test_split(random_state:np.random.RandomState,
+def get_train_val_test_seed_split(random_state:np.random.RandomState,
                              labels:List[int],
                              train_size_per_class: Union[int,float]=None, val_size_per_class: Union[int,float]=None,
-                             test_size_per_class: Union[int,float]=None,
+                             test_size_per_class: Union[int,float]=None, seed_size_per_class: Union[int, float]=None,
                              train_size: Union[int,float]=None, val_size: Union[int,float]=None, 
-                             test_size: Union[int,float]=None) -> Tuple[List[int],List[int],List[int]]:
+                             test_size: Union[int,float]=None, seed_size: Union[int, float]=None) -> Tuple[List[int],List[int],List[int],List[int]]:
     r"""This function is modified from https://github.com/flyingtango/DiGCN/blob/main/code/Citation.py
     Get train/validation/test splits based on the input setting. 
     Args:
@@ -180,14 +145,18 @@ def get_train_val_test_split(random_state:np.random.RandomState,
         val_size (int, optional): The size of random splits for the validation dataset.
         test_size (int, optional): The size of random splits for the validation dataset. 
                     (Default: None. All nodes not selected for training/validation are used for testing)
-        train_size_per_class (int, optional): The size per class of random splits for the training dataset.  
-        val_size_per_class (int, optional): The size per class of random splits for the validation dataset.
-        test_size_per_class (int, optional): The size per class of random splits for the testing dataset. 
+        seed_size (int or float, optional): The size of random splits for the seed nodes within the training set. If the input is a float number, the ratio of nodes in each class will be sampled.
+        train_size_per_class (int or float, optional): The size per class of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.  
+        val_size_per_class (int or float, optional): The size per class of random splits for the validation dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
+        test_size_per_class (int or float, optional): The size per class of random splits for the testing dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
                     (Default: None. All nodes not selected for training/validation are used for testing)
+        seed_size_per_class (int or float, optional): The size per class of random splits for seed nodes within the training set. If the input is a float number, the ratio of nodes in each class will be sampled.  
+    
     Returns:
         train_indices (List): A List includes the node indices for training.
         val_indices (List): A List includes the node indices for validation.
         test_indices (List): A List includes the node indices for testing.
+        seed_indices (List): A list includes the node indices for seed nodes (could be empty).
     """
     num_samples = labels.shape[0]
     remaining_indices = list(range(num_samples))
@@ -197,6 +166,8 @@ def get_train_val_test_split(random_state:np.random.RandomState,
     if train_size is None and train_size_per_class is None:
         raise ValueError('Please input the values of train_size or train_size_per_class!')
 
+    if seed_size is not None and seed_size_per_class is not None:
+        raise Warning('The seed_size_per_class will be considered if both seed_size and seed_size_per_class are given!')
     if test_size is not None and test_size_per_class is not None:
         raise Warning('The test_size_per_class will be considered if both test_size and test_size_per_class are given!')
     if val_size is not None and val_size_per_class is not None:
@@ -215,6 +186,20 @@ def get_train_val_test_split(random_state:np.random.RandomState,
             train_indices = random_state.choice(remaining_indices, int(train_size*len(remaining_indices)), replace=False)
         else:
             raise TypeError("Please input a float or int number for the parameter train_size.")
+    
+    if seed_size_per_class is not None:
+        seed_indices = sample_per_class(
+            random_state, train_indices, seed_size_per_class)
+    elif seed_size is not None:
+        # select train examples with no respect to class distribution
+        if isinstance(seed_size, int):
+            seed_indices = random_state.choice(train_indices, seed_size, replace=False)
+        elif isinstance(seed_size, float):
+            seed_indices = random_state.choice(train_indices, int(seed_size*len(train_indices)), replace=False)
+        else:
+            raise TypeError("Please input a float or int number for the parameter seed_size.")
+    else:
+        seed_indices = []
 
     if val_size_per_class is not None:
         val_indices = sample_per_class(
@@ -247,7 +232,8 @@ def get_train_val_test_split(random_state:np.random.RandomState,
     assert len(set(train_indices)) == len(train_indices)
     assert len(set(val_indices)) == len(val_indices)
     assert len(set(test_indices)) == len(test_indices)
-    # assert sets are mutually exclusive
+    assert len(set(seed_indices)) == len(seed_indices)
+    # assert training, validation and test sets are mutually exclusive
     assert len(set(train_indices) - set(val_indices)
                ) == len(set(train_indices))
     assert len(set(train_indices) - set(test_indices)
@@ -276,4 +262,4 @@ def get_train_val_test_split(random_state:np.random.RandomState,
         # assert all classes have equal cardinality
         assert np.unique(test_sum).size == 1
 
-    return train_indices, val_indices, test_indices
+    return train_indices, val_indices, test_indices, seed_indices

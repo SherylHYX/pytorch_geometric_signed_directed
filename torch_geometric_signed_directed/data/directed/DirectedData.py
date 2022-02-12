@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Union, List
 
 from torch_geometric.typing import OptTensor
 from torch_geometric.utils import to_scipy_sparse_matrix, is_undirected
@@ -7,6 +7,8 @@ import scipy.sparse as sp
 import numpy as np
 from torch import FloatTensor, LongTensor
 from sklearn.preprocessing import StandardScaler
+
+from ...utils.general.node_split import node_class_split
 
 class DirectedData(Data):
     r"""A data object describing a homogeneous directed graph.
@@ -74,4 +76,14 @@ class DirectedData(Data):
         for k in data.to_dict().keys():
             if k not in self.to_dict().keys():
                 setattr(self, k, getattr(data, k))
+
+    def node_split(self, train_size: Union[int,float]=None, val_size: Union[int,float]=None, 
+                test_size: Union[int,float]=None, seed_size: Union[int,float]=None,
+                train_size_per_class: Union[int,float]=None, val_size_per_class: Union[int,float]=None,
+                test_size_per_class: Union[int,float]=None, seed_size_per_class: Union[int,float]=None, 
+                seed: List[int]=[], data_split: int=10):
+        self = node_class_split(self, train_size=train_size, val_size=val_size, 
+        test_size=test_size, seed_size=seed_size, train_size_per_class=train_size_per_class,
+        val_size_per_class=val_size_per_class, test_size_per_class=test_size_per_class,
+        seed_size_per_class=seed_size_per_class, seed=seed, data_split=data_split)
 
