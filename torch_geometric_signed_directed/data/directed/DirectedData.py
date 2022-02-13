@@ -46,15 +46,6 @@ class DirectedData(Data):
         if init_data is not None:
             self.inherit_attributes(init_data)
         
-
-    @property
-    def edge_weight(self) -> Any:
-        return self['edge_weight'] if 'edge_weight' in self._store else None
-
-    @property
-    def A(self) -> sp.spmatrix:
-        return self['A'] if 'A' in self._store else None
-    
     @property
     def is_directed(self) -> bool:
         return not is_undirected(self.edge_index)
