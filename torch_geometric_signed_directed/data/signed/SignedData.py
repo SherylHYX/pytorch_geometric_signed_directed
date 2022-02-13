@@ -52,35 +52,35 @@ class SignedData(Data):
         if A is None:
             A = to_scipy_sparse_matrix(edge_index, edge_weight)
             A = sp.lil_matrix(A)
-            A_abs = sp.lil_matrix(abs(A))
-            A_p_scipy = (A_abs + A)/2
-            A_n_scipy = (A_abs - A)/2
         elif isinstance(A, tuple):
             A_p_scipy = A[0]
             A_n_scipy = A[1]
             A = A_p_scipy - A_n_scipy
-            edge_weight = FloatTensor(A.data)
-            edge_index = LongTensor(np.array(A.nonzero()))
         else:
             edge_weight = FloatTensor(A.data)
             edge_index = LongTensor(np.array(A.nonzero()))
-            A_abs = sp.lil_matrix(abs(A))
-            A = sp.lil_matrix(A)
-            A_p_scipy = (A_abs + A)/2
-            A_n_scipy = (A_abs - A)/2
         self.A = sp.csr_matrix(A)
+        self.edge_weight = FloatTensor(self.A.data)
+        self.edge_index = edge_index
+        if init_data is not None:
+            self.inherit_attributes(init_data)
+
+    def separate_positive_negative(self):
+        A_abs = sp.lil_matrix(abs(self.A))
+        A = sp.lil_matrix(self.A)
+        A_p_scipy = (A_abs + A)/2
+        A_n_scipy = (A_abs - A)/2
         self.edge_index_p = LongTensor(np.array(A_p_scipy.nonzero()))
         self.edge_weight_p = FloatTensor(sp.csr_matrix(A_p_scipy).data)
         self.edge_index_n = LongTensor(np.array(A_n_scipy.nonzero()))
         self.edge_weight_n = FloatTensor(sp.csr_matrix(A_n_scipy).data)
         self.edge_weight = FloatTensor(self.A.data)
-        self.edge_index = edge_index
         self.A_p = A_p_scipy
         self.A_n = A_n_scipy
-        if init_data is not None:
-            self.inherit_attributes(init_data)
 
-        
+    def clear_separate_storage(self):
+        for name in ['A_p', 'A_n', 'edge_index_p', 'edge_index_n', 'edge_weight_p', 'edge_weight_n']:
+            del self.to_dict()[name]
 
     @property
     def edge_weight(self) -> Any:
@@ -92,32 +92,56 @@ class SignedData(Data):
 
 
     @property
-    def edge_weight_p(self) -> Any:
-        return self['edge_weight_p'] if 'edge_weight_p' in self._store else None
+    def edge_weight_p(self) -> FloatTensor:
+        if 'edge_weight_p' in self._store:
+            return self['edge_weight_p']  
+        else:
+            self.separate_positive_negative()
+            return self['edge_weight_p']
 
     @property
-    def edge_index_p(self) -> Any:
-        return self['edge_index_p'] if 'edge_index_p' in self._store else None
+    def edge_index_p(self) -> LongTensor:
+        if 'edge_index_p' in self._store:
+            return self['edge_index_p']  
+        else:
+            self.separate_positive_negative()
+            return self['edge_index_p']
 
     @property
     def A_p(self) -> sp.spmatrix:
-        return self['A_p'] if 'A_p' in self._store else None
+        if 'A_p' in self._store:
+            return self['A_p']  
+        else:
+            self.separate_positive_negative()
+            return self['A_p']
 
     @property
-    def edge_weight_n(self) -> Any:
-        return self['edge_weight_n'] if 'edge_weight_n' in self._store else None
+    def edge_weight_n(self) -> FloatTensor:
+        if 'edge_weight_n' in self._store:
+            return self['edge_weight_n']  
+        else:
+            self.separate_nositive_negative()
+            return self['edge_weight_n']
 
     @property
-    def edge_index_n(self) -> Any:
-        return self['edge_index_n'] if 'edge_index_n' in self._store else None
+    def edge_index_n(self) -> LongTensor:
+        if 'edge_index_n' in self._store:
+            return self['edge_index_n']  
+        else:
+            self.separate_nositive_negative()
+            return self['edge_index_n']
 
     @property
     def A_n(self) -> sp.spmatrix:
-        return self['A_n'] if 'A_n' in self._store else None
+        if 'A_n' in self._store:
+            return self['A_n']  
+        else:
+            self.separate_nositive_negative()
+            return self['A_n']
 
     @property
     def is_signed(self) -> bool:
-        return len(self.A_p.nonzero()) > 0 and len(self.A_n.nonzero()) > 0
+        return bool(self.edge_weight.max()*self.edge_weight.min() < 0)
 
     def set_signed_Laplacian_features(self, k: int=2):
         """generate the graph features using eigenvectors of the signed Laplacian matrix.
@@ -136,6 +160,7 @@ class SignedData(Data):
         (vals, vecs) = sp.linalg.eigsh(L, int(k), maxiter=A_p.shape[0], which='SA')
         vecs = vecs / vals  # weight eigenvalues by eigenvectors, since smaller eigenvectors are more likely to be informative
         self.x = vecs
+        self.clear_separate_storage()
 
 
     def set_spectral_adjacency_reg_features(self, k: int=2, normalization: Optional[int]=None, tau_p=None, tau_n=None, \
@@ -236,6 +261,7 @@ class SignedData(Data):
 
         v = v * w  # weight eigenvalues by eigenvectors, since larger eigenvectors are more likely to be informative
         self.x = v
+        self.clear_separate_storage()
     
     def inherit_attributes(self, data:Data): 
         for k in data.to_dict().keys():
