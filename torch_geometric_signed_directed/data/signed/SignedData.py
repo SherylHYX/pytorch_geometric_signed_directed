@@ -73,6 +73,10 @@ class SignedData(Data):
         self.A_p = to_scipy_sparse_matrix(self.edge_index_p, self.edge_weight_p)
         self.A_n = to_scipy_sparse_matrix(self.edge_index_n, self.edge_weight_n)
 
+    def clear_separate_attributes(self):
+        for name in ['edge_index_p', 'edge_index_n', 'edge_weight_p', 'edge_weight_n','A_p', 'A_n']:
+            delattr(self, name)
+
     @property
     def is_signed(self) -> bool:
         return bool(self.edge_weight.max()*self.edge_weight.min() < 0)
@@ -92,9 +96,10 @@ class SignedData(Data):
         d = sqrtinvdiag(Dbar)
         normA = d * A * d
         L = sp.eye(A_p.shape[0], format="csc") - normA # normalized symmetric signed Laplacian
-        (vals, vecs) = sp.linalg.eigsh(L, int(k), maxiter=A_p.shape[0], which='SA')
+        (vals, vecs) = sp.linalg.eigs(L, int(k), maxiter=A_p.shape[0], which='LR')
         vecs = vecs / vals  # weight eigenvalues by eigenvectors, since smaller eigenvectors are more likely to be informative
         self.x = vecs
+        self.clear_separate_attributes()
 
 
     def set_spectral_adjacency_reg_features(self, k: int=2, normalization: Optional[int]=None, tau_p=None, tau_n=None, \
@@ -134,7 +139,6 @@ class SignedData(Data):
             tau_p = 0.25 * np.mean(Dbar.data) / size
             tau_n = 0.25 * np.mean(Dbar.data) / size
 
-        symmetric = True
 
         p_tau = A_p.copy().astype(np.float32)
         n_tau = A_n.copy().astype(np.float32)
@@ -189,13 +193,11 @@ class SignedData(Data):
 
         matrix_o = sp.linalg.LinearOperator(matrix.shape, matvec=mv)
 
-        if symmetric:
-            (w, v) = sp.linalg.eigsh(matrix_o, int(eigens), maxiter=mi, which='LA')
-        else:
-            (w, v) = sp.linalg.eigs(matrix_o, int(eigens), maxiter=mi, which='LR')
+        (w, v) = sp.linalg.eigs(matrix_o, int(eigens), maxiter=mi, which='LR')
 
         v = v * w  # weight eigenvalues by eigenvectors, since larger eigenvectors are more likely to be informative
         self.x = v
+        self.clear_separate_attributes()
     
     def inherit_attributes(self, data:Data): 
         for k in data.to_dict().keys():
