@@ -19,7 +19,6 @@ def SSBM(n: int, k: int, pin: float, etain: float, pout: Optional[float]=None, s
         size_ratio: (float) The communities have number of nodes multiples of each other, with the largest size_ratio times the number of nodes of the smallest.
         values: (string) Edge weight distribution (within community and without sign flip; otherwise weight is negated):
             'ones': Weights are 1.
-            'gaussian': Weights are Gaussian, with variance 1 and expectation of 1.#
             'exp': Weights are exponentially distributed, with parameter 1.
             'uniform: Weights are uniformly distributed between 0 and 1.
         Returns:
@@ -139,7 +138,6 @@ def fill(values: str='ones') -> float:
     Arg:
         values: (string) Edge weight:
             'ones': Weights are 1.
-            'gaussian': Weights are Gaussian, with variance 1 and expectation of 1.#
             'exp': Weights are exponentially distributed, with parameter 1.
             'uniform: Weights are uniformly distributed between 0 and 1.
         Returns:
@@ -147,8 +145,6 @@ def fill(values: str='ones') -> float:
     """
     if values == 'ones':
         return float(1)
-    elif values == 'gaussian':
-        return np.random.normal(1)
     elif values == 'exp':
         return np.random.exponential()
     elif values == 'uniform':

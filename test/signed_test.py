@@ -78,12 +78,11 @@ def test_SSBM():
     num_classes = 3
     p = 0.1
     eta = 0.1
-    (A_p, _), labels = SSBM(num_nodes, num_classes, p, eta, size_ratio = 1.0, values='gaussian')
-    assert A_p.shape == (num_nodes, num_nodes)
-    assert np.max(labels) == num_classes - 1
 
-    (A_p, _), labels = SSBM(num_nodes, num_classes, p, eta, size_ratio = 2.0, values='exp')
+    (A_p, A_n), labels = SSBM(num_nodes, num_classes, p, eta, size_ratio = 2.0, values='exp')
     assert A_p.shape == (num_nodes, num_nodes)
+    assert A_p.min() >= 0
+    assert A_n.min() >= 0
     assert np.max(labels) == num_classes - 1
 
     (A_p, _), labels = SSBM(num_nodes, num_classes, p, eta, size_ratio = 1.5, values='uniform')
@@ -110,34 +109,41 @@ def test_SignedData():
     num_classes = 3
     p = 0.1
     eta = 0.1
-    (A_p, A_n), labels = SSBM(num_nodes, num_classes, p, eta, size_ratio = 1.0, values='gaussian')
+    (A_p, A_n), labels = SSBM(num_nodes, num_classes, p, eta, size_ratio = 1.0, values='exp')
     data = SignedData(y=labels, A=(A_p, A_n))
     assert data.is_signed
+    data.separate_positive_negative()
     assert data.A.shape == (num_nodes, num_nodes)
     assert data.A_p.shape == (num_nodes, num_nodes)
     assert data.A_n.shape == (num_nodes, num_nodes)
-    assert data.A_p.shape == (num_nodes, num_nodes)
-    data = SignedData(y=labels, A=A_p-A_n)
+    assert data.edge_index_p[0].shape == A_p.nonzero()[0].shape
+    assert data.edge_index_n[0].shape == A_n.nonzero()[0].shape
+    assert data.edge_weight_p.shape == A_p.data.shape
+    assert data.edge_weight_n.shape == A_n.data.shape
+    
+   
+    data = SignedData(y=labels, A=A_p-A_n, init_data=data)
     assert data.y.shape == labels.shape
-    assert data.edge_index_p[0].shape == data.A_p.nonzero()[0].shape
-    assert data.edge_index_n[0].shape == data.A_n.nonzero()[0].shape
-    assert data.edge_weight_p.shape == data.A_p.data.shape
-    assert data.edge_weight_n.shape == data.A_n.data.shape
+    data.separate_positive_negative()
+    assert data.edge_index_p[0].shape == A_p.nonzero()[0].shape
+    assert data.edge_index_n[0].shape == A_n.nonzero()[0].shape
+    assert data.edge_weight_p.shape == A_p.data.shape
+    assert data.edge_weight_n.shape == A_n.data.shape
     assert data.A.shape == (num_nodes, num_nodes)
-    data.clear_separate_storage()
-    assert data.edge_index_n[0].shape == data.A_n.nonzero()[0].shape
+    assert data.A_p.shape == (num_nodes, num_nodes)
+    assert data.A_n.shape == (num_nodes, num_nodes)
+    data2 = SignedData(A=sp.csr_matrix(np.array([[0,1,-1,0],[0,0,-1,1],[0,0,0,1],[-1,0,0,0]])))
+    data2.set_spectral_adjacency_reg_features(k=num_classes,normalization='sym_sep')
+    assert data2.x.shape == (4, num_classes)
     data2 = SignedData(edge_index=data.edge_index, edge_weight=data.edge_weight)
     data2.set_signed_Laplacian_features(k=2*num_classes)
     assert data2.x.shape == (num_nodes, 2*num_classes)
-    assert data2.A_n.shape == (num_nodes, num_nodes)
     data2.set_spectral_adjacency_reg_features(k=num_classes,normalization='sym')
     assert data2.x.shape == (num_nodes, num_classes)
-    assert data.edge_weight_p.shape == data.A_p.data.shape
     data2.set_spectral_adjacency_reg_features(k=num_classes,normalization='sym_sep')
     assert data2.x.shape == (num_nodes, num_classes)
     data2.set_spectral_adjacency_reg_features(k=num_classes)
     assert data2.x.shape == (num_nodes, num_classes)
-    assert data.edge_weight_n.shape == data.A_n.data.shape
             
 
 
