@@ -38,12 +38,14 @@ class SignedData(Data):
             :obj:`[num_nodes, num_dimensions]`. (default: :obj:`None`)
         A (sp.spmatrix or a tuple of sp.spmatrix, optional): SciPy sparse adjacency matrix,
             or a tuple of the positive and negative parts. (default: :obj:`None`)
+        init_data (Data, optional): Initial data object, whose attributes will be inherited. (default: :obj:`None`)
         **kwargs (optional): Additional attributes.
     """
     def __init__(self, x: OptTensor = None, edge_index: OptTensor = None,
                 edge_attr: OptTensor = None, edge_weight: OptTensor = None, y: OptTensor = None,
                 pos: OptTensor = None, 
-                A: Union[Tuple[sp.spmatrix, sp.spmatrix], sp.spmatrix, None] = None, **kwargs):
+                A: Union[Tuple[sp.spmatrix, sp.spmatrix], sp.spmatrix, None] = None, 
+                init_data: Optional[Data] = None, **kwargs):
         super().__init__(x=x, edge_index=edge_index,
                  edge_attr=edge_attr, y=y,
                  pos=pos, **kwargs)
@@ -75,6 +77,9 @@ class SignedData(Data):
         self.edge_index = edge_index
         self.A_p = A_p_scipy
         self.A_n = A_n_scipy
+        if init_data is not None:
+            self.inherit_attributes(init_data)
+
         
 
     @property
