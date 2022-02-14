@@ -11,8 +11,8 @@ from scipy.sparse import coo_matrix
 
 def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List[Tuple], 
                                     task:str, rs:np.random.RandomState) -> Union[List,List]:
-    r"""
-    Generate edge labels based on the task.
+    r"""Generate edge labels based on the task.
+
     Args:
         adj (scipy.sparse.csr_matrix): Scipy sparse undirected adjacency matrix. 
         edge_pairs (List[Tuple]): The edge list. each element in the list is an edge tuple.
@@ -66,8 +66,7 @@ def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List
 
 def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=10, prob_test:float= 0.15, 
                      prob_val:float= 0.05, task:str= 'direction', seed:int= 0) -> dict:
-    r"""
-    Get train/val/test dataset for the link prediction task.
+    r"""Get train/val/test dataset for the link prediction task.
 
     Args:
         data (torch_geometric.data.Data or DirectedData object): The input dataset.
@@ -93,7 +92,7 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
     if size is None:
         size = int(max(torch.max(row), torch.max(col))+1)
     if data.edge_weight is None:
-    	data.edge_weight = np.ones(len(row))
+        data.edge_weight = np.ones(len(row))
     A = coo_matrix((data.edge_weight, (row, col)), shape=(size, size), dtype=np.float32).tocsr()
     # create an undirected graph based on the adjacency
     G = nx.from_scipy_sparse_matrix(A, create_using=nx.Graph, edge_attribute='weight') 

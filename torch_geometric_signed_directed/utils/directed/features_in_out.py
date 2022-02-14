@@ -1,9 +1,28 @@
+from typing import Optional, Union, Tuple
+
 import torch
 import numpy as np
 import scipy.sparse as sp
 from torch_geometric.utils import to_undirected
 
-def directed_features_in_out(edge_index, size, edge_weight=None):
+def directed_features_in_out(edge_index: torch.LongTensor, size: int, 
+    edge_weight: Optional[torch.FloatTensor]=None) -> Tuple[torch.LongTensor, torch.LongTensor, 
+    torch.FloatTensor, torch.LongTensor, torch.FloatTensor]:
+    r""" Computes directed in-degree and out-degree features.
+
+    Args:
+        edge_index (PyTorch LongTensor): The edge indices.
+        size (int or None): The number of nodes, *i.e.*
+            :obj:`max_val + 1` of :attr:`edge_index`.
+        edge_weight (PyTorch Tensor, optional): One-dimensional edge weights.
+            (default: :obj:`None`)
+    Return types:
+        index_undirected (PyTorch LongTensor): Undirected edge_index.
+        edge_in (PyTorch LongTensor): Inwards edge indices.
+        in_weight (PyTorch Tensor): Inwards edge weights.
+        edge_out (PyTorch LongTensor): Outwards edge indices.
+        out_weight (PyTorch Tensor): Outwards edge weights.
+    """
     if edge_weight is not None:
         a = sp.coo_matrix((edge_weight, edge_index), shape=(size, size)).tocsc()
     else:
@@ -31,4 +50,5 @@ def directed_features_in_out(edge_index, size, edge_weight=None):
     
     in_weight  = torch.from_numpy(A_in.data).float()
     out_weight = torch.from_numpy(A_out.data).float()
-    return to_undirected(edge_index), edge_in, in_weight, edge_out, out_weight
+    index_undirected = to_undirected(edge_index)
+    return index_undirected, edge_in, in_weight, edge_out, out_weight

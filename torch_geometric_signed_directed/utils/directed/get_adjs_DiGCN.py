@@ -63,6 +63,7 @@ def cal_fast_appr(alpha: float, edge_index: torch.LongTensor, \
     and optional :obj:`edge_weight` from the
     `Directed Graph Contrastive Learning" 
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
+    
     Args:
         alpha (float): alpha used in approximate personalized page rank.
         edge_index (PyTorch LongTensor): The edge indices.
