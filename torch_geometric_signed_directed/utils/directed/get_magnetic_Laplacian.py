@@ -19,7 +19,7 @@ def get_magnetic_Laplacian(edge_index: torch.LongTensor, edge_weight: Optional[t
     and optional :obj:`edge_weight` from the
     `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
     
-    Args:
+    Arg types:
         edge_index (PyTorch LongTensor): The edge indices.
         edge_weight (PyTorch Tensor, optional): One-dimensional edge weights.
             (default: :obj:`None`)

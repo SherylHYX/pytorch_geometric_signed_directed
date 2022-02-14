@@ -23,6 +23,7 @@ class Prob_Balanced_Normalized_Loss(torch.nn.Module):
 
     def forward(self, prob: torch.FloatTensor) -> torch.Tensor:
         """Making a forward pass of the probablistic balanced normalized cut loss function.
+        
         Arg types:
             * prob (PyTorch FloatTensor) - Prediction probability matrix made by the model
         

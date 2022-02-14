@@ -11,13 +11,13 @@ def extract_network(A: sp.spmatrix, labels: Union[np.array, LongTensor, None]=No
     for at most max_iter iterations, from the
     `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
 
-    Args:
+    Arg types:
         A (scipy sparse matrix): Adjacency matrix.
         labels (numpy array or torch.LongTensor, optional): Node labels, default None.
         lowest_degree (int, optional): The lowest degree for the output network, default 2.
         max_iter (int, optional): The maximum number of iterations.
 
-    Return:
+    Return types:
         A (scipy sparse matrix): Adjacency matrix after fixing degrees and obtaining a connected netework.
         labels (numpy array): Node labels after fixing degrees and obtaining a connected netework.
     """

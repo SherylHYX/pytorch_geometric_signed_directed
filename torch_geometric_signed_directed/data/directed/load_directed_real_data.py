@@ -16,8 +16,8 @@ def load_directed_real_data(dataset: str='WebKB', root:str = './', name:str = 'T
                             test_size_per_class: Union[int,float]=None, seed_size_per_class: Union[int,float]=None, 
                             seed: List[int]=[], data_split: int=10) -> DirectedData:
     """The function for WebKB data downloading and convert to DirectedData object.
-    
-    Args:
+
+    Arg types:
         dataset (str, optional): data set name (default: 'WebKB').
         root (str, optional): path to save the dataset (default: './').
         name (str, required): the name of the subdataset (default: 'Texas').
@@ -41,6 +41,9 @@ def load_directed_real_data(dataset: str='WebKB', root:str = './', name:str = 'T
         seed_size_per_class (int or float, optional): The size per class of random splits for seed nodes within the training set. If the input is a float number, the ratio of nodes in each class will be sampled.  
         seed (An empty list or a list with the length of data_split, optional): The random seed list for each data split.
         data_split (int, optional): number of splits (Default : 10)
+
+    Return types:
+        data (Data): The required data object.
     """
     if dataset.lower() == 'webkb':
         data = WebKB(root=root, name=name, transform=transform, pre_transform=pre_transform)[0]

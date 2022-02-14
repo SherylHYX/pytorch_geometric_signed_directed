@@ -27,7 +27,7 @@ class Prob_Imbalance_Loss(torch.nn.Module):
     K: int, normalization: str = 'vol_sum', threshold: str = 'sort') -> torch.FloatTensor:
         """Making a forward pass of the probablistic imbalance loss function from the
     `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
-        Args:
+        Arg types:
             prob (PyTorch FloatTensor): Prediction probability matrix made by the model
             A (PyTorch FloatTensor, can be sparse): Adjacency matrix A
             K (int): Number of clusters
@@ -48,7 +48,7 @@ class Prob_Imbalance_Loss(torch.nn.Module):
                            
                 'naive': No thresholding, suming up all K*(K-1)/2 terms of imbalance values.  
                 
-        Return:
+        Return types:
             loss value, roughly in [0,1].
         """
         assert normalization in ['vol_sum', 'vol_min', 'vol_max',

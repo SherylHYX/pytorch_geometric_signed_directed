@@ -13,6 +13,7 @@ def drop_feature(x, drop_prob):
     Arg types:
         x (PyTorch FloatTensor): Node features.
         drop_prob (float): Feature drop probability.
+        
     Return types:
         x (PyTorch FloatTensor): Node features.
     """
@@ -34,7 +35,7 @@ def pred_digcl(embeddings, y, train_index):
         * **embeddings** (PyTorch FloatTensor) - Node embeddings.
         * **y** (PyTorch LongTensor) - Labels.
         * **train_index** (NumPy array) - Training index. 
-        
+
     Return types:
         * **y_pred** (NumPy array) - Predicted labels.
     """

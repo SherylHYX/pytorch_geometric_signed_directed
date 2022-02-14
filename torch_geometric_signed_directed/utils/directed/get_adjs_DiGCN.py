@@ -13,7 +13,7 @@ def fast_appr_power(A, alpha=0.1, max_iter=100,
     `Directed Graph Contrastive Learning" 
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
 
-    Args:
+    Arg types:
         A (sp.csr_matrix): Sparse adjacency matrix.
         alpha (float, optional): alpha used in page rank. Default 0.1.
         max_iter (int): Maximum number of iterations. Default 100.
@@ -22,7 +22,7 @@ def fast_appr_power(A, alpha=0.1, max_iter=100,
                 containing probability distributions.
                 It will be normalized automatically. Default None.
 
-    Return:
+    Return types:
         PageRank Scores for the nodes.
     """
     # In Moler's algorithm, $G_{ij}$ represents the existences of an edge
@@ -66,7 +66,7 @@ def cal_fast_appr(alpha: float, edge_index: torch.LongTensor, \
     `Directed Graph Contrastive Learning" 
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
 
-    Args:
+    Arg types:
         alpha (float): alpha used in approximate personalized page rank.
         edge_index (PyTorch LongTensor): The edge indices.
         num_nodes (int or None): The number of nodes, *i.e.*
@@ -76,7 +76,7 @@ def cal_fast_appr(alpha: float, edge_index: torch.LongTensor, \
         edge_weight (PyTorch Tensor, optional): One-dimensional edge weights.
             (default: :obj:`None`)
 
-    Return:
+    Return types:
         edge_index (PyTorch LongTensor): The edge indices of the approximate page-rank matrix.
         edge_weight (PyTorch Tensor): One-dimensional edge weights of the approximate page-rank matrix.
     """
@@ -123,7 +123,7 @@ def get_appr_directed_adj(alpha: float, edge_index: torch.LongTensor, \
     `Digraph Inception Convolutional Networks" 
     <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
 
-    Args:
+    Arg types:
         alpha (float): alpha used in approximate personalized page rank.
         edge_index (PyTorch LongTensor): The edge indices.
         num_nodes (int or None): The number of nodes, *i.e.*
@@ -133,7 +133,7 @@ def get_appr_directed_adj(alpha: float, edge_index: torch.LongTensor, \
         edge_weight (PyTorch Tensor, optional): One-dimensional edge weights.
             (default: :obj:`None`)
 
-    Return:
+    Return types:
         edge_index (PyTorch LongTensor): The edge indices of the approximate page-rank matrix.
         edge_weight (PyTorch Tensor): One-dimensional edge weights of the approximate page-rank matrix.
     """
@@ -210,7 +210,7 @@ def get_second_directed_adj(edge_index: torch.LongTensor, \
     `Digraph Inception Convolutional Networks" 
     <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
     
-    Args:
+    Arg types:
         edge_index (PyTorch LongTensor): The edge indices.
         num_nodes (int or None): The number of nodes, *i.e.*
             :obj:`max_val + 1` of :attr:`edge_index`.
@@ -219,7 +219,7 @@ def get_second_directed_adj(edge_index: torch.LongTensor, \
         edge_weight (PyTorch Tensor, optional): One-dimensional edge weights.
             (default: :obj:`None`)
 
-    Return:
+    Return types:
         edge_index (PyTorch LongTensor): The edge indices of the approximate page-rank matrix.
         edge_weight (PyTorch Tensor): One-dimensional edge weights of the approximate page-rank matrix.
     """

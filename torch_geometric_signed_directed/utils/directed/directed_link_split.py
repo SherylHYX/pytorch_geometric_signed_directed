@@ -13,13 +13,13 @@ def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List
                                     task:str, rs:np.random.RandomState) -> Union[List,List]:
     r"""Generate edge labels based on the task.
 
-    Args:
+    Arg types:
         adj (scipy.sparse.csr_matrix): Scipy sparse undirected adjacency matrix. 
         edge_pairs (List[Tuple]): The edge list. each element in the list is an edge tuple.
         task (str): The evaluation task: all (three-class link prediction); direction (direction prediction); existence (existence prediction) 
         rs (np.random.RandomState): The randomstate for edge selection.
-        
-    Return:
+
+    Return types:
         new_edge_pairs (List): A list of edges.
         labels (List): The labels for new_edge_pairs. 
 
@@ -72,7 +72,7 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
                      prob_val:float= 0.05, task:str= 'direction', seed:int= 0) -> dict:
     r"""Get train/val/test dataset for the link prediction task.
 
-    Args:
+    Arg types:
         data (torch_geometric.data.Data or DirectedData object): The input dataset.
         prob_val (float, optional): The proportion of edges selected for validation (Default: 0.05).
         prob_test (float, optional): The proportion of edges selected for testing (Default: 0.15).
@@ -81,7 +81,7 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
         task (str, optional): The evaluation task: all (three-class link prediction); direction (direction prediction); existence (existence prediction). (Default: 'direction')
         seed (int, optional): The random seed for dataset generation (Default: 0).
 
-    Return:
+    Return types:
         datasets: A dict include training/validation/testing splits of edges and labels. For split index i:
 
                       datasets[i]['graph'] (torch.LongTensor): the observed edge list after removing edges for validation and testing.
