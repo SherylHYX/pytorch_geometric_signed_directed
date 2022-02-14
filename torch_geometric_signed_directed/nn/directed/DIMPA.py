@@ -30,6 +30,7 @@ class DIMPA(torch.nn.Module):
                 edge_weight: torch.FloatTensor) -> torch.FloatTensor:
         """
         Making a forward pass of DIMPA.
+        
         Arg types:
             * **x_s** (PyTorch FloatTensor) - Souce hidden representations.
             * **x_t** (PyTorch FloatTensor) - Target hidden representations.

@@ -31,6 +31,7 @@ class DiGCN_InceptionBlock(torch.nn.Module):
         edge_weight2: torch.FloatTensor) -> Tuple[torch.FloatTensor, torch.FloatTensor, torch.FloatTensor]:
         """
         Making a forward pass of the DiGCN inception block model.
+        
         Arg types:
             * x (PyTorch FloatTensor) - Node features.
             * edge_index, edge_index2 (PyTorch LongTensor) - Edge indices.

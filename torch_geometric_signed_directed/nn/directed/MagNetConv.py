@@ -108,6 +108,7 @@ class MagNetConv(MessagePassing):
     ) -> torch.FloatTensor:
         """
         Making a forward pass of the MagNet Convolution layer.
+        
         Arg types:
             * x_real, x_imag (PyTorch Float Tensor) - Node features.
             * edge_index (PyTorch Long Tensor) - Edge indices.

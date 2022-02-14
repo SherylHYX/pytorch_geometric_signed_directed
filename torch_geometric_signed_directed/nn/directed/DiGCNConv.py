@@ -52,6 +52,7 @@ class DiGCNConv(MessagePassing):
         edge_weight: torch.FloatTensor=None) -> torch.FloatTensor:
         """
         Making a forward pass of the DiGCN Convolution layer.
+        
         Arg types:
             * x (PyTorch FloatTensor) - Node features.
             * edge_index (PyTorch LongTensor) - Edge indices.

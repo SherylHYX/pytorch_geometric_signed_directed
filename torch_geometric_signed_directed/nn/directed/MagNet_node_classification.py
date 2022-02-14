@@ -53,6 +53,7 @@ class MagNet_node_classification(nn.Module):
         edge_weight: Optional[torch.LongTensor]=None) -> torch.FloatTensor:
         """
         Making a forward pass of the MagNet node classification model.
+        
         Arg types:
             * real, imag (PyTorch Float Tensor) - Node features.
             * edge_index (PyTorch Long Tensor) - Edge indices.

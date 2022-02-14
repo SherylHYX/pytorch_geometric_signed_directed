@@ -59,6 +59,7 @@ class DGCNConv(MessagePassing):
     def forward(self, x: Tensor, edge_index: Adj, edge_weight: OptTensor = None) -> Tensor:
         """
         Making a forward pass of the graph convolutional operator.
+        
         Arg types:
             * x (PyTorch FloatTensor) - Node features.
             * edge_index (Adj) - Edge indices.

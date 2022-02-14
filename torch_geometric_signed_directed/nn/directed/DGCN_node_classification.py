@@ -1,5 +1,4 @@
-from typing import Optional, Tuple
-from torch_geometric.typing import Adj, OptTensor
+from typing import Optional
 
 import torch
 import torch.nn as nn
@@ -45,6 +44,7 @@ class DGCN_node_classification(torch.nn.Module):
         in_w: Optional[torch.FloatTensor]=None, out_w: Optional[torch.FloatTensor]=None) -> torch.FloatTensor:
         """
         Making a forward pass of the DGCN node classification model.
+
         Arg types:
             * x (PyTorch FloatTensor) - Node features.
             * edge_index (PyTorch LongTensor) - Edge indices.

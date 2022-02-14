@@ -28,6 +28,7 @@ class DiGCN_node_classification(torch.nn.Module):
         edge_weight: torch.FloatTensor=None) -> torch.FloatTensor:
         """
         Making a forward pass of the DiGCN node classification model without inception blocks.
+        
         Arg types:
             * x (PyTorch FloatTensor) - Node features.
             * edge_index (PyTorch LongTensor) - Edge indices.

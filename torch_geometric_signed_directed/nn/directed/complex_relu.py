@@ -14,6 +14,7 @@ class complex_relu_layer(nn.Module):
     def forward(self, real, img):
         """
         Making a forward pass of the complex ReLU layer.
+        
         Arg types:
             * real, imag (PyTorch Float Tensor) - Node features.
         Return types:
