@@ -11,7 +11,7 @@ from ...utils.general import node_class_split
 class Telegram(InMemoryDataset):
     r"""Data loader for the Telegram data set used in the
     `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
-    
+
     Args:
         root (string): Root directory where the dataset should be saved.
         transform (callable, optional): A function/transform that takes in an
@@ -58,7 +58,7 @@ class Telegram(InMemoryDataset):
         indices = torch.from_numpy(indices).long()
         features = torch.from_numpy(rs.normal(0, 1.0, (s_A.shape[0], 1))).float()
 
-        data = Data(x=features, edge_index=indices, edge_weight=None, y=label)
+        data = Data(x=features, edge_index=indices, edge_weight=values, y=label)
         data = node_class_split(data, train_size_per_class=train_ratio, val_size_per_class=val_ratio)
         if self.pre_transform is not None:
             data = self.pre_transform(data)

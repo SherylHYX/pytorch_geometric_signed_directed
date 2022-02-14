@@ -14,19 +14,19 @@ def polarized_SSBM(total_n: int=100, num_com: int=3, N: int=30, K: int=2, p: flo
     """A polarized signed stochastic block model graph generator from the
     `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
 
-    Args:
-        total_n (int): Total number of nodes in the polarized network.
-        num_com (int): Number of conflicting communities.
-        N (int): Default size of an SSBM community.
-        K (int): Number of blocks(clusters) within a conflicting community.
-        p (int): Probability of existence of an edge.
-        eta (float): Sign flip probability, 0 <= eta <= 0.5.
-        size_ratio (float): The communities have number of nodes multiples of each other, with the largest size_ratio times the number of nodes of the smallest.
+    Arg types:
+        * **total_n** (int) - Total number of nodes in the polarized network.
+        * **num_com** (int) - Number of conflicting communities.
+        * **N** (int) - Default size of an SSBM community.
+        * **K** (int) - Number of blocks(clusters) within a conflicting community.
+        * **p** (int) - Probability of existence of an edge.
+        * **eta** (float) - Sign flip probability, 0 <= eta <= 0.5.
+        * **size_ratio** (float) - The communities have number of nodes multiples of each other, with the largest size_ratio times the number of nodes of the smallest.
         
-    Returns:
-        A_p_new, A_n_new (sp.spmatrix): Positive and negative parts of the polarized network.
-        labels_new (np.array): Ordered labels of the nodes, with conflicting communities labeled together, cluster 0 is the ambient cluster.
-        conflict_groups (np.array): An array indicating which conflicting group the node is in, 0 is ambient.
+    Return types:
+        * **A_p_new, A_n_new** (sp.spmatrix) - Positive and negative parts of the polarized network.
+        * **labels_new** (np.array) - Ordered labels of the nodes, with conflicting communities labeled together, cluster 0 is the ambient cluster.
+        * **conflict_groups** (np.array) - An array indicating which conflicting group the node is in, 0 is ambient.
 
     """
     select_num = math.floor(total_n*p/4*total_n) # number of links in large_A_p and large_A_n respectively

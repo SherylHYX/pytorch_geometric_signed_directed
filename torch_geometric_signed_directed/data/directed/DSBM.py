@@ -12,15 +12,15 @@ def DSBM(N: int, K: int, p: float, F: np.array, size_ratio: float=1) -> Tuple[sp
     `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
 
     Arg types:
-        N (int): Number of nodes.
-        K (int): Number of clusters.
-        p (float): Sparsity value, edge probability.
-        F (np.array): meta-graph adjacency matrix to generate edges
-        size_ratio (float): The communities have number of nodes multiples of each other, with the largest size_ratio times the number of nodes of the smallest.
+        * **N** (int) - Number of nodes.
+        * **K** (int) - Number of clusters.
+        * **p** (float) - Sparsity value, edge probability.
+        * **F** (np.array) - meta-graph adjacency matrix to generate edges
+        * **size_ratio** (float) - The communities have number of nodes multiples of each other, with the largest size_ratio times the number of nodes of the smallest.
     
     Return types:
-        a (sp.csr_matrix): a is a sparse N by N matrix of the edges
-        c (np.array): an array of cluster membership.
+        * **a** (sp.csr_matrix) - a is a sparse N by N matrix of the edges
+        * **c** (np.array) - an array of cluster membership.
     """
 
     assign = np.zeros(N, dtype=int)
