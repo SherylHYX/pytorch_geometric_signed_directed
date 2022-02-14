@@ -335,7 +335,7 @@ def test_DSBM():
     A, labels = extract_network(A=A, lowest_degree=10)
     assert labels is None
     assert A.shape[1] <= num_nodes
-'''
+
 def test_DirectedData():
     num_nodes = 200
     num_classes = 3
@@ -349,4 +349,4 @@ def test_DirectedData():
     data2 = DirectedData(edge_index = data.edge_index)
     assert data2.A.shape[0] == num_nodes
     data2.set_hermitian_features(k=num_classes)
-    assert data2.x.shape == (num_nodes, 2*num_classes)'''
+    assert data2.x.shape == (num_nodes, 2*num_classes)
