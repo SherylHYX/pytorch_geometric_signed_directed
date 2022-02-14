@@ -6,6 +6,7 @@ from ..general.scipy_sparse_to_torch_sparse import scipy_sparse_to_torch_sparse
 class Unhappy_Ratio(torch.nn.Module):
     r"""A calculation of the ratio of unhappy edges among all edges from the
     `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
+    
     Args:
         A_p (scipy sparse matrices): Positive part of adjacency matrix A.
         A_n (scipy sparse matrices): Negative part of adjacency matrix A.
@@ -20,11 +21,11 @@ class Unhappy_Ratio(torch.nn.Module):
 
     def forward(self, prob: torch.FloatTensor) -> torch.Tensor:
         """Making a forward pass of the calculation of the ratio of unhappy edges among all edges.
-        Args:
-            prob: (PyTorch FloatTensor) Prediction probability matrix made by the model
+        Arg types:
+            * prob (PyTorch FloatTensor) - Prediction probability matrix made by the model
         
-        Returns:
-            loss value.
+        Return types:
+            * loss value (torch.Tensor).
         """
         device = prob.device
         mat = self.mat.to(device)

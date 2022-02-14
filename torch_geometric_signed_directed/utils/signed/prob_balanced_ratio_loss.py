@@ -6,6 +6,7 @@ from ..general.scipy_sparse_to_torch_sparse import scipy_sparse_to_torch_sparse
 class Prob_Balanced_Ratio_Loss(torch.nn.Module):
     r"""An implementation of the probablistic balanced ratio cut loss function from the
     `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
+    
     Args:
         A_p (scipy sparse matrices): Positive part of adjacency matrix A.
         A_n (scipy sparse matrices): Negative part of adjacency matrix A.

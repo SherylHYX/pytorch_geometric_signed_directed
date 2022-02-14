@@ -9,7 +9,8 @@ def drop_feature(x, drop_prob):
     r""" Drop feature funciton from the
     `Digraph Inception Convolutional Networks" 
     <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
-    Args:
+
+    Arg types:
         x (PyTorch FloatTensor): Node features.
         drop_prob (float): Feature drop probability.
     Return types:
@@ -28,12 +29,13 @@ def pred_digcl(embeddings, y, train_index):
     r""" Generate predictions from embeddings from the
     `Digraph Inception Convolutional Networks" 
     <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
-    Args:
-        embeddings (PyTorch FloatTensor): Node embeddings.
-        y (PyTorch LongTensor): Labels.
-        train_index (NumPy array): Training index. 
+    
+    Arg types:
+        * **embeddings** (PyTorch FloatTensor) - Node embeddings.
+        * **y** (PyTorch LongTensor) - Labels.
+        * **train_index** (NumPy array) - Training index. 
     Return types:
-        y_pred (NumPy array): Predicted labels.
+        * **y_pred** (NumPy array) - Predicted labels.
     """
     X = embeddings.detach().cpu().numpy()
     Y = y.detach().cpu().numpy()
