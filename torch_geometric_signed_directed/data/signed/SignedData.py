@@ -107,23 +107,23 @@ class SignedData(Data):
     def set_spectral_adjacency_reg_features(self, k: int=2, normalization: Optional[int]=None, tau_p=None, tau_n=None, \
         eigens=None, mi=None):
         """generate the graph features using eigenvectors of the regularised adjacency matrix.
-        
+
         Args:
             k (int): The dimension of the features. Default is 2.
             normalization (string): How to normalise for cluster size:
 
-            1. :obj:`none`: No normalization.
+                1. :obj:`none`: No normalization.
 
-            2. :obj:`"sym"`: Symmetric normalization
-            :math:`\mathbf{A} <- \mathbf{D}^{-1/2} \mathbf{A}
-            \mathbf{D}^{-1/2}`
+                2. :obj:`"sym"`: Symmetric normalization
+                :math:`\mathbf{A} <- \mathbf{D}^{-1/2} \mathbf{A}
+                \mathbf{D}^{-1/2}`
 
-            3. :obj:`"rw"`: Random-walk normalization
-            :math:`\mathbf{A} <- \mathbf{D}^{-1} \mathbf{A}`
+                3. :obj:`"rw"`: Random-walk normalization
+                :math:`\mathbf{A} <- \mathbf{D}^{-1} \mathbf{A}`
 
-            4. :obj:`"sym_sep"`: Symmetric normalization for the positive and negative parts separately.
+                4. :obj:`"sym_sep"`: Symmetric normalization for the positive and negative parts separately.
 
-            5. :obj:`"rw_sep"`: Random-walk normalization for the positive and negative parts separately.
+                5. :obj:`"rw_sep"`: Random-walk normalization for the positive and negative parts separately.
 
             tau_p (int): Regularisation coefficient for positive adjacency matrix.
             tau_n (int): Regularisation coefficient for negative adjacency matrix.

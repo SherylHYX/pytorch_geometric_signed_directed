@@ -16,8 +16,7 @@ def node_class_split(data: torch_geometric.data.Data,
         data (torch_geometric.data.Data or DirectedData, required): The data object for data split.
         train_size (int or float, optional): The size of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
         val_size (int or float, optional): The size of random splits for the validation dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
-        test_size (int or float, optional): The size of random splits for the validation dataset. If the input is a float number, the ratio of nodes in each class will be sampled. 
-                    (Default: None. All nodes not selected for training/validation are used for testing)
+        test_size (int or float, optional): The size of random splits for the validation dataset. If the input is a float number, the ratio of nodes in each class will be sampled. (Default: None. All nodes not selected for training/validation are used for testing)
         seed_size (int or float, optional): The size of random splits for the seed nodes within the training set. If the input is a float number, the ratio of nodes in each class will be sampled.
         train_size_per_class (int or float, optional): The size per class of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.  
         val_size_per_class (int or float, optional): The size per class of random splits for the validation dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
@@ -141,8 +140,7 @@ def get_train_val_test_seed_split(random_state:np.random.RandomState,
         random_state (np.random.RandomState): Numpy random state for random selection.
         train_size (int ,optional): The size of random splits for the training dataset.
         val_size (int, optional): The size of random splits for the validation dataset.
-        test_size (int, optional): The size of random splits for the validation dataset. 
-                    (Default: None. All nodes not selected for training/validation are used for testing)
+        test_size (int, optional): The size of random splits for the validation dataset. (Default: None. All nodes not selected for training/validation are used for testing)
         seed_size (int or float, optional): The size of random splits for the seed nodes within the training set. If the input is a float number, the ratio of nodes in each class will be sampled.
         train_size_per_class (int or float, optional): The size per class of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.  
         val_size_per_class (int or float, optional): The size per class of random splits for the validation dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
