@@ -6,6 +6,7 @@ from ..general.conv_base import Conv_Base
 class DIMPA(torch.nn.Module):
     r"""The directed mixed-path aggregation model from the
     `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
+    
     Args:
         hop (int): Number of hops to consider.
     """

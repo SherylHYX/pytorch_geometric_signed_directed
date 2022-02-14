@@ -9,6 +9,7 @@ from .DGCNConv import DGCNConv
 class DGCN_node_classification(torch.nn.Module):
     r"""An implementation of the DGCN node classification model from `Directed Graph Convolutional Network" 
     <https://arxiv.org/pdf/2004.13970.pdf>`_ paper.
+    
     Args:
         input_dim (int): Dimention of input features.
         filter_num (int): Hidden dimention.

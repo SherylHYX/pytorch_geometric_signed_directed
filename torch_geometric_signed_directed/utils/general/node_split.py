@@ -11,6 +11,7 @@ def node_class_split(data: torch_geometric.data.Data,
                 test_size_per_class: Union[int,float]=None, seed_size_per_class: Union[int,float]=None, 
                 seed: List[int]=[], data_split: int=10) -> torch_geometric.data.Data:
     r""" Train/Val/Test/Seed split for node classification tasks.
+
     Args:
         data (torch_geometric.data.Data or DirectedData, required): The data object for data split.
         train_size (int or float, optional): The size of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
@@ -86,8 +87,8 @@ def node_class_split(data: torch_geometric.data.Data,
 
 def sample_per_class(random_state: np.random.RandomState, labels: List[int], num_examples_per_class: Union[int,float], 
                         forbidden_indices: Optional[List[int]]=None, force_indices: Optional[List[int]]=None) -> List[int]:
-    r"""This function is modified from https://github.com/flyingtango/DiGCN/blob/main/code/Citation.py
-    Sample a set of nodes per class.
+    r"""This function is modified from https://github.com/flyingtango/DiGCN/blob/main/code/Citation.py. It samples a set of nodes per class.
+    
     Args:
         random_state (np.random.RandomState): Numpy random state for random selection.
         labels (List[int]): Node labels array.
@@ -134,8 +135,8 @@ def get_train_val_test_seed_split(random_state:np.random.RandomState,
                              test_size_per_class: Union[int,float]=None, seed_size_per_class: Union[int, float]=None,
                              train_size: Union[int,float]=None, val_size: Union[int,float]=None, 
                              test_size: Union[int,float]=None, seed_size: Union[int, float]=None) -> Tuple[List[int],List[int],List[int],List[int]]:
-    r"""This function is modified from https://github.com/flyingtango/DiGCN/blob/main/code/Citation.py
-    Get train/validation/test splits based on the input setting. 
+    r"""Get train/validation/test/seed splits based on the input setting. 
+
     Args:
         random_state (np.random.RandomState): Numpy random state for random selection.
         train_size (int ,optional): The size of random splits for the training dataset.

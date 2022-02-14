@@ -8,6 +8,7 @@ class DiGCL_Encoder(torch.nn.Module):
     r"""An implementation of the DiGCL encoder model from the
     `Directed Graph Contrastive Learning" 
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
+    
     Args:
         in_channels (int): Dimension of input features.
         out_channels (int): Dimension of output representations.

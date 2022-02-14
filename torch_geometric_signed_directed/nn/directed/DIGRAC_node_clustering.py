@@ -9,6 +9,7 @@ from .DIMPA import DIMPA
 class DIGRAC_node_clustering(torch.nn.Module):
     r"""The directed graph clustering model from the
     `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
+    
     Args:
         num_features (int): Number of features.
         hidden (int): Hidden dimensions of the initial MLP.

@@ -14,6 +14,7 @@ class MagNetConv(MessagePassing):
     `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper
     :math:`\mathbf{\hat{L}}` denotes the scaled and normalized magnetic Laplacian
     :math:`\frac{2\mathbf{L}}{\lambda_{\max}} - \mathbf{I}`.
+    
     Args:
         in_channels (int): Size of each input sample.
         out_channels (int): Size of each output sample.

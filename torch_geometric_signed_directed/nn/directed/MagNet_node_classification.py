@@ -10,6 +10,7 @@ from .MagNetConv import MagNetConv
 class MagNet_node_classification(nn.Module):
     r"""The MagNet model for node classification from the
     `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
+    
     Args:
         in_channels (int): Size of each input sample.
         num_filter (int, optional): Number of hidden channels.  Default: 2.

@@ -12,6 +12,7 @@ class DGCNConv(MessagePassing):
     `Directed Graph Convolutional Network" 
     <https://arxiv.org/pdf/2004.13970.pdf>`_ paper.
     The same as Kipf's GCN but remove trainable weights.
+    
     Args:
         improved (bool, optional): If set to :obj:`True`, the layer computes
             :math:`\mathbf{\hat{A}}` as :math:`\mathbf{A} + 2\mathbf{I}`.

@@ -7,6 +7,7 @@ class DiGCN_node_classification(torch.nn.Module):
     r"""An implementation of the DiGCN model without inception blocks for node classification from the
     `Digraph Inception Convolutional Networks" 
     <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
+    
     Args:
         num_features (int): Dimension of input features.
         hidden (int): Hidden dimension.

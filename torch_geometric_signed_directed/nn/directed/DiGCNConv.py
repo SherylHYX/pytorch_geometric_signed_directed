@@ -9,6 +9,7 @@ class DiGCNConv(MessagePassing):
     <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
     The spectral operation is the same with Kipf's GCN.
     DiGCN preprocesses the adjacency matrix and does not require a norm operation during the convolution operation.
+    
     Args:
         in_channels (int): Size of each input sample.
         out_channels (int): Size of each output sample.

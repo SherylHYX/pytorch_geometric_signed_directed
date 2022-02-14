@@ -1,8 +1,7 @@
 import torch.nn as nn
 
 class complex_relu_layer(nn.Module):
-    """The complex ReLU layer from the
-    `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
+    """The complex ReLU layer from the `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
     """
     def __init__(self, ):
         super(complex_relu_layer, self).__init__()
