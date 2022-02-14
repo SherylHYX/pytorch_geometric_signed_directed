@@ -49,7 +49,7 @@ class Cora_ml(InMemoryDataset):
             labels = loader.get('labels')
 
         coo = adj.tocoo()
-        values = torch.from_numpy(coo.data)
+        values = torch.from_numpy(coo.data).float()
         indices = np.vstack((coo.row, coo.col))
         indices = torch.from_numpy(indices).long()
         features = torch.from_numpy(features.todense()).float()

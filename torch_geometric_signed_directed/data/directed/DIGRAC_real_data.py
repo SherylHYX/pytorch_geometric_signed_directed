@@ -45,7 +45,7 @@ class DIGRAC_real_data(InMemoryDataset):
         values = torch.from_numpy(coo.data).float()
         indices = np.vstack((coo.row, coo.col))
         indices = torch.from_numpy(indices).long()
-        data = Data(edge_index=indices, edge_weight=values)
+        data = Data(num_nodes=indices.max().item() + 1, edge_index=indices, edge_weight=values)
 
         if self.pre_transform is not None:
             data = self.pre_transform(data)
