@@ -54,8 +54,7 @@ class SIMPA(nn.Module):
                 x_pt: Optional[torch.FloatTensor] = None, x_nt: Optional[torch.FloatTensor] = None) -> Tuple[torch.FloatTensor,
                                                                                                              torch.FloatTensor, torch.LongTensor, torch.FloatTensor]:
         """
-        Making a forward pass of SIMPA from the
-    `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
+        Making a forward pass of SIMPA.
 
         Arg types:
             * **edge_index_p, edge_index_n** (PyTorch FloatTensor) - Edge indices for positive and negative parts.
@@ -65,8 +64,7 @@ class SIMPA(nn.Module):
             * **x_pt** (PyTorch FloatTensor, optional) - Target positive hidden representations. Default: None.
             * **x_nt** (PyTorch FloatTensor, optional) - Target negative hidden representations. Default: None.
         Return types:
-            * **feat** (PyTorch FloatTensor) - Embedding matrix, with shape (num_nodes, 2*input_dim) for undirected graphs 
-                and (num_nodes, 4*input_dim) for directed graphs.
+            * **feat** (PyTorch FloatTensor) - Embedding matrix, with shape (num_nodes, 2*input_dim) for undirected graphs and (num_nodes, 4*input_dim) for directed graphs.
         """
 
         if self._undirected:
