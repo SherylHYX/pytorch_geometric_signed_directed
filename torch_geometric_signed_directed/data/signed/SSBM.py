@@ -18,9 +18,12 @@ def SSBM(n: int, k: int, pin: float, etain: float, pout: Optional[float]=None, s
         etaout: (float) Noise value between communities.
         size_ratio: (float) The communities have number of nodes multiples of each other, with the largest size_ratio times the number of nodes of the smallest.
         values: (string) Edge weight distribution (within community and without sign flip; otherwise weight is negated):
-            'ones': Weights are 1.
-            'exp': Weights are exponentially distributed, with parameter 1.
-            'uniform: Weights are uniformly distributed between 0 and 1.
+
+            1. :obj:`ones`: Weights are 1.
+
+            2. :obj:`"exp"`: Weights are exponentially distributed, with parameter 1.
+
+            3. :obj:`"uniform"`: Weights are uniformly distributed between 0 and 1.
         Returns:
         (a,b),c where a is a sparse n by n matrix of positive edges, b is a sparse n by n matrix of negative edges c is an array of cluster membership.
     """

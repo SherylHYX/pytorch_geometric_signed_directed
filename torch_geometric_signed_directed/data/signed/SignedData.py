@@ -108,15 +108,22 @@ class SignedData(Data):
         Args:
             k (int): The dimension of the features. Default is 2.
             normalization (string): How to normalise for cluster size:
-                'none' - do not normalise.
-                'sym' - symmetric normalization.
-                'rw' - random walk normalization.
-                'sym_sep' - separate symmetric normalization of positive and negative parts.
-                'rw_sep' - separate random walk normalization of positive and negative parts.
+
+            1. :obj:`none`: No normalization.
+
+            2. :obj:`"sym"`: Symmetric normalization
+            :math:`\mathbf{A} <- \mathbf{D}^{-1/2} \mathbf{A}
+            \mathbf{D}^{-1/2}`
+
+            3. :obj:`"rw"`: Random-walk normalization
+            :math:`\mathbf{A} <- \mathbf{D}^{-1} \mathbf{A}`
+
+            4. :obj:`"sym_sep"`: Symmetric normalization for the positive and negative parts separately.
+
+            5. :obj:`"rw_sep"`: Random-walk normalization for the positive and negative parts separately.
+
             tau_p (int): Regularisation coefficient for positive adjacency matrix.
             tau_n (int): Regularisation coefficient for negative adjacency matrix.
-
-        Other parameters:
             eigens (int): The number of eigenvectors to take. Defaults to k.
             mi (int): The maximum number of iterations for which to run eigenvlue solvers. Defaults to number of nodes.
         """

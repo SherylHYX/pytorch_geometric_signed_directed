@@ -24,8 +24,7 @@ def polarized_SSBM(total_n: int=100, num_com: int=3, N: int=30, K: int=2, p: flo
         
         Returns:
         A_p_new, A_n_new : (sp.spmatrix) Positive and negative parts of the polarized network.
-        labels_new : (np.array) Ordered labels of the nodes, with conflicting communities labeled together, 
-            cluster 0 is the ambient cluster.
+        labels_new : (np.array) Ordered labels of the nodes, with conflicting communities labeled together, cluster 0 is the ambient cluster.
         conflict_groups : (np.array) An array indicating which conflicting group the node is in, 0 is ambient.
 
     """
