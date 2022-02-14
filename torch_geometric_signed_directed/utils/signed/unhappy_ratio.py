@@ -7,7 +7,8 @@ class Unhappy_Ratio(torch.nn.Module):
     r"""A calculation of the ratio of unhappy edges among all edges from the
     `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
     Args:
-        A_p, A_n (scipy sparse matrices): positive and negative parts of adjacency matrix A.
+        A_p (scipy sparse matrices): Positive part of adjacency matrix A.
+        A_n (scipy sparse matrices): Negative part of adjacency matrix A.
     """
     def __init__(self, A_p: sp.spmatrix, A_n: sp.spmatrix):
         super(Unhappy_Ratio, self).__init__()
@@ -18,8 +19,7 @@ class Unhappy_Ratio(torch.nn.Module):
         self.num_edges = len((A_p - A_n).nonzero()[0])
 
     def forward(self, prob: torch.FloatTensor) -> torch.Tensor:
-        """Making a forward pass of the calculation of the ratio of unhappy edges among all edges from the
-    `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
+        """Making a forward pass of the calculation of the ratio of unhappy edges among all edges.
         Args:
             prob: (PyTorch FloatTensor) Prediction probability matrix made by the model
         

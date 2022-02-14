@@ -9,6 +9,19 @@ from ...utils.general import node_class_split
 
 
 class Cora_ml(InMemoryDataset):
+    r"""Data loader for the Cora_ML data set used in the
+    `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
+    Args:
+        root (string): Root directory where the dataset should be saved.
+        transform (callable, optional): A function/transform that takes in an
+            :obj:`torch_geometric.data.Data` object and returns a transformed
+            version. The data object will be transformed before every access.
+            (default: :obj:`None`)
+        pre_transform (callable, optional): A function/transform that takes in
+            an :obj:`torch_geometric.data.Data` object and returns a
+            transformed version. The data object will be transformed before
+            being saved to disk. (default: :obj:`None`)
+    """
     def __init__(self, root: str, transform: Optional[Callable]=None, pre_transform: Optional[Callable]=None):
         self.url = ('https://github.com/SherylHYX/pytorch_geometric_signed_directed/raw/main/datasets/cora_ml.npz')
         super().__init__(root, transform, pre_transform)
@@ -50,6 +63,19 @@ class Cora_ml(InMemoryDataset):
         torch.save((data, slices), self.processed_paths[0])
 
 class Citeseer(InMemoryDataset):
+    r"""Data loader for the CiteSeer data set used in the
+    `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
+    Args:
+        root (string): Root directory where the dataset should be saved.
+        transform (callable, optional): A function/transform that takes in an
+            :obj:`torch_geometric.data.Data` object and returns a transformed
+            version. The data object will be transformed before every access.
+            (default: :obj:`None`)
+        pre_transform (callable, optional): A function/transform that takes in
+            an :obj:`torch_geometric.data.Data` object and returns a
+            transformed version. The data object will be transformed before
+            being saved to disk. (default: :obj:`None`)
+    """
     def __init__(self, root: str, transform: Optional[Callable]=None, pre_transform: Optional[Callable]=None):
         self.url = ('https://github.com/SherylHYX/pytorch_geometric_signed_directed/raw/main/datasets/citeseer.npz')
         super().__init__(root, transform, pre_transform)

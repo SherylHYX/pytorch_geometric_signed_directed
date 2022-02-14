@@ -7,7 +7,8 @@ class Prob_Balanced_Normalized_Loss(torch.nn.Module):
     r"""An implementation of the probablistic balanced normalized cut loss function from the
     `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
     Args:
-        A_p, A_n (scipy sparse matrices): positive and negative parts of adjacency matrix A.
+        A_p (scipy sparse matrices): Positive part of adjacency matrix A.
+        A_n (scipy sparse matrices): Negative part of adjacency matrix A.
     """
     def __init__(self, A_p: sp.spmatrix, A_n: sp.spmatrix):
         super(Prob_Balanced_Normalized_Loss, self).__init__()
@@ -20,8 +21,7 @@ class Prob_Balanced_Normalized_Loss(torch.nn.Module):
         self.mat = scipy_sparse_to_torch_sparse(mat)
 
     def forward(self, prob: torch.FloatTensor) -> torch.Tensor:
-        """Making a forward pass of the probablistic balanced normalized cut loss function from the
-    `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
+        """Making a forward pass of the probablistic balanced normalized cut loss function.
         Args:
             prob: (PyTorch FloatTensor) Prediction probability matrix made by the model
         

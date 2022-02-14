@@ -17,7 +17,8 @@ def DSBM(N: int, K: int, p: float, F: np.array, size_ratio: float=1) -> Tuple[sp
         F : meta-graph adjacency matrix to generate edges
         size_ratio: The communities have number of nodes multiples of each other, with the largest size_ratio times the number of nodes of the smallest.
     Returns:
-        a,c where a is a sparse N by N matrix of the edges, c is an array of cluster membership.
+        a : (sp.csr_matrix) a is a sparse N by N matrix of the edges
+        c : (np.array) an array of cluster membership.
     """
 
     assign = np.zeros(N, dtype=int)

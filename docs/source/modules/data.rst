@@ -42,3 +42,23 @@ Data Loaders
 .. automodule:: torch_geometric_signed_directed.data.directed.load_directed_real_data
     :members:
     :undoc-members:
+
+.. automodule:: torch_geometric_signed_directed.data.directed.DIGRAC_real_data
+    :members:
+    :undoc-members:
+
+.. automodule:: torch_geometric_signed_directed.data.directed.Telegram
+    :members:
+    :undoc-members:
+
+.. automodule:: torch_geometric_signed_directed.data.directed.WikiCS
+    :members:
+    :undoc-members:
+
+.. automodule:: torch_geometric_signed_directed.data.directed.citation
+    :members:
+    :undoc-members:
+
+.. automodule:: torch_geometric_signed_directed.data.directed.WikipediaNetwork
+    :members:
+    :undoc-members:
