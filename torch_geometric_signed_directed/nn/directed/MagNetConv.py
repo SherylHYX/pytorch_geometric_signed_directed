@@ -107,8 +107,7 @@ class MagNetConv(MessagePassing):
         lambda_max: OptTensor = None,
     ) -> torch.FloatTensor:
         """
-        Making a forward pass of the MagNet Convolution layer from the
-    `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper
+        Making a forward pass of the MagNet Convolution layer.
         Arg types:
             * x_real, x_imag (PyTorch Float Tensor) - Node features.
             * edge_index (PyTorch Long Tensor) - Edge indices.

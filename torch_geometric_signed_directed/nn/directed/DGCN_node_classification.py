@@ -44,16 +44,14 @@ class DGCN_node_classification(torch.nn.Module):
         edge_in: torch.LongTensor, edge_out: torch.LongTensor, \
         in_w: Optional[torch.FloatTensor]=None, out_w: Optional[torch.FloatTensor]=None) -> torch.FloatTensor:
         """
-        Making a forward pass of the DGCN node classification model from `Directed Graph Convolutional Network" 
-    <https://arxiv.org/pdf/2004.13970.pdf>`_ paper.
+        Making a forward pass of the DGCN node classification model.
         Arg types:
             * x (PyTorch FloatTensor) - Node features.
             * edge_index (PyTorch LongTensor) - Edge indices.
             * edge_in, edge_out (PyTorch LongTensor) - Edge indices for input and output directions, respectively.
             * in_w, out_w (PyTorch FloatTensor, optional) - Edge weights corresponding to edge indices.
         Return types:
-            * x (PyTorch FloatTensor) - Logarithmic class probabilities for all nodes, 
-                with shape (num_nodes, num_classes).
+            * x (PyTorch FloatTensor) - Logarithmic class probabilities for all nodes, with shape (num_nodes, num_classes).
         """
         x = self.lin1(x)
         x1 = self.dgconv(x, edge_index)

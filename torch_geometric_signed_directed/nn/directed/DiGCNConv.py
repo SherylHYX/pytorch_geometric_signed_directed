@@ -51,9 +51,7 @@ class DiGCNConv(MessagePassing):
     def forward(self, x: torch.FloatTensor, edge_index: torch.LongTensor, \
         edge_weight: torch.FloatTensor=None) -> torch.FloatTensor:
         """
-        Making a forward pass of the DiGCN Convolution layer from the
-    `Digraph Inception Convolutional Networks" 
-    <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
+        Making a forward pass of the DiGCN Convolution layer.
         Arg types:
             * x (PyTorch FloatTensor) - Node features.
             * edge_index (PyTorch LongTensor) - Edge indices.

@@ -52,8 +52,7 @@ class MagNet_node_classification(nn.Module):
     def forward(self, real: torch.FloatTensor, imag: torch.FloatTensor, edge_index: torch.LongTensor, \
         edge_weight: Optional[torch.LongTensor]=None) -> torch.FloatTensor:
         """
-        Making a forward pass of the MagNet node classification model from the
-    `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
+        Making a forward pass of the MagNet node classification model.
         Arg types:
             * real, imag (PyTorch Float Tensor) - Node features.
             * edge_index (PyTorch Long Tensor) - Edge indices.

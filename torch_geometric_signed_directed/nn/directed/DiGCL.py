@@ -30,16 +30,13 @@ class DiGCL_Encoder(torch.nn.Module):
 
     def forward(self, x: torch.Tensor, edge_index: torch.Tensor, edge_weight: torch.Tensor = None):
         """
-        Making a forward pass of the DiGCL encoder model from the
-    `Directed Graph Contrastive Learning" 
-    <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
+        Making a forward pass of the DiGCL encoder model.
         Arg types:
             * x (PyTorch FloatTensor) - Node features.
             * edge_index (PyTorch LongTensor) - Edge indices.
             * edge_weight (PyTorch FloatTensor, optional) - Edge weights corresponding to edge indices.
         Return types:
-            * x (PyTorch FloatTensor) - Embeddings for all nodes, 
-                with shape (num_nodes, out_channels).
+            * x (PyTorch FloatTensor) - Embeddings for all nodes, with shape (num_nodes, out_channels).
         """
         for i in range(self._num_layers):
             x = self.activation(self.conv[i](x, edge_index, edge_weight))
@@ -80,8 +77,7 @@ class DiGCL(torch.nn.Module):
             * edge_index (PyTorch LongTensor) - Edge indices.
             * edge_weight (PyTorch FloatTensor, optional) - Edge weights corresponding to edge indices.
         Return types:
-            * x (PyTorch FloatTensor) - Embeddings for all nodes, 
-                with shape (num_nodes, out_channels).
+            * x (PyTorch FloatTensor) - Embeddings for all nodes, with shape (num_nodes, out_channels).
         """
         return self.encoder(x, edge_index, edge_weight)
 
@@ -129,9 +125,7 @@ class DiGCL(torch.nn.Module):
     def loss(self, z1: torch.Tensor, z2: torch.Tensor,
              mean: bool = True, batch_size: int = 0):
         """
-        The DiGCL contrastive loss from the
-    `Directed Graph Contrastive Learning" 
-    <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
+        The DiGCL contrastive loss.
         Arg types:
             * z1, z2 (PyTorch FloatTensor) - Node hidden representations.
             * mean (bool, optional) - Whether to return the mean of loss values, default True, otherwise return sum.

@@ -18,8 +18,7 @@ class SSSNET_node_clustering(nn.Module):
         hop (int): Number of hops to consider.
         fill_value (float): Value for added self-loops for the positive part of the adjacency matrix.
         directed (bool, optional): Whether the input network is directed or not. (default: :obj:`False`)
-        bias (bool, optional): If set to :obj:`False`, the layer will not learn
-            an additive bias. (default: :obj:`True`)
+        bias (bool, optional): If set to :obj:`False`, the layer will not learn an additive bias. (default: :obj:`True`)
     """
 
     def __init__(self, nfeat: int, hidden: int, nclass: int, dropout: float, hop: int, fill_value: float,
@@ -91,16 +90,14 @@ class SSSNET_node_clustering(nn.Module):
                 features: torch.FloatTensor) -> Tuple[torch.FloatTensor,
                                                       torch.FloatTensor, torch.LongTensor, torch.FloatTensor]:
         """
-        Making a forward pass of the SSSNET from the
-    `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
+        Making a forward pass of the SSSNET.
 
         Arg types:
             * **edge_index_p, edge_index_n** (PyTorch FloatTensor) - Edge indices for positive and negative parts.
             * **edge_weight_p, edge_weight_n** (PyTorch FloatTensor) - Edge weights for positive and nagative parts.
             * **features** (PyTorch FloatTensor) - Input node features, with shape (num_nodes, num_features).
         Return types:
-            * **z** (PyTorch FloatTensor) - Embedding matrix, with shape (num_nodes, 2*hidden) for undirected graphs 
-                and (num_nodes, 4*hidden) for directed graphs.
+            * **z** (PyTorch FloatTensor) - Embedding matrix, with shape (num_nodes, 2*hidden) for undirected graphs and (num_nodes, 4*hidden) for directed graphs.
             * **output** (PyTorch FloatTensor) - Log of prob, with shape (num_nodes, num_clusters).
             * **predictions_cluster** (PyTorch LongTensor) - Predicted labels.
             * **prob** (PyTorch FloatTensor) - Probability assignment matrix of different clusters, with shape (num_nodes, num_clusters).

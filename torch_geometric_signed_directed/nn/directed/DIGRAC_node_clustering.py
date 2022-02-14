@@ -50,8 +50,7 @@ class DIGRAC_node_clustering(torch.nn.Module):
     def forward(self, edge_index: torch.FloatTensor, edge_weight: torch.FloatTensor,
                 features: torch.FloatTensor) -> Tuple[torch.FloatTensor, torch.FloatTensor, torch.LongTensor, torch.FloatTensor]:
         """
-        Making a forward pass of the DIGRAC from the
-    `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
+        Making a forward pass of the DIGRAC.
         Arg types:
             * **edge_index** (PyTorch FloatTensor) - Edge indices.
             * **edge_weight** (PyTorch FloatTensor) - Edge weights.

@@ -29,8 +29,7 @@ class DIMPA(torch.nn.Module):
                 edge_index: torch.FloatTensor, 
                 edge_weight: torch.FloatTensor) -> torch.FloatTensor:
         """
-        Making a forward pass of DIMPA from the
-    `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
+        Making a forward pass of DIMPA.
         Arg types:
             * **x_s** (PyTorch FloatTensor) - Souce hidden representations.
             * **x_t** (PyTorch FloatTensor) - Target hidden representations.

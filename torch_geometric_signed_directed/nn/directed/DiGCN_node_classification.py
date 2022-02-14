@@ -27,16 +27,13 @@ class DiGCN_node_classification(torch.nn.Module):
     def forward(self, x: torch.FloatTensor, edge_index: torch.LongTensor, \
         edge_weight: torch.FloatTensor=None) -> torch.FloatTensor:
         """
-        Making a forward pass of the DiGCN node classification model without inception blocks from the
-    `Digraph Inception Convolutional Networks" 
-    <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
+        Making a forward pass of the DiGCN node classification model without inception blocks.
         Arg types:
             * x (PyTorch FloatTensor) - Node features.
             * edge_index (PyTorch LongTensor) - Edge indices.
             * edge_weight (PyTorch FloatTensor, optional) - Edge weights corresponding to edge indices.
         Return types:
-            * x (PyTorch FloatTensor) - Logarithmic class probabilities for all nodes, 
-                with shape (num_nodes, num_classes).
+            * x (PyTorch FloatTensor) - Logarithmic class probabilities for all nodes, with shape (num_nodes, num_classes).
         """
         x = F.relu(self.conv1(x, edge_index, edge_weight))
         x = F.dropout(x, p=self.dropout, training=self.training)

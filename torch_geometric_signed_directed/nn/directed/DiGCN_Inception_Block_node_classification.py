@@ -32,16 +32,13 @@ class DiGCN_Inception_Block_node_classification(torch.nn.Module):
         edge_index_tuple: Tuple[torch.LongTensor, torch.LongTensor], \
         edge_weight_tuple: Tuple[torch.FloatTensor, torch.FloatTensor]) -> torch.FloatTensor:
         """
-        Making a forward pass of the DiGCN node classification model with inception blocks from the
-    `Digraph Inception Convolutional Networks" 
-    <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
+        Making a forward pass of the DiGCN node classification model.
         Arg types:
             * x (PyTorch FloatTensor) - Node features.
             * edge_index_tuple (PyTorch LongTensor) - Tuple of edge indices.
             * edge_weight_tuple (PyTorch FloatTensor, optional) - Tuple of edge weights corresponding to edge indices.
         Return types:
-            * x (PyTorch FloatTensor) - Logarithmic class probabilities for all nodes, 
-                with shape (num_nodes, num_classes).
+            * x (PyTorch FloatTensor) - Logarithmic class probabilities for all nodes, with shape (num_nodes, num_classes).
         """
         x = features
         edge_index, edge_index2 = edge_index_tuple
