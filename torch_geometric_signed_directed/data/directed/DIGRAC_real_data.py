@@ -42,7 +42,7 @@ class DIGRAC_real_data(InMemoryDataset):
     def process(self):
         adj = sp.load_npz(self.raw_dir+'/'+self.name+'.npz')
         coo = adj.tocoo()
-        values = torch.from_numpy(coo.data)
+        values = torch.from_numpy(coo.data).float()
         indices = np.vstack((coo.row, coo.col))
         indices = torch.from_numpy(indices).long()
         data = Data(edge_index=indices, edge_weight=values)
