@@ -8,14 +8,14 @@ def meta_graph_generation(F_style: str='cyclic', K: int=4, eta: float=0.05, \
     `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
 
     Arg types:
-        F_style (str): Style of the meta-graph: 'cyclic', 'path', 'complete', 'star' or 'multipartite'.
-        K (int): Number of clusters.
-        eta (float): Noise parameter, 0 <= eta <= 0.5.
-        ambient (bool): Whether there are ambient nodes.
-        fill_val (float): Value to fill in the ambient locations.
+        * **F_style** (str) - Style of the meta-graph: 'cyclic', 'path', 'complete', 'star' or 'multipartite'.
+        * **K** (int) - Number of clusters.
+        * **eta** (float) - Noise parameter, 0 <= eta <= 0.5.
+        * **ambient** (bool) - Whether there are ambient nodes.
+        * **fill_val** (float) - Value to fill in the ambient locations.
         
     Return types:
-        F (NumPy array): The resulting meta-graph adjacency matrix.
+        * **F** (NumPy array) - The resulting meta-graph adjacency matrix.
     """
     if eta == 0:
         eta = -1
