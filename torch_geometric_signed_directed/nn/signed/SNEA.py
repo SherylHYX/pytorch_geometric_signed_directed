@@ -19,7 +19,7 @@ from torch_geometric.utils import (add_self_loops,
 
 class SNEAConv(MessagePassing):
     r"""The signed graph attentional layers operator from the `"Learning Signed
-    Network Embedding via Graph Attention" <https://arxiv.org/abs/1808.06354>`_ paper
+    Network Embedding via Graph Attention" <https://ojs.aaai.org/index.php/AAAI/article/view/5911>`_ paper
 
     .. math::
        \mathbf{h}_{i}^{\mathcal{B}(l)}=\tanh \left(\sum_{j \in \hat{\mathcal{N}}_{i}^{+}, k \in \mathcal{N}_{i}^{-}} \alpha_{i j}^{\mathcal{B}(l)} \mathbf{h}_{j}^{\mathcal{B}(l-1)} \mathbf{W}^{\mathcal{B}(l)}

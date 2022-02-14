@@ -26,11 +26,17 @@ In detail, the following signed or directed graph neural networks, as well as re
 
 * **[SSSNET_node_clustering](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SSSNET_node_clustering.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
 
+* **[SDGNN](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SDGNN.py)** from Huang *et al.*: [SDGNN: Learning Node Representation for Signed Directed Networks](https://arxiv.org/pdf/2101.02390.pdf) (AAAI 2021)
+
+* **[SiGAT](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SiGAT.py)** from Huang *et al.*: [Signed Graph Attention Networks](https://arxiv.org/pdf/1906.10958.pdf) (ICANN 2019)
 
 <details>
 <summary><b>Expand to see all methods implemented for signed networks...</b></summary>
 
-more to come...
+* **[SNEA](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SNEA.py)** from Li *et al.*: [Learning Signed Network Embedding via Graph Attention](https://ojs.aaai.org/index.php/AAAI/article/view/5911) (AAAI 2021)
+
+* **[SGCN](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SGCN.py)** from Derr *et al.*: [Signed Graph Attention Networks](https://arxiv.org/pdf/1808.06354.pdf) (ICDM 2018)
+
 
 </details>
   
@@ -86,14 +92,6 @@ more to come...
 * **[Directed Stochastic Block Model(DSBM)](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/DSBM.py)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
 
 
-<details>
-<summary><b>Expand to see all auxiliary network generation methods...</b></summary>
-  
-more to come...
-
-  
-</details>
-
 **Data Loaders and Classes**
 
 
@@ -101,18 +99,23 @@ more to come...
 
 * **[SignedData](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/SignedData.py)** Signed Data Class.
 
-* **[load_snap_signed_real_data](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/snap_signed_real_data.py)** Data loader for SNAP signed real data.
-
 * **[DirectedData](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/DirectedData.py)** Directed Data Class.
-
-* **[load_directed_real_data](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/load_directed_real_data.py)** Directed real data loader.
 
 
 <details>
 <summary><b>Expand to see all data loaders and related methods...</b></summary>
   
-more to come...
+* **[DIGRAC_directed_real_data](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/DIGRAC_directed_real_data.py)** to load directed real-world data sets from the DIGRAC paper.
 
+* **[Telegram](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/Telegram.py)** to load the Telegram data set.
+
+* **[Cora_ml](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/citation.py)** to load the Cora_ML data set.
+
+* **[Citeseer](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/citation.py)** to load the CiteSeer data set.
+
+* **[WikiCS](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/WikiCS.py)** to load the WikiCS data set.
+
+* **[WikipediaNetwork](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/citation.py)** to load the WikipediaNetwork data set.
   
 </details>
 
@@ -130,9 +133,8 @@ more to come...
 <details>
 <summary><b>Expand to see all task-specific objectives and evaluation methods...</b></summary>
   
-more to come...
+* **[link_sign_prediction_logistic_function](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/signed/link_sign_prediction_logistic_function.py)** for signed networks' link sign prediction task.
 
-  
 </details>
 
 **Utilities and Preprocessing Methods**
