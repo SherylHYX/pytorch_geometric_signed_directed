@@ -14,11 +14,11 @@ def fast_appr_power(A, alpha=0.1, max_iter=100,
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
 
     Arg types:
-        A (sp.csr_matrix): Sparse adjacency matrix.
-        alpha (float, optional): alpha used in page rank. Default 0.1.
-        max_iter (int): Maximum number of iterations. Default 100.
-        tol (flot, optional): Tolerance. Default 1e-6.
-        personalize (array, optional): if not None, should be an array with the size of the nodes
+        * **A** (sp.csr_matrix) - Sparse adjacency matrix.
+        * **alpha** (float, optional) -alpha used in page rank. Default 0.1.
+        * **max_iter** (int -Maximum number of iterations. Default 100.
+        * **tol** (flot, optional) -Tolerance. Default 1e-6.
+        * **personalize** (array, optional) -if not None, should be an array with the size of the nodes
                 containing probability distributions.
                 It will be normalized automatically. Default None.
 
@@ -67,18 +67,18 @@ def cal_fast_appr(alpha: float, edge_index: torch.LongTensor, \
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
 
     Arg types:
-        alpha (float): alpha used in approximate personalized page rank.
-        edge_index (PyTorch LongTensor): The edge indices.
-        num_nodes (int or None): The number of nodes, *i.e.*
+        * **alpha** (float) -alpha used in approximate personalized page rank.
+        * **edge_index** (PyTorch LongTensor) -The edge indices.
+        * **num_nodes** (int or None) -The number of nodes, *i.e.*
             :obj:`max_val + 1` of :attr:`edge_index`.
-        dtype (torch.dtype): The desired data type of returned tensor
+        * **dtype** (torch.dtype) -The desired data type of returned tensor
             in case :obj:`edge_weight=None`.
-        edge_weight (PyTorch Tensor, optional): One-dimensional edge weights.
+        * **edge_weight** (PyTorch Tensor, optional) -One-dimensional edge weights.
             (default: :obj:`None`)
 
     Return types:
-        edge_index (PyTorch LongTensor): The edge indices of the approximate page-rank matrix.
-        edge_weight (PyTorch Tensor): One-dimensional edge weights of the approximate page-rank matrix.
+        * **edge_index** (PyTorch LongTensor) -The edge indices of the approximate page-rank matrix.
+        * **edge_weight** (PyTorch Tensor) -One-dimensional edge weights of the approximate page-rank matrix.
     """
     if edge_weight == None:
         edge_weight = torch.ones((edge_index.size(1), ), dtype=dtype,
@@ -124,18 +124,18 @@ def get_appr_directed_adj(alpha: float, edge_index: torch.LongTensor, \
     <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
 
     Arg types:
-        alpha (float): alpha used in approximate personalized page rank.
-        edge_index (PyTorch LongTensor): The edge indices.
-        num_nodes (int or None): The number of nodes, *i.e.*
+        * **alpha** (float) -alpha used in approximate personalized page rank.
+        * **edge_index** (PyTorch LongTensor) -The edge indices.
+        * **num_nodes** (int or None) -The number of nodes, *i.e.*
             :obj:`max_val + 1` of :attr:`edge_index`.
-        dtype (torch.dtype): The desired data type of returned tensor
+        * **dtype** (torch.dtype) -The desired data type of returned tensor
             in case :obj:`edge_weight=None`.
-        edge_weight (PyTorch Tensor, optional): One-dimensional edge weights.
+        * **edge_weight** (PyTorch Tensor, optional) -One-dimensional edge weights.
             (default: :obj:`None`)
 
     Return types:
-        edge_index (PyTorch LongTensor): The edge indices of the approximate page-rank matrix.
-        edge_weight (PyTorch Tensor): One-dimensional edge weights of the approximate page-rank matrix.
+        * **edge_index** (PyTorch LongTensor) -The edge indices of the approximate page-rank matrix.
+        * **edge_weight** (PyTorch Tensor) -One-dimensional edge weights of the approximate page-rank matrix.
     """
     if edge_weight == None:
         edge_weight = torch.ones((edge_index.size(1), ), dtype=dtype,
@@ -211,17 +211,17 @@ def get_second_directed_adj(edge_index: torch.LongTensor, \
     <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
     
     Arg types:
-        edge_index (PyTorch LongTensor): The edge indices.
-        num_nodes (int or None): The number of nodes, *i.e.*
+        * **edge_index** (PyTorch LongTensor) -The edge indices.
+        * **num_nodes** (int or None) -The number of nodes, *i.e.*
             :obj:`max_val + 1` of :attr:`edge_index`.
-        dtype (torch.dtype): The desired data type of returned tensor
+        * **dtype** (torch.dtype) -The desired data type of returned tensor
             in case :obj:`edge_weight=None`.
-        edge_weight (PyTorch Tensor, optional): One-dimensional edge weights.
+        * **edge_weight** (PyTorch Tensor, optional) -One-dimensional edge weights.
             (default: :obj:`None`)
 
     Return types:
-        edge_index (PyTorch LongTensor): The edge indices of the approximate page-rank matrix.
-        edge_weight (PyTorch Tensor): One-dimensional edge weights of the approximate page-rank matrix.
+        * **edge_index** (PyTorch LongTensor) -The edge indices of the approximate page-rank matrix.
+        * **dge_weight** (PyTorch Tensor) -One-dimensional edge weights of the approximate page-rank matrix.
     """
     if edge_weight is None:
         edge_weight = torch.ones((edge_index.size(1), ), dtype=dtype,

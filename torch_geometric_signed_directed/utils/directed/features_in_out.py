@@ -11,18 +11,18 @@ def directed_features_in_out(edge_index: torch.LongTensor, size: int,
     r""" Computes directed in-degree and out-degree features.
 
     Arg types:
-        edge_index (PyTorch LongTensor): The edge indices.
-        size (int or None): The number of nodes, *i.e.*
+        * **edge_index** (PyTorch LongTensor - The edge indices.
+        * **size** (int or None - The number of nodes, *i.e.*
             :obj:`max_val + 1` of :attr:`edge_index`.
-        edge_weight (PyTorch Tensor, optional): One-dimensional edge weights.
+        * **edge_weight** (PyTorch Tensor, optional - One-dimensional edge weights.
             (default: :obj:`None`)
             
     Return types:
-        index_undirected (PyTorch LongTensor): Undirected edge_index.
-        edge_in (PyTorch LongTensor): Inwards edge indices.
-        in_weight (PyTorch Tensor): Inwards edge weights.
-        edge_out (PyTorch LongTensor): Outwards edge indices.
-        out_weight (PyTorch Tensor): Outwards edge weights.
+        * **index_undirected** (PyTorch LongTensor - Undirected edge_index.
+        * **edge_in** (PyTorch LongTensor - Inwards edge indices.
+        * **in_weight** (PyTorch Tensor - Inwards edge weights.
+        * **edge_out** (PyTorch LongTensor - Outwards edge indices.
+        * **out_weight** (PyTorch Tensor - Outwards edge weights.
     """
     if edge_weight is not None:
         a = sp.coo_matrix((edge_weight, edge_index), shape=(size, size)).tocsc()
