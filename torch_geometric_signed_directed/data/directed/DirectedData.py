@@ -50,6 +50,10 @@ class DirectedData(Data):
     def is_directed(self) -> bool:
         return not is_undirected(self.edge_index)
 
+    def to_unweighted(self):
+        self.A = to_scipy_sparse_matrix(self.edge_index, None)
+        self.edge_weight = FloatTensor(self.A.data)
+
     def set_hermitian_features(self, k:int=2):
         """ create Hermitian feature  (rw normalized)
         inputs:
