@@ -20,9 +20,10 @@ class WikiCS(InMemoryDataset):
             transformed version. The data object will be transformed before
             being saved to disk. (default: :obj:`None`)
     """
-    url = 'https://github.com/pmernyei/wiki-cs-dataset/raw/master/dataset'
+    
 
     def __init__(self, root: str, transform: Optional[Callable]=None, pre_transform: Optional[Callable]=None):
+        self.url = 'https://github.com/pmernyei/wiki-cs-dataset/raw/master/dataset'
         super(WikiCS, self).__init__(root, transform, pre_transform)
         self.data, self.slices = torch.load(self.processed_paths[0])
 
