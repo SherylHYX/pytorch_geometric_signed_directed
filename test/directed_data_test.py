@@ -24,6 +24,9 @@ def test_directed_datasets():
     directed_dataset = load_directed_real_data(dataset='wikipedianetwork', root='./tmp_data/wikipedianetwork', name='squirrel', pre_transform=T.GCNNorm(), transform=T.ToUndirected())
     assert isinstance(directed_dataset, DirectedData)
     assert not directed_dataset.is_directed
+    assert not directed_dataset.is_weighted
+    directed_dataset = load_directed_real_data(dataset='telegram', root='./tmp_data/')
+    assert isinstance(directed_dataset, DirectedData)
     for dataset_name in ['cora_ml', 'citeseer', 'wikitalk', 'blog', 'telegram', 'migration']:
         directed_dataset = load_directed_real_data(dataset=dataset_name, root='./tmp_data/')
         assert isinstance(directed_dataset, DirectedData)

@@ -50,6 +50,10 @@ class DirectedData(Data):
     def is_directed(self) -> bool:
         return not is_undirected(self.edge_index)
 
+    @property
+    def is_weighted(self) -> bool:
+        return self.edge_weight.max() != self.edge_weight.min()
+
     def to_unweighted(self):
         self.A = to_scipy_sparse_matrix(self.edge_index, None)
         self.edge_weight = FloatTensor(self.A.data)
