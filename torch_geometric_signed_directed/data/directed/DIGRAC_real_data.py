@@ -10,10 +10,9 @@ class DIGRAC_real_data(InMemoryDataset):
     r"""Data loader for the data sets used in the
     `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
     Args:
-        name (string): Name of the data set, choices are: 'blog', 'wikitalk', 'migration', 'lead_lag"+str(year) (year from 2000 to 2019)
-        root (string): Root directory where the dataset should be saved.
-        transform (callable, optional): A function/transform that takes in an
-            :obj:`torch_geometric.data.Data` object and returns a transformed
+        name (str): Name of the data set, choices are: 'blog', 'wikitalk', 'migration', 'lead_lag"+str(year) (year from 2000 to 2019).
+        root (str): Root directory where the dataset should be saved.
+        transform (callable, optional): A function/transform that takes in an :obj:`torch_geometric.data.Data` object and returns a transformed
             version. The data object will be transformed before every access.
             (default: :obj:`None`)
         pre_transform (callable, optional): A function/transform that takes in
