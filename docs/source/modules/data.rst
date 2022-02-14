@@ -9,7 +9,7 @@ Data Objects
 
 .. automodule:: torch_geometric_signed_directed.data.signed.SignedData
     :members:
-    :undoc-members:
+    :undoc-members: sqrtinvdiag
 
     
 .. automodule:: torch_geometric_signed_directed.data.directed.DirectedData
@@ -33,11 +33,6 @@ Data Generators
     
 Data Loaders
 -----------------------
-
-.. automodule:: torch_geometric_signed_directed.data.signed.snap_signed_real_data
-    :members:
-    :undoc-members:
-
     
 .. automodule:: torch_geometric_signed_directed.data.directed.load_directed_real_data
     :members:
