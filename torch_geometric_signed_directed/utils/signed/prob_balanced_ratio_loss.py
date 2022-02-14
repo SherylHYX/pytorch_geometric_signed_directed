@@ -19,11 +19,11 @@ class Prob_Balanced_Ratio_Loss(torch.nn.Module):
 
     def forward(self, prob: torch.FloatTensor) -> torch.Tensor:
         """Making a forward pass of the probablistic balanced ratio cut loss function.
-        Args:
-            prob: (PyTorch FloatTensor) Prediction probability matrix made by the model
+        Arg types:
+            * prob (PyTorch FloatTensor) - Prediction probability matrix made by the model
         
-        Returns:
-            loss value.
+        Return types:
+            * loss value (torch.Tensor).
         """
         device = prob.device
         mat = self.mat.to(device)
