@@ -15,7 +15,11 @@ Task-Specific Objectives and Evaluation Methods
     :members:
     :undoc-members:
 
-.. automodule:: torch_geometric_signed_directed.utils.signed.unhappy ratio
+.. automodule:: torch_geometric_signed_directed.utils.signed.unhappy_ratio
+    :members:
+    :undoc-members:
+
+.. automodule:: torch_geometric_signed_directed.utils.signed.link_sign_prediction_logistic_function
     :members:
     :undoc-members:
 

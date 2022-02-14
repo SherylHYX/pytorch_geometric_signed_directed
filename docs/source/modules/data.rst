@@ -57,3 +57,7 @@ Data Loaders
 .. automodule:: torch_geometric_signed_directed.data.directed.WikipediaNetwork
     :members:
     :undoc-members:
+
+.. automodule:: torch_geometric_signed_directed.data.signed.SignedDirectedGraphDataset
+    :members:
+    :undoc-members:

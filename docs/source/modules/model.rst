@@ -11,6 +11,22 @@ Signed Network Models
     :members:
     :undoc-members:
 
+.. automodule:: torch_geometric_signed_directed.nn.signed.SDGNN
+    :members:
+    :undoc-members:
+
+.. automodule:: torch_geometric_signed_directed.nn.signed.SiGAT
+    :members:
+    :undoc-members:
+
+.. automodule:: torch_geometric_signed_directed.nn.signed.SNEA
+    :members:
+    :undoc-members:
+
+.. automodule:: torch_geometric_signed_directed.nn.signed.SGCN
+    :members:
+    :undoc-members:
+
 Directed Network Models
 --------------
 
