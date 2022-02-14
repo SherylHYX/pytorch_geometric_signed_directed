@@ -12,6 +12,7 @@ def fast_appr_power(A, alpha=0.1, max_iter=100,
     r""" Computes the fast pagerank adjacency matrix of the graph from the
     `Directed Graph Contrastive Learning" 
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
+
     Args:
         A (sp.csr_matrix): Sparse adjacency matrix.
         alpha (float, optional): alpha used in page rank. Default 0.1.
@@ -63,7 +64,7 @@ def cal_fast_appr(alpha: float, edge_index: torch.LongTensor, \
     and optional :obj:`edge_weight` from the
     `Directed Graph Contrastive Learning" 
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
-    
+
     Args:
         alpha (float): alpha used in approximate personalized page rank.
         edge_index (PyTorch LongTensor): The edge indices.
@@ -119,6 +120,7 @@ def get_appr_directed_adj(alpha: float, edge_index: torch.LongTensor, \
     and optional :obj:`edge_weight` from the
     `Digraph Inception Convolutional Networks" 
     <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
+
     Args:
         alpha (float): alpha used in approximate personalized page rank.
         edge_index (PyTorch LongTensor): The edge indices.
@@ -204,6 +206,7 @@ def get_second_directed_adj(edge_index: torch.LongTensor, \
     and optional :obj:`edge_weight` from the
     `Digraph Inception Convolutional Networks" 
     <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
+    
     Args:
         edge_index (PyTorch LongTensor): The edge indices.
         num_nodes (int or None): The number of nodes, *i.e.*

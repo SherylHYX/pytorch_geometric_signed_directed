@@ -21,8 +21,11 @@ def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List
     Returns:
         new_edge_pairs (List): A list of edges.
         labels (List): The labels for new_edge_pairs. 
+
                        If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
+
                        If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists).
+                       
                        If task == 'all': 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist).
     """
     labels = np.zeros(len(edge_pairs), dtype=np.int32)
@@ -78,13 +81,18 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
         seed (int, optional): The random seed for dataset generation (Default: 0).
 
     Return:
-        datasets: A dict include training/validation/testing splits of edges and labels.
-                  For split index i:
+        datasets: A dict include training/validation/testing splits of edges and labels. For split index i:
+
                       datasets[i]['graph'] (torch.LongTensor): the observed edge list after removing edges for validation and testing.
+
                       datasets[i]['train'/'val'/'testing']['edges'] (List): the edge list for training/validation/testing.
-                      datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges.
+
+                      datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:
+
                           If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
+
                           If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists).
+
                           If task == 'all': 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist).
     """
     edge_index = data.edge_index

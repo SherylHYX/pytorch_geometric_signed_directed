@@ -6,8 +6,9 @@ import numpy as np
 class Prob_Imbalance_Loss(torch.nn.Module):
     r"""An implementation of the probablistic imbalance loss function from the
     `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
+
     Args:
-        F : (int or NumPy array, optional) Number of pairwise imbalance socres to consider, or the meta-graph adjacency matrix.
+        F (int or NumPy array, optional) : Number of pairwise imbalance socres to consider, or the meta-graph adjacency matrix.
     """
 
     def __init__(self, F: Optional[Union[int, np.ndarray]] = None):
@@ -27,17 +28,24 @@ class Prob_Imbalance_Loss(torch.nn.Module):
         """Making a forward pass of the probablistic imbalance loss function from the
     `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
         Args:
-            prob: (PyTorch FloatTensor) Prediction probability matrix made by the model
-            A: (PyTorch FloatTensor, can be sparse) Adjacency matrix A
-            K: (int) Number of clusters
-            normalization: (str, optional) normalization method:
+            prob (PyTorch FloatTensor): Prediction probability matrix made by the model
+            A (PyTorch FloatTensor, can be sparse): Adjacency matrix A
+            K (int): Number of clusters
+            normalization (str, optional): normalization method:
+
                 'vol_sum': Normalized by the sum of volumes, the default choice.
-                'vol_max': Normalized by the maximum of volumes.            
+
+                'vol_max': Normalized by the maximum of volumes.        
+
                 'vol_min': Normalized by the minimum of volumes.   
+
                 'plain': No normalization, just CI.   
             threshold: (str, optional) normalization method:
+
                 'sort': Picking the top beta imbalnace values, the default choice.
-                'std': Picking only the terms 3 standard deviation away from null hypothesis.             
+
+                'std': Picking only the terms 3 standard deviation away from null hypothesis.  
+                           
                 'naive': No thresholding, suming up all K*(K-1)/2 terms of imbalance values.  
         Returns:
             loss value, roughly in [0,1].
