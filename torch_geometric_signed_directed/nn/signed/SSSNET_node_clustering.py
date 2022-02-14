@@ -10,6 +10,7 @@ from .SIMPA import SIMPA
 class SSSNET_node_clustering(nn.Module):
     r"""The signed graph clustering model from the
     `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
+    
     Args:
         nfeat (int): Number of features.
         hidden (int): Hidden dimensions of the initial MLP.

@@ -21,7 +21,8 @@ def fast_appr_power(A, alpha=0.1, max_iter=100,
         personalize (array, optional): if not None, should be an array with the size of the nodes
                 containing probability distributions.
                 It will be normalized automatically. Default None.
-    Return types:
+
+    Returns:
         PageRank Scores for the nodes.
     """
     # In Moler's algorithm, $G_{ij}$ represents the existences of an edge
@@ -74,7 +75,8 @@ def cal_fast_appr(alpha: float, edge_index: torch.LongTensor, \
             in case :obj:`edge_weight=None`.
         edge_weight (PyTorch Tensor, optional): One-dimensional edge weights.
             (default: :obj:`None`)
-    Return types:
+
+    Returns:
         edge_index (PyTorch LongTensor): The edge indices of the approximate page-rank matrix.
         edge_weight (PyTorch Tensor): One-dimensional edge weights of the approximate page-rank matrix.
     """
@@ -130,7 +132,8 @@ def get_appr_directed_adj(alpha: float, edge_index: torch.LongTensor, \
             in case :obj:`edge_weight=None`.
         edge_weight (PyTorch Tensor, optional): One-dimensional edge weights.
             (default: :obj:`None`)
-    Return types:
+
+    Returns:
         edge_index (PyTorch LongTensor): The edge indices of the approximate page-rank matrix.
         edge_weight (PyTorch Tensor): One-dimensional edge weights of the approximate page-rank matrix.
     """
@@ -215,7 +218,8 @@ def get_second_directed_adj(edge_index: torch.LongTensor, \
             in case :obj:`edge_weight=None`.
         edge_weight (PyTorch Tensor, optional): One-dimensional edge weights.
             (default: :obj:`None`)
-    Return types:
+
+    Returns:
         edge_index (PyTorch LongTensor): The edge indices of the approximate page-rank matrix.
         edge_weight (PyTorch Tensor): One-dimensional edge weights of the approximate page-rank matrix.
     """

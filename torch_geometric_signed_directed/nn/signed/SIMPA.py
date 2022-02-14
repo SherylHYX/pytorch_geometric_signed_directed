@@ -10,6 +10,7 @@ from ..general.conv_base import Conv_Base
 class SIMPA(nn.Module):
     r"""The signed mixed-path aggregation model from the
     `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
+    
     Args:
         hop (int): Number of hops to consider.
         fill_value (float): Value for added self-loops for the positive part of the adjacency matrix.
