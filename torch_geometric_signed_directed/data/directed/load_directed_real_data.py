@@ -61,7 +61,7 @@ def load_directed_real_data(dataset: str='WebKB', root:str = './', name:str = 'T
         data = DIGRAC_real_data(name=dataset, root=root, transform=transform, pre_transform=pre_transform)[0]
     else:
         raise NameError('Please input the correct data set name instead of {}!'.format(dataset))
-    directed_dataset = DirectedData(edge_index=data.edge_index, init_data=data)
+    directed_dataset = DirectedData(edge_index=data.edge_index, edge_weight=data.edge_weight, init_data=data)
     if train_size is not None or train_size_per_class is not None:
         directed_dataset.node_split(train_size=train_size, val_size=val_size, 
             test_size=test_size, seed_size=seed_size, train_size_per_class=train_size_per_class,

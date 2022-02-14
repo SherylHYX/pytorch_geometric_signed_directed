@@ -24,9 +24,14 @@ def test_directed_datasets():
     directed_dataset = load_directed_real_data(dataset='wikipedianetwork', root='./tmp_data/wikipedianetwork', name='squirrel', pre_transform=T.GCNNorm(), transform=T.ToUndirected())
     assert isinstance(directed_dataset, DirectedData)
     assert not directed_dataset.is_directed
+    assert directed_dataset.is_weighted
+    directed_dataset.to_unweighted()
     assert not directed_dataset.is_weighted
     directed_dataset = load_directed_real_data(dataset='telegram', root='./tmp_data/')
     assert isinstance(directed_dataset, DirectedData)
+    assert directed_dataset.is_weighted
+    directed_dataset.to_unweighted()
+    assert not directed_dataset.is_weighted
     for dataset_name in ['cora_ml', 'citeseer', 'wikitalk', 'blog', 'telegram', 'migration']:
         directed_dataset = load_directed_real_data(dataset=dataset_name, root='./tmp_data/')
         assert isinstance(directed_dataset, DirectedData)
@@ -41,7 +46,9 @@ def test_directed_datasets():
     assert isinstance(directed_dataset, DirectedData)
     assert not directed_dataset.is_directed
     assert isinstance(directed_dataset.edge_weight, torch.Tensor)
+    assert directed_dataset.is_weighted
     directed_dataset.to_unweighted()
+    assert not directed_dataset.is_weighted
     directed_dataset = load_directed_real_data(dataset='cora_ml', root='./tmp_data/cora_ml', pre_transform=T.GCNNorm(), transform=T.ToUndirected(), train_size_per_class=20, val_size=500)
     assert isinstance(directed_dataset, DirectedData)
     assert not directed_dataset.is_directed
