@@ -11,11 +11,11 @@ def drop_feature(x, drop_prob):
     <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
 
     Arg types:
-        x (PyTorch FloatTensor): Node features.
-        drop_prob (float): Feature drop probability.
-        
+        * **x** (PyTorch FloatTensor) - Node features.
+        * **drop_prob** (float) - Feature drop probability.
+
     Return types:
-        x (PyTorch FloatTensor): Node features.
+        * **x** (PyTorch FloatTensor) - Node features.
     """
     drop_mask = torch.empty(
         (x.size(1), ),
