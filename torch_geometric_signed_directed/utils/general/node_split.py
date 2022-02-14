@@ -48,7 +48,10 @@ def node_class_split(data: torch_geometric.data.Data,
     elif len(seed) != data_split:
         raise ValueError('Please input the random seed list with the same length of {}!'.format(data_split))
 
-    labels = data.y.numpy()
+    if isinstance(data.y, torch.Tensor):
+        labels = data.y.numpy()
+    else:
+        labels = np.array(data.y)
     masks = {}
     masks['train'], masks['val'], masks['test'], masks['seed'] = [], [] , [], []
     for i in range(data_split):

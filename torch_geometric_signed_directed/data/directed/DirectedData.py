@@ -1,4 +1,4 @@
-from typing import Any, Union, List, Optional
+from typing import Union, List, Optional
 
 from torch_geometric.typing import OptTensor
 from torch_geometric.utils import to_scipy_sparse_matrix, is_undirected
@@ -77,6 +77,7 @@ class DirectedData(Data):
                 test_size_per_class: Union[int,float]=None, seed_size_per_class: Union[int,float]=None, 
                 seed: List[int]=[], data_split: int=10):
         r""" Train/Val/Test/Seed split for node classification tasks.
+
         Args:
             data (torch_geometric.data.Data or DirectedData, required): The data object for data split.
             train_size (int or float, optional): The size of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.

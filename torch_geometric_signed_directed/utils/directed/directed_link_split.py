@@ -18,7 +18,8 @@ def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List
         edge_pairs (List[Tuple]): The edge list. each element in the list is an edge tuple.
         task (str): The evaluation task: all (three-class link prediction); direction (direction prediction); existence (existence prediction) 
         rs (np.random.RandomState): The randomstate for edge selection.
-    Returns:
+        
+    Return:
         new_edge_pairs (List): A list of edges.
         labels (List): The labels for new_edge_pairs. 
 

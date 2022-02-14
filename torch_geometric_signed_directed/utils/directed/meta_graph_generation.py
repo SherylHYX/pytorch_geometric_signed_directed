@@ -13,7 +13,8 @@ def meta_graph_generation(F_style: str='cyclic', K: int=4, eta: float=0.05, \
         eta (float): Noise parameter, 0 <= eta <= 0.5.
         ambient (bool): Whether there are ambient nodes.
         fill_val (float): Value to fill in the ambient locations.
-    Returns:
+        
+    Return:
         F (NumPy array): The resulting meta-graph adjacency matrix.
     """
     if eta == 0:

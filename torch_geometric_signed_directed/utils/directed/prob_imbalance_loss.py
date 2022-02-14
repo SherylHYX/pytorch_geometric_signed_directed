@@ -47,7 +47,8 @@ class Prob_Imbalance_Loss(torch.nn.Module):
                 'std': Picking only the terms 3 standard deviation away from null hypothesis.  
                            
                 'naive': No thresholding, suming up all K*(K-1)/2 terms of imbalance values.  
-        Returns:
+                
+        Return:
             loss value, roughly in [0,1].
         """
         assert normalization in ['vol_sum', 'vol_min', 'vol_max',

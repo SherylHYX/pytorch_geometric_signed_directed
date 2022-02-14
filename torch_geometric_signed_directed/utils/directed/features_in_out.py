@@ -16,7 +16,8 @@ def directed_features_in_out(edge_index: torch.LongTensor, size: int,
             :obj:`max_val + 1` of :attr:`edge_index`.
         edge_weight (PyTorch Tensor, optional): One-dimensional edge weights.
             (default: :obj:`None`)
-    Returns:
+            
+    Return:
         index_undirected (PyTorch LongTensor): Undirected edge_index.
         edge_in (PyTorch LongTensor): Inwards edge indices.
         in_weight (PyTorch Tensor): Inwards edge weights.

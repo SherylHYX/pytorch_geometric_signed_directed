@@ -132,9 +132,11 @@ def test_SignedData():
     assert data.A.shape == (num_nodes, num_nodes)
     assert data.A_p.shape == (num_nodes, num_nodes)
     assert data.A_n.shape == (num_nodes, num_nodes)
-    data2 = SignedData(A=sp.csr_matrix(np.array([[0,1,-1,0],[0,0,-1,1],[0,0,0,1],[-1,0,0,0]])))
+    data.node_split(train_size=0.8, val_size=0.1, test_size=0.1, seed_size=0.1)
+    assert data.seed_mask.sum() == 0.1*num_nodes*10*0.8
+    data2 = SignedData(A=sp.csr_matrix(np.array([[0,1,-1,0,1],[0,0,-1,1, 1],[0,0,0,1,0],[-1,0,0,0,-1], [1,0,0,0,0]])))
     data2.set_spectral_adjacency_reg_features(k=2,normalization='sym_sep')
-    assert data2.x.shape == (4, 2)
+    assert data2.x.shape == (5, 2)
     data2 = SignedData(edge_index=data.edge_index, edge_weight=data.edge_weight)
     data2.set_signed_Laplacian_features(k=2*num_classes)
     assert data2.x.shape == (num_nodes, 2*num_classes)
