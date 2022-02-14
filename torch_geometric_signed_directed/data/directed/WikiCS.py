@@ -9,6 +9,7 @@ from torch_geometric.data import Data, InMemoryDataset, download_url
 
 class WikiCS(InMemoryDataset):
     r"""This is the copy of the torch_geometric.datasets.WikiCS (v1.6.3)
+    
     Args:
         root (string): Root directory where the dataset should be saved.
         transform (callable, optional): A function/transform that takes in an

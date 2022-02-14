@@ -16,6 +16,7 @@ def load_directed_real_data(dataset: str='WebKB', root:str = './', name:str = 'T
                             test_size_per_class: Union[int,float]=None, seed_size_per_class: Union[int,float]=None, 
                             seed: List[int]=[], data_split: int=10) -> DirectedData:
     """The function for WebKB data downloading and convert to DirectedData object.
+    
     Args:
         dataset (str, optional): data set name (default: 'WebKB').
         root (str, optional): path to save the dataset (default: './').

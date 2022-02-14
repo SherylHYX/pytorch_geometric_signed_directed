@@ -9,23 +9,27 @@ def SSBM(n: int, k: int, pin: float, etain: float, pout: Optional[float]=None, s
     etaout: Optional[float]=None, values: str='ones') -> Tuple[Tuple[sp.spmatrix, sp.spmatrix], np.array]:
     """A signed stochastic block model graph generator from the
     `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
+
     Args:
-        n: (int) Number of nodes.
-        k: (int) Number of communities.
-        pin: (float) Sparsity value within communities.
-        etain: (float) Noise value within communities.
-        pout: (float) Sparsity value between communities.
-        etaout: (float) Noise value between communities.
-        size_ratio: (float) The communities have number of nodes multiples of each other, with the largest size_ratio times the number of nodes of the smallest.
-        values: (string) Edge weight distribution (within community and without sign flip; otherwise weight is negated):
+        n (int): Number of nodes.
+        k (int): Number of communities.
+        pin (float): Sparsity value within communities.
+        etain (float): Noise value within communities.
+        pout (float): Sparsity value between communities.
+        etaout (float): Noise value between communities.
+        size_ratio (float): The communities have number of nodes multiples of each other, with the largest size_ratio times the number of nodes of the smallest.
+        values (string): Edge weight distribution (within community and without sign flip; otherwise weight is negated):
 
             1. :obj:`ones`: Weights are 1.
 
             2. :obj:`"exp"`: Weights are exponentially distributed, with parameter 1.
 
             3. :obj:`"uniform"`: Weights are uniformly distributed between 0 and 1.
-        Returns:
-        (a,b),c where a is a sparse n by n matrix of positive edges, b is a sparse n by n matrix of negative edges c is an array of cluster membership.
+    Returns:
+        A_p (sp.spmatrix): A sparse adjacency matrix for the positive part.
+        A_n (sp.spmatrix): A sparse adjacency matrix for the negative part.
+        labels (np.array): Labels.
+        
     """
 
     if pout == None:

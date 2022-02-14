@@ -10,6 +10,7 @@ from torch_geometric.data import Data, InMemoryDataset, download_url
 
 class WikipediaNetwork(InMemoryDataset):
     r"""The code is modified from torch_geometric.datasets.WikipediaNetwork (v1.6.3)
+    
     Args:
         root (string): Root directory where the dataset should be saved.
         name (string): The name of the dataset (:obj:`"Cornell"`,

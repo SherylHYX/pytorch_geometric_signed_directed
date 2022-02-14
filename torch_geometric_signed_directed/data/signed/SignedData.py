@@ -9,6 +9,7 @@ import numpy as np
 
 def sqrtinvdiag(M: sp.spmatrix) -> sp.csc_matrix:
     """Inverts and square-roots a positive diagonal matrix.
+
     Args:
         M (scipy sparse matrix): matrix to invert
     Returns:
@@ -83,6 +84,7 @@ class SignedData(Data):
 
     def set_signed_Laplacian_features(self, k: int=2):
         """generate the graph features using eigenvectors of the signed Laplacian matrix.
+
         Args:
             k (int): The dimension of the features. Default is 2.
         """
@@ -105,6 +107,7 @@ class SignedData(Data):
     def set_spectral_adjacency_reg_features(self, k: int=2, normalization: Optional[int]=None, tau_p=None, tau_n=None, \
         eigens=None, mi=None):
         """generate the graph features using eigenvectors of the regularised adjacency matrix.
+        
         Args:
             k (int): The dimension of the features. Default is 2.
             normalization (string): How to normalise for cluster size:
