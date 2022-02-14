@@ -143,13 +143,16 @@ def SSBM(n: int, k: int, pin: float, etain: float, pout: Optional[float]=None, s
 def fill(values: str='ones') -> float:
     """A filling method for the signed stochastic block model graph generator from the
     `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
-    Arg:
-        values: (string) Edge weight:
+    Arg types:
+        * **values** (string): Edge weight:
+
             'ones': Weights are 1.
+
             'exp': Weights are exponentially distributed, with parameter 1.
+
             'uniform: Weights are uniformly distributed between 0 and 1.
-        Returns:
-        value: (float) A filled value.
+    Return types:
+        * **value** (float): A filled value.
     """
     if values == 'ones':
         return float(1)
