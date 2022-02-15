@@ -131,7 +131,7 @@ class SDGNN(nn.Module):
         for a in adj_list:
             for b in adj_list[a]:
                 edges.append((a, b))
-        edges = torch.LongTensor(edges, device=self.device)
+        edges = torch.LongTensor(edges).to(self.device)
         return edges.t()
 
     def get_features(self, u, v, r_edgelists):
@@ -266,14 +266,14 @@ class SDGNN(nn.Module):
                                   for i in adj_lists2_1[node]])
 
             pos_neigs_weight = torch.FloatTensor(
-                [self.weight_dict[node][i] for i in adj_lists1_1[node]], device=self.device)
+                [self.weight_dict[node][i] for i in adj_lists1_1[node]]).to(self.device)
             neg_neigs_weight = torch.FloatTensor(
-                [self.weight_dict[node][i] for i in adj_lists2_1[node]], device=self.device)
+                [self.weight_dict[node][i] for i in adj_lists2_1[node]]).to(self.device)
 
             if pos_num > 0:
                 pos_neig_embs = nodes_embs[pos_neigs, :]
                 loss_pos = F.binary_cross_entropy_with_logits(torch.einsum(
-                    "nj,j->n", [pos_neig_embs, z1]), torch.ones(pos_num, device=self.device))
+                    "nj,j->n", [pos_neig_embs, z1]), torch.ones(pos_num).to(self.device))
 
                 if len(sta_pos_neighs) > 0:
                     sta_pos_neig_embs = nodes_embs[sta_pos_neighs, :]
@@ -281,14 +281,14 @@ class SDGNN(nn.Module):
                     z11 = z1.repeat(len(sta_pos_neighs), 1)
                     rs = self.fc(
                         torch.cat([z11, sta_pos_neig_embs], 1)).squeeze(-1)
-                    loss_pos += F.binary_cross_entropy_with_logits(rs, torch.ones(len(sta_pos_neighs), device=self.device),
+                    loss_pos += F.binary_cross_entropy_with_logits(rs, torch.ones(len(sta_pos_neighs)).to(self.device),
                                                                    weight=pos_neigs_weight)
                     s1 = self.score_function1(z1).repeat(
                         len(sta_pos_neighs), 1)
                     s2 = self.score_function2(sta_pos_neig_embs)
 
                     q = torch.where(
-                        (s1 - s2) > -0.5, torch.Tensor([-0.5], device=self.device).repeat(s1.shape), s1 - s2)
+                        (s1 - s2) > -0.5, torch.Tensor([-0.5]).to(self.device).repeat(s1.shape), s1 - s2)
                     tmp = (q - (s1 - s2))
                     loss_pos += torch.einsum("ij,ij->", [tmp, tmp])
 
@@ -297,7 +297,7 @@ class SDGNN(nn.Module):
             if neg_num > 0:
                 neg_neig_embs = nodes_embs[neg_neigs, :]
                 loss_neg = F.binary_cross_entropy_with_logits(torch.einsum("nj,j->n", [neg_neig_embs, z1]),
-                                                              torch.zeros(neg_num))
+                                                              torch.zeros(neg_num).to(self.device))
                 if len(sta_neg_neighs) > 0:
                     sta_neg_neig_embs = nodes_embs[sta_neg_neighs, :]
 
@@ -306,14 +306,14 @@ class SDGNN(nn.Module):
                         torch.cat([z12, sta_neg_neig_embs], 1)).squeeze(-1)
 
                     loss_neg += F.binary_cross_entropy_with_logits(rs, torch.zeros(
-                        len(sta_neg_neighs), device=self.device), weight=neg_neigs_weight)
+                        len(sta_neg_neighs)).to(self.device), weight=neg_neigs_weight)
 
                     s1 = self.score_function1(z1).repeat(
                         len(sta_neg_neighs), 1)
                     s2 = self.score_function2(sta_neg_neig_embs)
 
                     q = torch.where(s1 - s2 > 0.5, s1 - s2,
-                                    torch.Tensor([0.5]).repeat(s1.shape))
+                                    torch.Tensor([0.5]).to(self.device).repeat(s1.shape))
 
                     tmp = (q - (s1 - s2))
                     loss_neg += torch.einsum("ij,ij->", [tmp, tmp])

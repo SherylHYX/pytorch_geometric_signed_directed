@@ -2,13 +2,13 @@ import numpy as np
 import scipy.sparse as sp
 import torch
 from torch_geometric_signed_directed.nn.signed import (
-    SSSNET_node_clustering
+    SSSNET_node_clustering, SDGNN, SNEA, SiGAT, SGCN
 )
 from torch_geometric_signed_directed.data import (
     SSBM, SignedData
 )
 from torch_geometric_signed_directed.utils import (
-    Prob_Balanced_Ratio_Loss, Prob_Balanced_Normalized_Loss, Unhappy_Ratio
+    Prob_Balanced_Ratio_Loss, Prob_Balanced_Normalized_Loss, Unhappy_Ratio, link_sign_prediction_logistic_function
 )
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -24,7 +24,44 @@ def create_mock_data(num_nodes, num_features, num_classes=3, eta=0.1, p=0.2):
     edge_weight_n = torch.FloatTensor(sp.csr_matrix(A_n_scipy).data).to(device)
     return X, A_p_scipy, A_n_scipy, edge_index_p, edge_index_n, edge_weight_p, edge_weight_n
 
+def test_SDGNN():
+    """
+    Testing SDGNN
+    """
+    num_nodes = 100
+    num_features = 3
+    num_classes = 3
 
+    _, A_p_scipy, A_n_scipy, _, _, _, _ = \
+        create_mock_data(num_nodes, num_features, num_classes)
+
+    data = SignedData(A=(A_p_scipy, A_n_scipy))
+    train_edge_index = data.edge_index
+    train_edge_weight = data.edge_weight
+    test_edge_index = data.edge_index
+    test_edge_weight = data.edge_weight
+    nodes_num = data.num_nodes
+    edge_i_list = train_edge_index.t().cpu().numpy().tolist()
+    edge_s_list = train_edge_weight.long().cpu().numpy().tolist()
+    edge_index_s = torch.LongTensor([[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)]).to(device)
+
+    model = SDGNN(nodes_num, edge_index_s, 20, 20).to(device)
+    loss = model.loss()
+    with torch.no_grad():
+        z = model()
+
+    embeddings = z.cpu().numpy()
+    train_X = train_edge_index.t().cpu().numpy()
+    test_X  = test_edge_index.t().cpu().numpy()
+    train_y = train_edge_weight.cpu().numpy()
+    test_y  = test_edge_weight.cpu().numpy()
+    accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(embeddings, train_X, train_y, test_X, test_y)
+    assert auc_score >= 0
+    assert loss >= 0
+    assert accuracy >= 0
+    assert f1 >= 0
+    assert f1_macro >= 0
+    assert f1_micro >= 0
 
 
 def test_SSSNET():
@@ -72,6 +109,7 @@ def test_SSSNET():
     assert prob.shape == (
         num_nodes, num_classes
     )
+
 
 
             
