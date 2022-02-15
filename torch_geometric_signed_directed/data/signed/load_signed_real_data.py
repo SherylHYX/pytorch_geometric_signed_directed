@@ -3,7 +3,7 @@ from typing import Optional, Callable, Union, List
 from .SignedDirectedGraphDataset import SignedDirectedGraphDataset
 from .SignedData import SignedData
 
-def load_signed_real_data(dataset: str='Slashdot', root:str = './',
+def load_signed_real_data(dataset: str='epinions', root:str = './',
                             transform: Optional[Callable] = None, pre_transform: Optional[Callable] = None,
                             train_size: Union[int,float]=None, val_size: Union[int,float]=None, 
                             test_size: Union[int,float]=None, seed_size: Union[int,float]=None,
@@ -13,7 +13,7 @@ def load_signed_real_data(dataset: str='Slashdot', root:str = './',
     """The function for real-world signed data downloading and convert to SignedData object.
 
     Arg types:
-        * **dataset** (str, optional) - data set name (default: 'Slashdot').
+        * **dataset** (str, optional) - data set name (default: 'epinions').
         * **root** (str, optional) - path to save the dataset (default: './').
         * **transform** (callable, optional) - A function/transform that takes in an
             :obj:`torch_geometric.data.Data` object and returns a transformed
@@ -39,7 +39,7 @@ def load_signed_real_data(dataset: str='Slashdot', root:str = './',
     Return types:
         * **data** (Data) - The required data object.
     """
-    if dataset.lower() in ['bitcoin_otc', 'bitcoin_alpha', 'epinions', 'slashdot']:
+    if dataset.lower() in ['bitcoin_otc', 'bitcoin_alpha', 'epinions']:
         data = SignedDirectedGraphDataset(root=root, dataset_name=dataset, transform=transform, pre_transform=pre_transform)[0]
     else:
         raise NameError('Please input the correct data set name instead of {}!'.format(dataset))

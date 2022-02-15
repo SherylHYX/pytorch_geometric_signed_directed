@@ -24,6 +24,12 @@ def test_load_signed_real_data():
     signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='epinions')
     assert isinstance(signed_dataset, SignedData)
     assert signed_dataset.is_signed
+    signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='bitcoin_alpha')
+    assert isinstance(signed_dataset, SignedData)
+    assert signed_dataset.is_signed
+    signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='bitcoin_otc')
+    assert isinstance(signed_dataset, SignedData)
+    assert signed_dataset.is_signed
 
 def test_SSBM():
     num_nodes = 1000
