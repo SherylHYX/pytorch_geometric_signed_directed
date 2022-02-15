@@ -54,6 +54,22 @@ Directed Network Models
     :members:
     :undoc-members:
 
+.. automodule:: torch_geometric_signed_directed.nn.directed.MagNet_link_prediction
+    :members:
+    :undoc-members:
+
+.. automodule:: torch_geometric_signed_directed.nn.directed.DiGCN_link_prediction
+    :members:
+    :undoc-members:
+
+.. automodule:: torch_geometric_signed_directed.nn.directed.DiGCN_Inception_Block_link_prediction
+    :members:
+    :undoc-members:
+
+.. automodule:: torch_geometric_signed_directed.nn.directed.DGCN_link_prediction
+    :members:
+    :undoc-members:
+
 Auxiliary Network Embedding Methods
 --------------
 
