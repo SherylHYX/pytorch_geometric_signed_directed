@@ -3,7 +3,7 @@ import os.path as osp
 
 import torch
 
-from torch_geometric_signed_directed.nn.signed import SNEA
+from torch_geometric_signed_directed.nn.signed import SGCN_SNEA
 from torch_geometric_signed_directed.data.signed import SignedDirectedGraphDataset
 from torch_geometric_signed_directed.utils.signed import link_sign_prediction_logistic_function
 
@@ -35,9 +35,9 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 nodes_num = data.num_nodes
 edge_i_list = data.train_edge_index.t().numpy().tolist()
 edge_s_list = data.train_edge_weight.numpy().tolist()
-edge_index_s = torch.LongTensor([[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)], device=device)
+edge_index_s = torch.LongTensor([[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)]).to(device)
 
-model = SNEA(nodes_num, edge_index_s, 20, 20, layer_num=2, lamb=5).to(device)
+model = SGCN_SNEA('SNEA', nodes_num, edge_index_s, 20, 20, layer_num=2, lamb=5).to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 print(model)
 
