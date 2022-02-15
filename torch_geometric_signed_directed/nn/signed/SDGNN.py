@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -47,7 +49,7 @@ class SDRLayer(nn.Module):
             nn.Linear(out_dim, out_dim)
         )
 
-    def reset_parameters(self) -> None:
+    def reset_parameters(self):
         def init_weights(m):
             if type(m) == nn.Linear:
                 torch.nn.init.kaiming_normal_(m.weight)
@@ -56,7 +58,7 @@ class SDRLayer(nn.Module):
         for agg in self.aggs:
             agg.reset_parameters()
 
-    def forward(self, x):
+    def forward(self, x: torch.FloatTensor) -> torch.FloatTensor:
         # full batchs
         neigh_feats = []
         for edges, agg in zip(self.edge_lists, self.aggs):
@@ -126,7 +128,7 @@ class SDGNN(nn.Module):
         for layer in self.layers:
             layer.reset_parameters()
 
-    def map_adj_to_edges(self, adj_list):
+    def map_adj_to_edges(self, adj_list: List) -> torch.LongTensor:
         edges = []
         for a in adj_list:
             for b in adj_list[a]:
@@ -134,7 +136,8 @@ class SDGNN(nn.Module):
         edges = torch.LongTensor(edges).to(self.device)
         return edges.t()
 
-    def get_features(self, u, v, r_edgelists):
+    def get_features(self, u: int, v: int, r_edgelists: List) -> Tuple[int, int, int, int, int, 
+    int, int, int, int, int, int, int, int, int, int, int]:
         pos_in_edgelists, pos_out_edgelists, neg_in_edgelists, neg_out_edgelists = r_edgelists
 
         d1_1 = len(set(pos_out_edgelists[u]).intersection(
@@ -175,7 +178,7 @@ class SDGNN(nn.Module):
 
         return d1_1, d1_2, d1_3, d1_4, d2_1, d2_2, d2_3, d2_4, d3_1, d3_2, d3_3, d3_4, d4_1, d4_2, d4_3, d4_4
 
-    def build_adj_lists(self, edge_index):
+    def build_adj_lists(self, edge_index: torch.LongTensor):
         edge_index = edge_index.cpu().numpy().tolist()
         self.weight_dict = defaultdict(dict)
 
@@ -251,7 +254,7 @@ class SDGNN(nn.Module):
         nodes_embs = self.forward()
 
         loss_total = 0
-        for index, node in enumerate(nodes):
+        for _, node in enumerate(nodes):
             z1 = nodes_embs[unique_nodes_dict[node], :]
             pos_neigs = list([unique_nodes_dict[i]
                              for i in pos_neighbors[node]])
