@@ -150,7 +150,7 @@ def test_DiGCN():
     edge_weights = edge_weights.cpu()
 
     edge_index1, edge_weights1 = get_appr_directed_adj(0.1, edge_index, X.shape[0],
-        X.dtype, edge_weights)
+        X.dtype, None)
     edge_index1 = edge_index1.to(device)
     edge_weights1 = edge_weights1.to(device)
     
@@ -199,7 +199,7 @@ def test_DiGCN_Link():
     edge_index = link_data[0]['graph']
     edge_weights = link_data[0]['weights']
     edge_index1, edge_weights1 = get_appr_directed_adj(0.1, edge_index.cpu(), X.shape[0],
-        X.dtype, edge_weights.cpu())
+        X.dtype, None)
     link_data[0]['graph'] = edge_index1.to(device)
     link_data[0]['weights'] = edge_weights1.to(device)
     
@@ -215,7 +215,7 @@ def test_DiGCN_Link():
 
     edge_index = edge_index.cpu()
     edge_weights = edge_weights.cpu()
-    edge_index2, edge_weights2 = get_second_directed_adj(edge_index, X.shape[0], X.dtype, edge_weights)
+    edge_index2, edge_weights2 = get_second_directed_adj(edge_index, X.shape[0], X.dtype, None)
     edge_index2 = edge_index2.to(device)
     edge_weights2 = edge_weights2.to(device)
     edge_index = (link_data[0]['graph'], edge_index2)
@@ -258,7 +258,7 @@ def test_DiGCL():
     hidden = 4
 
     edge_index_init, edge_weight_init = cal_fast_appr(
-        alpha_1, edge_index, X.shape[0], X.dtype, edge_weight=edge_weights)
+        alpha_1, edge_index, X.shape[0], X.dtype, edge_weight=None)
     x = X.to(device)
     model = DiGCL(in_channels=X.shape[1], activation='relu',
                  num_hidden=2*hidden, num_proj_hidden=hidden,
