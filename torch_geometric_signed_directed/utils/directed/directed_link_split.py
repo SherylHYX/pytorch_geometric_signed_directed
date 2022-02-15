@@ -69,7 +69,7 @@ def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List
     return new_edge_pairs[labels >= 0], labels[labels >= 0]
 
 def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=10, prob_test:float= 0.15, 
-                     prob_val:float= 0.05, task:str= 'direction', seed:int= 0) -> dict:
+                     prob_val:float= 0.05, task:str= 'direction', seed:int= 0, device:str= 'cpu') -> dict:
     r"""Get train/val/test dataset for the link prediction task.
 
     Arg types:
@@ -80,6 +80,7 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
         * **size** (int, optional) - The size of the input graph. If none, the graph size is the maximum index of nodes plus 1 (Default: None).
         * **task** (str, optional) - The evaluation task: all (three-class link prediction); direction (direction prediction); existence (existence prediction). (Default: 'direction')
         * **seed** (int, optional) - The random seed for dataset generation (Default: 0).
+        * **device** (int, optional) - The device to hold the return value (Default: 'cpu').
 
     Return types:
         * **datasets** - A dict include training/validation/testing splits of edges and labels. For split index i:
@@ -96,13 +97,13 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
 
                           If task == 'all': 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist).
     """
-    edge_index = data.edge_index
+    edge_index = data.edge_index.cpu()
     row, col = edge_index[0], edge_index[1]
     if size is None:
         size = int(max(torch.max(row), torch.max(col))+1)
     if data.edge_weight is None:
-        data.edge_weight = np.ones(len(row))
-    A = coo_matrix((data.edge_weight, (row, col)), shape=(size, size), dtype=np.float32).tocsr()
+        data.edge_weight = torch.ones(len(row))
+    A = coo_matrix((data.edge_weight.cpu(), (row, col)), shape=(size, size), dtype=np.float32).tocsr()
     # create an undirected graph based on the adjacency
     G = nx.from_scipy_sparse_matrix(A, create_using=nx.Graph, edge_attribute='weight') 
     
@@ -139,13 +140,16 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
 
         # convert back to directed graph
         oberved_edges = np.zeros((len(ids_train),2), dtype=np.int32)
+        oberved_weight = np.zeros((len(ids_train),), dtype=np.float32)
         for i, e in enumerate(ids_train):
             if A[e[0], e[1]] > 0:
                 oberved_edges[i,0] = int(e[0])
                 oberved_edges[i,1] = int(e[1])
+                oberved_weight[i] = A[e[0], e[1]]
             if A[e[1], e[0]] > 0:
                 oberved_edges[i,0] = int(e[1])
                 oberved_edges[i,1] = int(e[0])
+                oberved_weight[i] = A[e[1], e[0]]
         
         if task == 'direction':
             ids_train = ids_train[labels_train < 2]
@@ -156,17 +160,18 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
             labels_val = labels_val[labels_val <2]
 
         datasets[ind] = {}
-        datasets[ind]['graph'] = torch.from_numpy(oberved_edges.T).long()
+        datasets[ind]['graph'] = torch.from_numpy(oberved_edges.T).long().to(device)
+        datasets[ind]['weights'] = torch.from_numpy(oberved_weight).float().to(device)
 
         datasets[ind]['train'] = {}
-        datasets[ind]['train']['edges'] = ids_train
-        datasets[ind]['train']['label'] = labels_train
+        datasets[ind]['train']['edges'] = torch.from_numpy(ids_train).long().to(device)
+        datasets[ind]['train']['label'] = torch.from_numpy(labels_train).long().to(device)
 
         datasets[ind]['val'] = {}
-        datasets[ind]['val']['edges'] = ids_val
-        datasets[ind]['val']['label'] = labels_val
+        datasets[ind]['val']['edges'] = torch.from_numpy(ids_val).long().to(device)
+        datasets[ind]['val']['label'] = torch.from_numpy(labels_val).long().to(device)
 
         datasets[ind]['test'] = {}
-        datasets[ind]['test']['edges'] = ids_test
-        datasets[ind]['test']['label'] = labels_test
+        datasets[ind]['test']['edges'] = torch.from_numpy(ids_test).long().to(device)
+        datasets[ind]['test']['label'] = torch.from_numpy(labels_test).long().to(device)
     return datasets

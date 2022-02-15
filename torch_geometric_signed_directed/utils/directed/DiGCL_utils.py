@@ -7,8 +7,8 @@ from sklearn.preprocessing import normalize, OneHotEncoder
 
 def drop_feature(x, drop_prob):
     r""" Drop feature funciton from the
-    `Digraph Inception Convolutional Networks" 
-    <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
+    `Directed Graph Contrastive Learning" 
+    <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
 
     Arg types:
         * **x** (PyTorch FloatTensor) - Node features.
@@ -26,10 +26,10 @@ def drop_feature(x, drop_prob):
 
     return x
 
-def pred_digcl(embeddings, y, train_index):
+def pred_digcl_node(embeddings, y, train_index):
     r""" Generate predictions from embeddings from the
-    `Digraph Inception Convolutional Networks" 
-    <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
+    `Directed Graph Contrastive Learning" 
+    <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
 
     Arg types:
         * **embeddings** (PyTorch FloatTensor) - Node embeddings.
@@ -60,4 +60,45 @@ def pred_digcl(embeddings, y, train_index):
     
 
     y_pred = np.argmax(clf.predict(X), axis=1)
+    return y_pred
+
+
+def pred_digcl_link(embeddings, y, train_index, test_index):
+    r""" Generate predictions from embeddings from the
+    `Directed Graph Contrastive Learning" 
+    <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
+
+    Arg types:
+        * **embeddings** (PyTorch FloatTensor) - Node embeddings.
+        * **y** (PyTorch LongTensor) - Labels.
+        * **train_index** (NumPy array) - Training index. 
+        * **train_index** (NumPy array) - Testing index. 
+
+    Return types:
+        * **y_pred** (NumPy array) - Predicted labels.
+    """
+    X = embeddings.detach().cpu().numpy()
+    Y = y.detach().cpu().numpy()
+    Y = Y.reshape(-1, 1)
+    onehot_encoder = OneHotEncoder(categories='auto').fit(Y)
+    Y = onehot_encoder.transform(Y).toarray().astype(bool)
+
+    X = normalize(X, norm='l2')
+    X_train1 = X[train_index[:,0]]
+    X_train2 = X[train_index[:,1]]
+    X_train = np.c_[X_train1, X_train2]
+    y_train = Y
+
+    logreg = LogisticRegression(solver='liblinear')
+    c = 2.0 ** np.arange(-10, 10)
+
+    clf = GridSearchCV(estimator=OneVsRestClassifier(logreg),
+                       param_grid=dict(estimator__C=c), n_jobs=8, cv=5,
+                       verbose=0)
+    clf.fit(X_train, y_train)
+    
+    X_test1 = X[test_index[:,0]]
+    X_test2 = X[test_index[:,1]]
+    X_test = np.c_[X_test1, X_test2]
+    y_pred = np.argmax(clf.predict(X_test), axis=1)
     return y_pred

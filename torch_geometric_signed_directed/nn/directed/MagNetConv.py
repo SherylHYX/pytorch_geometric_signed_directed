@@ -74,7 +74,6 @@ class MagNetConv(MessagePassing):
         lambda_max,
         dtype: Optional[int] = None
     ):
-
         edge_index, edge_weight = remove_self_loops(edge_index, edge_weight)
 
         edge_index, edge_weight_real, edge_weight_imag = get_magnetic_Laplacian(
