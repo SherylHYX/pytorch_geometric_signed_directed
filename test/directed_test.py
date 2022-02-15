@@ -135,6 +135,8 @@ def test_DGCN_link():
     assert preds.shape == (
         10, num_classes
     )
+    
+    model.reset_parameters()
 
 def test_DiGCN():
     """
@@ -230,6 +232,7 @@ def test_DiGCN_Link():
     assert preds.shape == (
         len(link_data[0]['train']['edges']), num_classes
     )
+    model.reset_parameters()
 
 def test_DiGCL():
     """
@@ -319,6 +322,7 @@ def test_DiGCL():
     assert pred.shape == (
         10,
     )
+    model.reset_parameters()
 
 def test_DIGRAC():
     """
