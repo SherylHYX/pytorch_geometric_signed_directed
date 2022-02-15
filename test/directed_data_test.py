@@ -2,7 +2,7 @@ import torch
 import numpy as np
 import torch_geometric.transforms as T
 
-from torch_geometric_signed_directed.data import load_directed_real_data, DirectedData
+from torch_geometric_signed_directed.data import load_directed_real_data, DirectedData, WikiCS
 from torch_geometric_signed_directed.utils import directed_link_class_split, node_class_split
 
 def test_directed_datasets():
@@ -27,7 +27,7 @@ def test_directed_datasets():
     assert directed_dataset.is_weighted
     directed_dataset.to_unweighted()
     assert not directed_dataset.is_weighted
-    directed_dataset = load_directed_real_data(dataset='telegram', root='./tmp_data/')
+    directed_dataset = load_directed_real_data(dataset='telegram', root='./tmp_data/', pre_transform=T.GCNNorm())
     assert isinstance(directed_dataset, DirectedData)
     assert directed_dataset.is_weighted
     directed_dataset.to_unweighted()

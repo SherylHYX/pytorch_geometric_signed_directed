@@ -71,5 +71,3 @@ class WikiCS(InMemoryDataset):
 
         torch.save(self.collate([data]), self.processed_paths[0])
 
-    def __repr__(self):
-        return '{}()'.format(self.__class__.__name__)
