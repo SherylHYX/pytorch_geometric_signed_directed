@@ -46,15 +46,6 @@ def train(X, edge_index,
 
     return loss.item()
 
-
-def test(X, y, edge_index, edge_weights, query_edges):
-    model.eval()
-    with torch.no_grad():
-        out = model(X, edge_index_tuple=edge_index, 
-                edge_weight_tuple=edge_weights, query_edges=query_edges)
-    test_acc = acc(out.max(dim=1)[1], y)
-    return test_acc
-
 path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', args.dataset)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
