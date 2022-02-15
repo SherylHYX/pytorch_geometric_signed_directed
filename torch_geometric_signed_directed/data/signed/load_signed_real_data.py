@@ -3,7 +3,7 @@ from typing import Optional, Callable, Union, List
 from .SignedDirectedGraphDataset import SignedDirectedGraphDataset
 from .SignedData import SignedData
 
-def load_signed_real_data(dataset: str='epinions', root:str = './',
+def load_signed_real_data(dataset: str='epinions', root:str = './tmp_data/',
                             transform: Optional[Callable] = None, pre_transform: Optional[Callable] = None,
                             train_size: Union[int,float]=None, val_size: Union[int,float]=None, 
                             test_size: Union[int,float]=None, seed_size: Union[int,float]=None,

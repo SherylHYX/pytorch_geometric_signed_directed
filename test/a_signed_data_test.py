@@ -1,5 +1,3 @@
-import os.path as osp
-
 import numpy as np
 
 from torch_geometric_signed_directed.data import (
@@ -8,7 +6,7 @@ from torch_geometric_signed_directed.data import (
 
 def test_real_world_dataset():
     dataset_name = 'bitcoin_otc'
-    path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', dataset_name)
+    path = './tmp_data/' + dataset_name
     dataset = SignedDirectedGraphDataset(path, dataset_name)
     data = dataset[0]
     assert len(data.edge_weight) > 0
