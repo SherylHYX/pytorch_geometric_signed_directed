@@ -178,7 +178,7 @@ class SDGNN(nn.Module):
 
         return d1_1, d1_2, d1_3, d1_4, d2_1, d2_2, d2_3, d2_4, d3_1, d3_2, d3_3, d3_4, d4_1, d4_2, d4_3, d4_4
 
-    def build_adj_lists(self, edge_index: torch.LongTensor):
+    def build_adj_lists(self, edge_index: torch.LongTensor) -> List:
         edge_index = edge_index.cpu().numpy().tolist()
         self.weight_dict = defaultdict(dict)
 
@@ -230,13 +230,13 @@ class SDGNN(nn.Module):
 
         return [adj_list1_1, adj_list1_2, adj_list2_1, adj_list2_2]
 
-    def forward(self):
+    def forward(self) -> torch.FloatTensor:
         x = self.embeddings.weight
         for layer_m in self.layers:
             x = layer_m(x)
         return x
 
-    def loss(self):
+    def loss(self) -> torch.Tensor:
         nodes = np.arange(0, self.node_num)
         pos_neighbors = self.adj1
         neg_neighbors = self.adj2

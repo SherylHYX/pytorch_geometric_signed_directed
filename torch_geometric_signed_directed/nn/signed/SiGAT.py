@@ -1,12 +1,11 @@
 
 from collections import defaultdict
-from typing import Tuple
+from typing import Tuple, List, Union
 
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import scipy.sparse as sp
 from torch_geometric.nn import  GATConv
 from torch_geometric.utils import k_hop_subgraph, add_self_loops
 
@@ -59,7 +58,7 @@ class SiGAT(nn.Module):
             nn.Linear(hidden_emb_dim, hidden_emb_dim)
         )
 
-    def map_adj_to_edges(self, adj_list):
+    def map_adj_to_edges(self, adj_list: List) -> torch.LongTensor:
         edges = []
         for a in adj_list:
             for b in adj_list[a]:
@@ -67,7 +66,8 @@ class SiGAT(nn.Module):
         edges = torch.LongTensor(edges).to(self.device)
         return edges.t()
 
-    def get_tri_features(self, u, v, r_edgelists):
+    def get_tri_features(self, u: int, v: int, r_edgelists: List) -> Tuple[int, int, int, int, int, 
+    int, int, int, int, int, int, int, int, int, int, int]:
         pos_in_edgelists, pos_out_edgelists, neg_in_edgelists, neg_out_edgelists = r_edgelists
 
         d1_1 = len(set(pos_out_edgelists[u]).intersection(
@@ -108,7 +108,7 @@ class SiGAT(nn.Module):
 
         return d1_1, d1_2, d1_3, d1_4, d2_1, d2_2, d2_3, d2_4, d3_1, d3_2, d3_3, d3_4, d4_1, d4_2, d4_3, d4_4
 
-    def build_adj_lists(self, edge_index_s):
+    def build_adj_lists(self, edge_index_s: torch.LongTensor) -> List:
 
         adj_list_pos = defaultdict(set)
         adj_list_pos_out = defaultdict(set)
@@ -161,7 +161,7 @@ class SiGAT(nn.Module):
 
         return [adj_list_pos, adj_list_pos_out, adj_list_pos_in, adj_list_neg, adj_list_neg_out, adj_list_neg_in] + adj_additions1 + adj_additions2
 
-    def forward(self, nodes):
+    def forward(self, nodes: Union[np.array, torch.Tensor]) -> torch.FloatTensor:
 
         if isinstance(nodes, torch.Tensor):
             nodes_t = nodes
@@ -186,7 +186,7 @@ class SiGAT(nn.Module):
         combined = self.mlp_layer(combined)
         return combined
 
-    def loss(self, nodes):
+    def loss(self, nodes: np.array) -> torch.Tensor:
         pos_neighbors, neg_neighbors = self.adj_pos, self.adj_neg
         pos_neighbors_list = [set.union(pos_neighbors[i]) for i in nodes]
         neg_neighbors_list = [set.union(neg_neighbors[i]) for i in nodes]
