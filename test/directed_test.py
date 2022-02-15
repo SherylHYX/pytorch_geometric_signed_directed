@@ -68,7 +68,7 @@ def test_DGCN():
     edge_index = edge_index.to(device)
     edge_in, in_weight, edge_out, out_weight = edge_in.to(device), in_weight.to(device), edge_out.to(device), out_weight.to(device)
 
-    model = DGCN_node_classification(num_features, 4, num_classes, 0.5).to(device)
+    model = DGCN_node_classification(num_features, 4, num_classes, 0.5, cached=True).to(device)
         
     preds = model(X, edge_index, edge_in, edge_out, in_weight, out_weight)
     
