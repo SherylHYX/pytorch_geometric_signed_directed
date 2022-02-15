@@ -64,7 +64,7 @@ class SiGAT(nn.Module):
         for a in adj_list:
             for b in adj_list[a]:
                 edges.append((a, b))
-        edges = torch.LongTensor(edges, device=self.device)
+        edges = torch.LongTensor(edges).to(self.device)
         return edges.t()
 
     def get_tri_features(self, u, v, r_edgelists):
