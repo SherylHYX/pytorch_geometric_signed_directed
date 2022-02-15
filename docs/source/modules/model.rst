@@ -4,10 +4,14 @@ PyTorch Geometric Signed Directed Models
 .. contents:: Contents
     :local:
 
-Signed Network Models
+Signed Network Models and Layers
 --------------
 
 .. automodule:: torch_geometric_signed_directed.nn.signed.SSSNET_node_clustering
+    :members:
+    :undoc-members:
+
+.. automodule:: torch_geometric_signed_directed.nn.signed.SIMPA
     :members:
     :undoc-members:
 
@@ -27,7 +31,7 @@ Signed Network Models
     :members:
     :undoc-members:
 
-Directed Network Models
+Directed Network Models and Layers
 --------------
 
 .. automodule:: torch_geometric_signed_directed.nn.directed.MagNet_node_classification
@@ -70,13 +74,6 @@ Directed Network Models
     :members:
     :undoc-members:
 
-Auxiliary Network Embedding Methods
---------------
-
-.. automodule:: torch_geometric_signed_directed.nn.signed.SIMPA
-    :members:
-    :undoc-members:
-
 .. automodule:: torch_geometric_signed_directed.nn.directed.MagNetConv
     :members:
     :undoc-members:
@@ -96,6 +93,10 @@ Auxiliary Network Embedding Methods
 .. automodule:: torch_geometric_signed_directed.nn.directed.DGCNConv
     :members:
     :undoc-members:
+
+
+Auxiliary Methods and Layers
+--------------
 
 .. automodule:: torch_geometric_signed_directed.nn.directed.complex_relu
     :members:
