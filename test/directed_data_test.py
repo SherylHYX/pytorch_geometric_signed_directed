@@ -2,8 +2,8 @@ import torch
 import numpy as np
 import torch_geometric.transforms as T
 
-from torch_geometric_signed_directed.data import load_directed_real_data, DirectedData, WikiCS
-from torch_geometric_signed_directed.utils import directed_link_class_split, node_class_split
+from torch_geometric_signed_directed.data import load_directed_real_data, DirectedData
+from torch_geometric_signed_directed.utils import directed_link_class_split, node_class_split, in_out_degree
 
 def test_directed_datasets():
     """
@@ -67,6 +67,8 @@ def test_link_split():
     Testing link_split()
     """
     directed_dataset = load_directed_real_data(dataset='WebKB', root='./tmp_data/', name='Texas')
+    degrees = in_out_degree(directed_dataset.edge_index, size=len(directed_dataset.x))
+    assert degrees.shape == (len(directed_dataset.x), 2)
     edges = directed_dataset.edge_index.T.tolist()
     datasets = directed_link_class_split(directed_dataset, prob_val = 0.15, prob_test = 0.05, task = 'direction')
     assert len(list(datasets.keys())) == 10
@@ -109,7 +111,7 @@ def test_node_split():
     assert torch.sum(data.val_mask) == 30
     assert torch.sum(data.test_mask) == 45
     
-    directed_dataset = load_directed_real_data(dataset='cora_ml', root='./tmp_data/')
+    directed_dataset = load_directed_real_data(dataset='cora_ml', root='./tmp_data/', pre_transform=T.GCNNorm())
     assert directed_dataset.is_directed
     num_classes = len(np.unique(directed_dataset.y))
     data = node_class_split(directed_dataset, train_size_per_class = 20, seed_size_per_class = 0.1, val_size_per_class = 10, test_size_per_class = 20, data_split=3)

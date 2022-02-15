@@ -15,7 +15,7 @@ class DiGCN_link_prediction(torch.nn.Module):
         label_dim (int): The dimension of labels.
         dropout (float): Dropout value.
     """
-    def __init__(self, num_features: int, hidden: int, label_dim: int, dropout: float):
+    def __init__(self, num_features: int, hidden: int, label_dim: int, dropout: float=0.0):
         super(DiGCN_link_prediction, self).__init__()
         self.conv1 = DiGCNConv(num_features, hidden)
         self.conv2 = DiGCNConv(hidden, hidden)

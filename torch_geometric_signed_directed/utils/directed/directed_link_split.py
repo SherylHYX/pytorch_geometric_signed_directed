@@ -29,7 +29,7 @@ def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List
                        
                        If task == 'all': 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist).
     """
-    labels = np.zeros(len(edge_pairs), dtype=np.int32)
+    labels = -np.ones(len(edge_pairs), dtype=np.int32)
     new_edge_pairs = np.array(edge_pairs)
     counter = 0
     for i, e in enumerate(edge_pairs): # directed edges
@@ -139,8 +139,16 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
         ids_train, labels_train = undirected_label2directed_label(A, ids_train, task, rs)
 
         # convert back to directed graph
-        oberved_edges = np.zeros((len(ids_train),2), dtype=np.int32)
-        oberved_weight = np.zeros((len(ids_train),), dtype=np.float32)
+        if task == 'direction':
+            ids_train = ids_train[labels_train < 2]
+            labels_train = labels_train[labels_train <2]
+            ids_test = ids_test[labels_test < 2]
+            labels_test = labels_test[labels_test <2]
+            ids_val = ids_val[labels_val < 2]
+            labels_val = labels_val[labels_val <2]
+
+        oberved_edges = -np.ones((len(ids_train),2), dtype=np.int32)
+        oberved_weight = -np.ones((len(ids_train),), dtype=np.float32)
         for i, e in enumerate(ids_train):
             if A[e[0], e[1]] > 0:
                 oberved_edges[i,0] = int(e[0])
@@ -150,15 +158,9 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
                 oberved_edges[i,0] = int(e[1])
                 oberved_edges[i,1] = int(e[0])
                 oberved_weight[i] = A[e[1], e[0]]
-        
-        if task == 'direction':
-            ids_train = ids_train[labels_train < 2]
-            labels_train = labels_train[labels_train <2]
-            ids_test = ids_test[labels_test < 2]
-            labels_test = labels_test[labels_test <2]
-            ids_val = ids_val[labels_val < 2]
-            labels_val = labels_val[labels_val <2]
 
+        oberved_edges = oberved_edges[np.sum(oberved_edges, axis=-1) >= 0] 
+        oberved_weight = oberved_weight[oberved_weight >= 0] 
         datasets[ind] = {}
         datasets[ind]['graph'] = torch.from_numpy(oberved_edges.T).long().to(device)
         datasets[ind]['weights'] = torch.from_numpy(oberved_weight).float().to(device)

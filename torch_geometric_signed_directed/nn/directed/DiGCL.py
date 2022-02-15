@@ -29,6 +29,10 @@ class DiGCL_Encoder(torch.nn.Module):
 
         self.activation = ({'relu': F.relu, 'prelu': nn.PReLU(), 'rrelu': nn.RReLU()})[activation]
 
+    def reset_parameters(self):
+        for layer in self.conv:
+            layer.reset_parameters()
+            
     def forward(self, x: torch.Tensor, edge_index: torch.Tensor, edge_weight: torch.Tensor = None):
         """
         Making a forward pass of the DiGCL encoder model.
@@ -67,6 +71,12 @@ class DiGCL(torch.nn.Module):
 
         self.fc1 = torch.nn.Linear(num_hidden, num_proj_hidden)
         self.fc2 = torch.nn.Linear(num_proj_hidden, num_hidden)
+
+    def reset_parameters(self):
+        self.fc1.reset_parameters()
+        self.fc2.reset_parameters()
+        self.encoder.reset_parameters()
+        return
 
     def forward(self, x: torch.Tensor,
                 edge_index: torch.Tensor, edge_weight: torch.Tensor = None) -> torch.Tensor:
