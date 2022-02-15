@@ -7,8 +7,8 @@ import torch.nn.functional as F
 from .complex_relu import complex_relu_layer
 from .MagNetConv import MagNetConv
 
-class MagNet_node_classification(nn.Module):
-    r"""The MagNet model for node classification from the
+class MagNet_link_prediction(nn.Module):
+    r"""The MagNet model for link prediction from the
     `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
     
     Args:
@@ -31,7 +31,7 @@ class MagNet_node_classification(nn.Module):
     """
     def __init__(self, in_channels:int, num_filter:int=2, q:float=0.25, K:int=2, label_dim:int=2, \
         activation:bool=False, trainable_q:bool=False, layer:int=2, dropout:float=False, normalization:str='sym'):
-        super(MagNet_node_classification, self).__init__()
+        super(MagNet_link_prediction, self).__init__()
 
         chebs = nn.ModuleList()
         chebs.append(MagNetConv(in_channels=in_channels, out_channels=num_filter, K=K, \
@@ -46,23 +46,23 @@ class MagNet_node_classification(nn.Module):
                 q=q, trainable_q=trainable_q, normalization=normalization))
 
         self.Chebs = chebs
-
-        self.Conv = nn.Conv1d(2*num_filter, label_dim, kernel_size=1)        
+        self.linear = nn.Linear(num_filter*4, label_dim)      
         self.dropout = dropout
 
     def reset_parameters(self):
         for cheb in self.Chebs:
             cheb.reset_parameters()
-        self.Conv.reset_parameters()
-        
+        self.linear.reset_parameters()
+
     def forward(self, real: torch.FloatTensor, imag: torch.FloatTensor, edge_index: torch.LongTensor, \
-        edge_weight: Optional[torch.LongTensor]=None) -> torch.FloatTensor:
+        query_edges: torch.LongTensor, edge_weight: Optional[torch.LongTensor]=None) -> torch.FloatTensor:
         """
         Making a forward pass of the MagNet node classification model.
         
         Arg types:
             * real, imag (PyTorch Float Tensor) - Node features.
             * edge_index (PyTorch Long Tensor) - Edge indices.
+            * query_edges (PyTorch Long Tensor) - Edge indices for querying labels.
             * edge_weight (PyTorch Float Tensor, optional) - Edge weights corresponding to edge indices.
         Return types:
             * log_prob (PyTorch Float Tensor) - Logarithmic class probabilities for all nodes, with shape (num_nodes, num_classes).
@@ -72,13 +72,10 @@ class MagNet_node_classification(nn.Module):
             if self.activation:
                 real, imag = self.complex_relu(real, imag)
 
-        x = torch.cat((real, imag), dim = -1)
-        
+        x = torch.cat((real[query_edges[:,0]], real[query_edges[:,1]], imag[query_edges[:,0]], imag[query_edges[:,1]]), dim = -1)
         if self.dropout > 0:
             x = F.dropout(x, self.dropout, training=self.training)
 
-        x = x.unsqueeze(0)
-        x = x.permute((0,2,1))
-        x = self.Conv(x)
+        x = self.linear(x)
         x = F.log_softmax(x, dim=1)
-        return torch.transpose(x[0], 0, 1)
+        return x

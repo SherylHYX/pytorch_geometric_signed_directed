@@ -6,7 +6,10 @@ from torch_sparse import SparseTensor
 from torch_geometric_signed_directed.nn.directed import (
     DiGCN_node_classification, DiGCN_Inception_Block_node_classification, 
     DIGRAC_node_clustering, MagNet_node_classification, 
-    DGCN_node_classification, DGCNConv, DiGCL
+    DGCN_node_classification, DGCNConv, DiGCL,
+    DGCN_link_prediction,
+    MagNet_link_prediction, DiGCN_link_prediction,
+    DiGCN_Inception_Block_link_prediction
 )
 from torch_geometric_signed_directed.data import (
     DSBM, DirectedData
@@ -15,8 +18,10 @@ from torch_geometric_signed_directed.utils import (
     Prob_Imbalance_Loss, scipy_sparse_to_torch_sparse, 
     get_appr_directed_adj, get_second_directed_adj,
     directed_features_in_out, meta_graph_generation, extract_network,
-    cal_fast_appr, pred_digcl, drop_feature, fast_appr_power
+    cal_fast_appr, pred_digcl_node, pred_digcl_link, drop_feature, fast_appr_power,
+    directed_link_class_split
 )
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def create_mock_data(num_nodes, num_features, num_classes=3, F_style='cyclic', eta=0.1, p=0.2):
@@ -100,7 +105,36 @@ def test_DGCN():
     assert out2.size() == (4, 16)
     assert torch.allclose(conv(x, adj2.t()), out2, atol=1e-6)
 
+def test_DGCN_link():
+    """
+    Testing DGCN for link prediction
+    """
+    num_nodes = 100
+    num_features = 3
+    num_classes = 3
 
+    X, A, _, _, edge_index, edge_weights = \
+        create_mock_data(num_nodes, num_features, num_classes)
+    edge_index = edge_index.cpu()
+    edge_weights = edge_weights.cpu()
+    
+    edge_index, edge_in, in_weight, edge_out, out_weight = directed_features_in_out(edge_index, A.shape[0], edge_weights)
+    edge_index = edge_index.to(device)
+    edge_in, in_weight, edge_out, out_weight = edge_in.to(device), in_weight.to(device), edge_out.to(device), out_weight.to(device)
+
+    model = DGCN_link_prediction(num_features, 4, num_classes, 0.5).to(device)
+    preds = model(X, edge_index, edge_in, edge_out, edge_index[:,:10].T, in_weight, out_weight)
+    
+    assert preds.shape == (
+        10, num_classes
+    )
+
+    model = DGCN_link_prediction(num_features, 4, num_classes, 0.0, True, True).to(device)
+    preds = model(X, edge_index, edge_in, edge_out, edge_index[:,:10].T, in_weight, out_weight)
+    
+    assert preds.shape == (
+        10, num_classes
+    )
 
 def test_DiGCN():
     """
@@ -148,6 +182,55 @@ def test_DiGCN():
         num_nodes, num_classes
     )
     
+def test_DiGCN_Link():
+    """
+    Testing DiGCN for link prediction
+    """
+    num_nodes = 100
+    num_features = 3
+    num_classes = 2
+
+    X, _, _, _, edge_index, edge_weights = \
+        create_mock_data(num_nodes, num_features, num_classes)
+
+    data = DirectedData(x=X, edge_index=edge_index, edge_weight=edge_weights)
+    link_data = directed_link_class_split(data, prob_val = 0.15, prob_test = 0.05, task = 'existence', device=device)
+
+    edge_index = link_data[0]['graph']
+    edge_weights = link_data[0]['weights']
+    edge_index1, edge_weights1 = get_appr_directed_adj(0.1, edge_index.cpu(), X.shape[0],
+        X.dtype, edge_weights.cpu())
+    link_data[0]['graph'] = edge_index1.to(device)
+    link_data[0]['weights'] = edge_weights1.to(device)
+    
+    model = DiGCN_link_prediction(num_features, 4, num_classes, 0.5).to(device)
+        
+    preds = model(data.x, link_data[0]['graph'], query_edges=link_data[0]['train']['edges'], 
+                    edge_weight=link_data[0]['weights'])
+    
+    assert preds.shape == (
+        len(link_data[0]['train']['edges']), num_classes
+    )
+    assert model.conv1.__repr__() == 'DiGCNConv(3, 4)'
+
+    edge_index = edge_index.cpu()
+    edge_weights = edge_weights.cpu()
+    edge_index2, edge_weights2 = get_second_directed_adj(edge_index, X.shape[0], X.dtype, edge_weights)
+    edge_index2 = edge_index2.to(device)
+    edge_weights2 = edge_weights2.to(device)
+    edge_index = (link_data[0]['graph'], edge_index2)
+    edge_weights = (link_data[0]['weights'], edge_weights2)
+    del edge_index2, edge_weights2
+
+    model = DiGCN_Inception_Block_link_prediction(num_features, 4, num_classes,
+                    0.5).to(device)
+    preds = model(X, edge_index, query_edges=link_data[0]['train']['edges'],
+                    edge_weight_tuple=edge_weights)
+    
+    assert preds.shape == (
+        len(link_data[0]['train']['edges']), num_classes
+    )
+
 def test_DiGCL():
     """
     Testing DiGCL
@@ -203,7 +286,7 @@ def test_DiGCL():
     # test
     model.eval()
     z = model(x, edge_index_init, edge_weight_init)
-    pred = pred_digcl(z, y, train_index)
+    pred = pred_digcl_node(z, y, train_index)
     
     assert pred.shape == (
         num_nodes, 
@@ -225,12 +308,17 @@ def test_DiGCL():
     # test
     model.eval()
     z = model(x, edge_index_init, edge_weight_init)
-    pred = pred_digcl(z, y, train_index)
+    pred = pred_digcl_node(z, y, train_index)
     
     assert pred.shape == (
         num_nodes, 
     )
-
+    # test (link prediction)
+    pred = pred_digcl_link(z, y=torch.randint(3,size=(10,1),device=device), 
+                               train_index=edge_index.T.cpu()[:10], test_index=edge_index.T.cpu()[10:20])
+    assert pred.shape == (
+        10,
+    )
 
 def test_DIGRAC():
     """
@@ -293,7 +381,57 @@ def test_MagNet():
         num_nodes, num_classes
     )
     assert model.Chebs[0].__repr__() == 'MagNetConv(3, 2, K=3, normalization=sym)'
+
+    model.reset_parameters()
+
+def test_MagNet_Link():
+    """
+    Testing MagNet for link prediction
+    """
+    num_nodes = 100
+    num_features = 3
+    num_classes = 2
+
+    X, _, _, _, edge_index, edge_weight = \
+        create_mock_data(num_nodes, num_features, num_classes)
+    data = DirectedData(x=X, edge_index=edge_index, edge_weight=edge_weight)
+    link_data = directed_link_class_split(data, prob_val = 0.15, prob_test = 0.05, task = 'existence', device=device)
+    model = MagNet_link_prediction(data.x.shape[1], K = 1, q = 0.1, label_dim=num_classes, layer = 2, \
+                                activation = True, num_filter = 2, dropout=0.5, normalization=None).to(device)  
+    preds = model(data.x, data.x, edge_index=link_data[0]['graph'], query_edges=link_data[0]['train']['edges'], 
+                    edge_weight=link_data[0]['weights']) 
     
+    assert preds.shape == (
+        len(link_data[0]['train']['edges']), num_classes
+    )
+
+    model = MagNet_link_prediction(data.x.shape[1], K = 3, label_dim=num_classes, layer = 3, trainable_q = True, \
+                                activation = True, num_filter = 2, dropout=0.5).to(device)  
+    preds = model(data.x, data.x, link_data[0]['graph'], query_edges=link_data[0]['train']['edges'], 
+                    edge_weight=link_data[0]['weights']) 
+    
+    assert preds.shape == (
+        len(link_data[0]['train']['edges']), num_classes
+    )
+    assert model.Chebs[0].__repr__() == 'MagNetConv(3, 2, K=3, normalization=sym)'
+
+    num_classes = 3
+    link_data = directed_link_class_split(data, prob_val = 0.15, prob_test = 0.05, task = 'all', device=device)
+    link_data[0]['graph'] = link_data[0]['graph']
+    link_data[0]['train']['edges'] = link_data[0]['train']['edges']
+    link_data[0]['weights'] = link_data[0]['weights']
+
+    model = MagNet_link_prediction(data.x.shape[1], K = 1, q = 0.1, label_dim=num_classes, layer = 2, \
+                                activation = True, num_filter = 2, dropout=0.5, normalization=None).to(device)  
+    preds = model(data.x, data.x, edge_index=link_data[0]['graph'], query_edges=link_data[0]['train']['edges'], 
+                    edge_weight=link_data[0]['weights']) 
+    
+    assert preds.shape == (
+        len(link_data[0]['train']['edges']), num_classes
+    )
+
+    model.reset_parameters()
+
 def test_DSBM():
     num_nodes = 200
     num_classes = 3
