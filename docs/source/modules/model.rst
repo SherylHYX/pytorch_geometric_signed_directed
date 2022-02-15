@@ -23,11 +23,15 @@ Signed Network Models and Layers
     :members:
     :undoc-members:
 
-.. automodule:: torch_geometric_signed_directed.nn.signed.SNEA
+.. automodule:: torch_geometric_signed_directed.nn.signed.SGCN_SNEA
     :members:
     :undoc-members:
 
-.. automodule:: torch_geometric_signed_directed.nn.signed.SGCN
+.. automodule:: torch_geometric_signed_directed.nn.signed.SNEAConv
+    :members:
+    :undoc-members:
+
+.. automodule:: torch_geometric_signed_directed.nn.signed.SGCNConv
     :members:
     :undoc-members:
 
