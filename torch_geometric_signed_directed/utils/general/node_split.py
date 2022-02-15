@@ -45,7 +45,7 @@ def node_class_split(data: torch_geometric.data.Data,
 
     if len(seed) == 0:
         seed=list(range(data_split))
-    elif len(seed) != data_split:
+    if len(seed) != data_split:
         raise ValueError('Please input the random seed list with the same length of {}!'.format(data_split))
 
     if isinstance(data.y, torch.Tensor):

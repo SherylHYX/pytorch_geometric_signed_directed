@@ -81,6 +81,8 @@ def test_SignedData():
     assert data.A_n.shape == (num_nodes, num_nodes)
     data.node_split(train_size=0.8, val_size=0.1, test_size=0.1, seed_size=0.1)
     assert data.seed_mask.sum() == 0.1*num_nodes*10*0.8
+    data.node_split(train_size=80, val_size=10, test_size=10, seed_size=8)
+    assert data.seed_mask.sum() == 10*8
     data2 = SignedData(edge_index=data.edge_index, edge_weight=data.edge_weight)
     data2.set_signed_Laplacian_features(k=2*num_classes)
     assert data2.x.shape == (num_nodes, 2*num_classes)
