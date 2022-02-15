@@ -294,7 +294,7 @@ def test_DiGCL():
 
     model = DiGCL(in_channels=X.shape[1], activation='prelu',
                  num_hidden=2*hidden, num_proj_hidden=hidden,
-                 tau=0.5, num_layers=2).to(device)
+                 tau=0.5, num_layers=3).to(device)
     for _ in range(epochs):
         x_1 = drop_feature(x, drop_feature_rate_1)
         x_2 = drop_feature(x, drop_feature_rate_2)

@@ -67,7 +67,6 @@ class DiGCL(torch.nn.Module):
 
         self.fc1 = torch.nn.Linear(num_hidden, num_proj_hidden)
         self.fc2 = torch.nn.Linear(num_proj_hidden, num_hidden)
-        self.fc3 = torch.nn.Linear(num_hidden, num_hidden)
 
     def forward(self, x: torch.Tensor,
                 edge_index: torch.Tensor, edge_weight: torch.Tensor = None) -> torch.Tensor:
@@ -86,10 +85,6 @@ class DiGCL(torch.nn.Module):
     def projection(self, z: torch.Tensor) -> torch.Tensor:
         z = F.elu(self.fc1(z))
         return self.fc2(z)
-
-    def projection2(self, z: torch.Tensor) -> torch.Tensor:
-        z = F.elu(self.fc3(z))
-        return z
 
     def sim(self, z1: torch.Tensor, z2: torch.Tensor):
         z1 = F.normalize(z1)
