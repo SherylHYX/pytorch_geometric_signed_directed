@@ -1,8 +1,9 @@
 import numpy as np
 import scipy.sparse as sp
 import torch
+from torch_sparse import SparseTensor
 from torch_geometric_signed_directed.nn.signed import (
-    SSSNET_node_clustering, SDGNN, SGCN_SNEA, SiGAT
+    SSSNET_node_clustering, SDGNN, SGCN_SNEA, SiGAT, SGCNConv
 )
 from torch_geometric_signed_directed.data import (
     SSBM, SignedData
@@ -28,6 +29,25 @@ def test_SGCN_SNEA():
     """
     Testing SGCN and SNEA
     """
+    x = torch.randn(4, 16)
+    edge_index = torch.tensor([[0, 1, 2, 3], [0, 0, 1, 1]])
+    row, col = edge_index
+    adj = SparseTensor(row=row, col=col, sparse_sizes=(4, 4))
+
+    conv1 = SGCNConv(16, 32, first_aggr=True)
+    assert conv1.__repr__() == 'SGCNConv(16, 32, first_aggr=True)'
+
+    conv2 = SGCNConv(32, 48, first_aggr=False)
+    assert conv2.__repr__() == 'SGCNConv(32, 48, first_aggr=False)'
+
+    out1 = conv1(x, edge_index, edge_index)
+    assert out1.size() == (4, 64)
+    assert conv1(x, adj.t(), adj.t()).tolist() == out1.tolist()
+
+    out2 = conv2(out1, edge_index, edge_index)
+    assert out2.size() == (4, 96)
+    assert conv2(out1, adj.t(), adj.t()).tolist() == out2.tolist()
+
     num_nodes = 100
     num_features = 3
     num_classes = 3
