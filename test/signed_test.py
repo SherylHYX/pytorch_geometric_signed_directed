@@ -116,6 +116,7 @@ def test_SiGAT():
     with torch.no_grad():
         nodes = np.arange(0, nodes_num)
         z = model(nodes)
+        z = model(torch.from_numpy(nodes).to(device))
 
     embeddings = z.cpu().numpy()
     train_X = train_edge_index.t().cpu().numpy()

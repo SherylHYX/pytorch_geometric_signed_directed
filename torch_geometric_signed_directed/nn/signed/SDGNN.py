@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 import numpy as np
-from torch_geometric.nn import GATConv, SAGEConv
+from torch_geometric.nn import GATConv
 
 from collections import defaultdict
 
@@ -17,24 +17,19 @@ class SDRLayer(nn.Module):
             in_dim (int): Dimenson of input features. Defaults to 20.
             out_dim (int): Dimenson of output features. Defaults to 20.
             edge_lists (list): Edgelist for current motifs.
-            aggregator (str): Aggregator for current motif. Defaults to "attention".
     """
     def __init__(
         self,
         in_dim: int = 20,
         out_dim: int = 20,
-        edge_lists: list = [],
-        aggregator: str = "attention"
+        edge_lists: list = []
     ):
         super().__init__()
 
         self.edge_lists = edge_lists
         self.aggs = []
 
-        if aggregator == 'attention':
-            agg = GATConv
-        else:
-            agg = SAGEConv
+        agg = GATConv
 
         for i in range(len(edge_lists)):
             self.aggs.append(
