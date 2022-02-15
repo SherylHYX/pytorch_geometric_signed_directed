@@ -24,8 +24,7 @@ class SDRLayer(nn.Module):
         in_dim: int = 20,
         out_dim: int = 20,
         edge_lists: list = [],
-        aggregator: str = "attention",
-        **kwargs
+        aggregator: str = "attention"
     ):
         super().__init__()
 

@@ -180,8 +180,8 @@ class SNEA(nn.Module):
 
     def __init__(
         self,
-        node_num,
-        edge_index_s,
+        node_num: int,
+        edge_index_s: torch.LongTensor,
         in_dim: int = 64,
         out_dim: int = 64,
         layer_num: int = 2,
@@ -217,7 +217,7 @@ class SNEA(nn.Module):
             conv.reset_parameters()
         self.lin.reset_parameters()
 
-    def nll_loss(self, z, pos_edge_index, neg_edge_index):
+    def nll_loss(self, z: Tensor, pos_edge_index: torch.LongTensor, neg_edge_index: torch.LongTensor):
         """Computes the discriminator loss based on node embeddings :obj:`z`,
         and positive edges :obj:`pos_edge_index` and negative nedges
         :obj:`neg_edge_index`.

@@ -92,8 +92,7 @@ class SGCNConv(MessagePassing):
         self.lin_u.reset_parameters()
 
     def forward(self, x: Union[Tensor, PairTensor], pos_edge_index: Adj,
-                neg_edge_index: Adj):
-        """"""
+                neg_edge_index: Adj) -> Tensor:
 
         # propagate_type    e: (x: PairTensor)
         if isinstance(x, Tensor):
@@ -160,7 +159,7 @@ class SGCN(nn.Module):
     def __init__(
         self,
         node_num: int,
-        edge_index_s ,
+        edge_index_s: torch.LongTensor ,
         in_dim: int = 64,
         out_dim: int = 64,
         layer_num: int = 2,
@@ -195,7 +194,7 @@ class SGCN(nn.Module):
             conv.reset_parameters()
         self.lin.reset_parameters()
 
-    def nll_loss(self, z, pos_edge_index, neg_edge_index):
+    def nll_loss(self, z: Tensor, pos_edge_index: torch.LongTensor, neg_edge_index: torch.LongTensor) -> Tensor:
         """Computes the discriminator loss based on node embeddings :obj:`z`,
         and positive edges :obj:`pos_edge_index` and negative nedges
         :obj:`neg_edge_index`.
@@ -221,7 +220,7 @@ class SGCN(nn.Module):
             none_edge_index.new_full((none_edge_index.size(1), ), 2))
         return nll_loss / 3.0
 
-    def pos_embedding_loss(self, z, pos_edge_index):
+    def pos_embedding_loss(self, z: Tensor, pos_edge_index: torch.LongTensor) -> Tensor:
         """Computes the triplet loss between positive node pairs and sampled
         non-node pairs.
 
@@ -234,7 +233,7 @@ class SGCN(nn.Module):
         out = (z[i] - z[j]).pow(2).sum(dim=1) - (z[i] - z[k]).pow(2).sum(dim=1)
         return torch.clamp(out, min=0).mean()
 
-    def neg_embedding_loss(self, z, neg_edge_index):
+    def neg_embedding_loss(self, z: Tensor, neg_edge_index: torch.LongTensor) -> Tensor:
         """Computes the triplet loss between negative node pairs and sampled
         non-node pairs.
 
@@ -247,7 +246,7 @@ class SGCN(nn.Module):
         out = (z[i] - z[k]).pow(2).sum(dim=1) - (z[i] - z[j]).pow(2).sum(dim=1)
         return torch.clamp(out, min=0).mean()
 
-    def discriminate(self, z, edge_index):
+    def discriminate(self, z: Tensor, edge_index: torch.LongTensor) -> torch.FloatTensor:
         """Given node embeddings :obj:`z`, classifies the link relation
         between node pairs :obj:`edge_index` to be either positive,
         negative or non-existent.
@@ -260,21 +259,21 @@ class SGCN(nn.Module):
         value = self.lin(value)
         return torch.log_softmax(value, dim=1)
 
-    def loss(self):
+    def loss(self) -> torch.FloatTensor:
         z = self.forward()
         nll_loss = self.nll_loss(z, self.pos_edge_index, self.neg_edge_index)
         loss_1 = self.pos_embedding_loss(z, self.pos_edge_index)
         loss_2 = self.neg_embedding_loss(z, self.neg_edge_index)
         return nll_loss + self.lamb * (loss_1 + loss_2)
 
-    def forward(self):
+    def forward(self) -> Tensor:
         z = torch.tanh(self.conv1(
             self.x, self.pos_edge_index, self.neg_edge_index))
         for conv in self.convs:
             z = torch.tanh(conv(z, self.pos_edge_index, self.neg_edge_index))
         return z
 
-    def create_spectral_features(self):
+    def create_spectral_features(self) -> torch.FloatTensor:
 
         from sklearn.decomposition import TruncatedSVD
 
