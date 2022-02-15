@@ -1,9 +1,9 @@
 import os.path as osp
 
 import numpy as np
-from torch_geometric_signed_directed.data.signed import SignedDirectedGraphDataset
+
 from torch_geometric_signed_directed.data import (
-    SSBM, polarized_SSBM, SignedData
+    SSBM, polarized_SSBM, SignedData, load_signed_real_data, SignedDirectedGraphDataset
 )
 
 def test_real_world_dataset():
@@ -19,6 +19,11 @@ def test_real_world_dataset():
     neg = (data.edge_weight < 0).sum()
     assert pos.item() == 32029
     assert neg.item() == 3563
+
+def test_load_signed_real_data():
+    signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='epinions')
+    assert isinstance(signed_dataset, SignedData)
+    assert signed_dataset.is_signed
 
 def test_SSBM():
     num_nodes = 1000

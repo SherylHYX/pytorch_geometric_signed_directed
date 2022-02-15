@@ -18,8 +18,8 @@ dataset_name_url_dic = {
 
 class SignedDirectedGraphDataset(InMemoryDataset):
     r"""Signed Directed Graph from the `"SDGNN: Learning Node Representation 
-    for Signed Directed Networks" <https://arxiv.org/abs/2101.02390>`_ paper, consising of five different
-    datasets: Bitcoin-Alpha, Bitcoin-OTC, Wikirfa, Slashdot and Epinions.
+    for Signed Directed Networks" <https://arxiv.org/abs/2101.02390>`_ paper, consising of three different
+    datasets: Bitcoin-Alpha, Bitcoin-OTC and Epinions.
     """
 
     def __init__(
@@ -32,7 +32,7 @@ class SignedDirectedGraphDataset(InMemoryDataset):
         transform: Optional[Callable] = None,
         pre_transform: Optional[Callable] = None
     ):
-        self.dataset_name = dataset_name
+        self.dataset_name = dataset_name.lower()
         self.url = dataset_name_url_dic[dataset_name]
         assert train_ratio+test_ratio == 1.0
 
