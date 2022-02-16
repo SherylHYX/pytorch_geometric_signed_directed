@@ -6,7 +6,7 @@ import scipy.sparse as sp
 from torch_geometric.utils import to_undirected
 
 def directed_features_in_out(edge_index: torch.LongTensor, size: int, 
-    edge_weight: Optional[torch.FloatTensor]=None) -> Tuple[torch.LongTensor, torch.LongTensor, 
+    edge_weight: Optional[torch.FloatTensor]=None, device:str='cpu') -> Tuple[torch.LongTensor, torch.LongTensor, 
     torch.FloatTensor, torch.LongTensor, torch.FloatTensor]:
     r""" Computes directed in-degree and out-degree features.
 
@@ -16,6 +16,8 @@ def directed_features_in_out(edge_index: torch.LongTensor, size: int,
             :obj:`max_val + 1` of :attr:`edge_index`.
         * **edge_weight** (PyTorch Tensor, optional) - One-dimensional edge weights.
             (default: :obj:`None`)
+        * **device** (str, optional) - The device to store the returned values.
+            (default: :str:`cpu`)
             
     Return types:
         * **index_undirected** (PyTorch LongTensor) - Undirected edge_index.
@@ -25,9 +27,9 @@ def directed_features_in_out(edge_index: torch.LongTensor, size: int,
         * **out_weight** (PyTorch Tensor) - Outwards edge weights.
     """
     if edge_weight is not None:
-        a = sp.coo_matrix((edge_weight, edge_index), shape=(size, size)).tocsc()
+        a = sp.coo_matrix((edge_weight.cpu(), edge_index.cpu()), shape=(size, size)).tocsc()
     else:
-        a = sp.coo_matrix((np.ones(len(edge_index[0])), edge_index), shape=(size, size)).tocsc()
+        a = sp.coo_matrix((np.ones(len(edge_index[0])), edge_index.cpu()), shape=(size, size)).tocsc()
     
     out_degree = np.array(a.sum(axis=0))[0]
     out_degree[out_degree == 0] = 1
@@ -52,4 +54,6 @@ def directed_features_in_out(edge_index: torch.LongTensor, size: int,
     in_weight  = torch.from_numpy(A_in.data).float()
     out_weight = torch.from_numpy(A_out.data).float()
     index_undirected = to_undirected(edge_index)
-    return index_undirected, edge_in, in_weight, edge_out, out_weight
+
+    device = edge_index.device
+    return index_undirected.to(device), edge_in.to(device), in_weight.to(device), edge_out.to(device), out_weight.to(device)

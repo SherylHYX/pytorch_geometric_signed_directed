@@ -135,6 +135,8 @@ def test_DGCN_link():
     assert preds.shape == (
         10, num_classes
     )
+    
+    model.reset_parameters()
 
 def test_DiGCN():
     """
@@ -230,6 +232,7 @@ def test_DiGCN_Link():
     assert preds.shape == (
         len(link_data[0]['train']['edges']), num_classes
     )
+    model.reset_parameters()
 
 def test_DiGCL():
     """
@@ -314,11 +317,12 @@ def test_DiGCL():
         num_nodes, 
     )
     # test (link prediction)
-    pred = pred_digcl_link(z, y=torch.randint(3,size=(10,1),device=device), 
-                               train_index=edge_index.T.cpu()[:10], test_index=edge_index.T.cpu()[10:20])
+    pred = pred_digcl_link(z, y=torch.randint(3,size=(50,1),device=device), 
+                               train_index=edge_index.T.cpu()[:50], test_index=edge_index.T.cpu()[50:60])
     assert pred.shape == (
         10,
     )
+    model.reset_parameters()
 
 def test_DIGRAC():
     """
@@ -397,7 +401,7 @@ def test_MagNet_Link():
     data = DirectedData(x=X, edge_index=edge_index, edge_weight=edge_weight)
     link_data = directed_link_class_split(data, prob_val = 0.15, prob_test = 0.05, task = 'existence', device=device)
     model = MagNet_link_prediction(data.x.shape[1], K = 1, q = 0.1, label_dim=num_classes, layer = 2, \
-                                activation = True, num_filter = 2, dropout=0.5, normalization=None).to(device)  
+                                activation = True, hidden = 2, dropout=0.5, normalization=None).to(device)  
     preds = model(data.x, data.x, edge_index=link_data[0]['graph'], query_edges=link_data[0]['train']['edges'], 
                     edge_weight=link_data[0]['weights']) 
     
@@ -406,7 +410,7 @@ def test_MagNet_Link():
     )
 
     model = MagNet_link_prediction(data.x.shape[1], K = 3, label_dim=num_classes, layer = 3, trainable_q = True, \
-                                activation = True, num_filter = 2, dropout=0.5).to(device)  
+                                activation = True, hidden = 2, dropout=0.5).to(device)  
     preds = model(data.x, data.x, link_data[0]['graph'], query_edges=link_data[0]['train']['edges'], 
                     edge_weight=link_data[0]['weights']) 
     
@@ -422,7 +426,7 @@ def test_MagNet_Link():
     link_data[0]['weights'] = link_data[0]['weights']
 
     model = MagNet_link_prediction(data.x.shape[1], K = 1, q = 0.1, label_dim=num_classes, layer = 2, \
-                                activation = True, num_filter = 2, dropout=0.5, normalization=None).to(device)  
+                                activation = True, hidden = 2, dropout=0.5, normalization=None).to(device)  
     preds = model(data.x, data.x, edge_index=link_data[0]['graph'], query_edges=link_data[0]['train']['edges'], 
                     edge_weight=link_data[0]['weights']) 
     

@@ -12,12 +12,12 @@ class MagNet_link_prediction(nn.Module):
     `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
     
     Args:
-        in_channels (int): Size of each input sample.
-        num_filter (int, optional): Number of hidden channels.  Default: 2.
+        num_features (int): Size of each input sample.
+        hidden (int, optional): Number of hidden channels.  Default: 2.
         K (int, optional): Order of the Chebyshev polynomial.  Default: 2.
         q (float, optional): Initial value of the phase parameter, 0 <= q <= 0.25. Default: 0.25.
         label_dim (int, optional): Number of output classes.  Default: 2.
-        activation (bool, optional): whether to use activation function or not. (default: :obj:`False`)
+        activation (bool, optional): whether to use activation function or not. (default: :obj:`True`)
         trainable_q (bool, optional): whether to set q to be trainable or not. (default: :obj:`False`)
         layer (int, optional): Number of MagNetConv layers. Deafult: 2.
         dropout (float, optional): Dropout value. (default: :obj:`False`)
@@ -29,12 +29,12 @@ class MagNet_link_prediction(nn.Module):
             :math:`\mathbf{L} = \mathbf{I} - \mathbf{D}^{-1/2} \mathbf{A}
             \mathbf{D}^{-1/2} Hadamard \exp(i \Theta^{(q)})`
     """
-    def __init__(self, in_channels:int, num_filter:int=2, q:float=0.25, K:int=2, label_dim:int=2, \
-        activation:bool=False, trainable_q:bool=False, layer:int=2, dropout:float=False, normalization:str='sym'):
+    def __init__(self, num_features:int, hidden:int=2, q:float=0.25, K:int=2, label_dim:int=2, \
+        activation:bool=True, trainable_q:bool=False, layer:int=2, dropout:float=False, normalization:str='sym'):
         super(MagNet_link_prediction, self).__init__()
 
         chebs = nn.ModuleList()
-        chebs.append(MagNetConv(in_channels=in_channels, out_channels=num_filter, K=K, \
+        chebs.append(MagNetConv(in_channels=num_features, out_channels=hidden, K=K, \
             q=q, trainable_q=trainable_q, normalization=normalization))
         self.normalization = normalization
         self.activation = activation
@@ -42,11 +42,11 @@ class MagNet_link_prediction(nn.Module):
             self.complex_relu = complex_relu_layer()
 
         for _ in range(1, layer):
-            chebs.append(MagNetConv(in_channels=num_filter, out_channels=num_filter, K=K,\
+            chebs.append(MagNetConv(in_channels=hidden, out_channels=hidden, K=K,\
                 q=q, trainable_q=trainable_q, normalization=normalization))
 
         self.Chebs = chebs
-        self.linear = nn.Linear(num_filter*4, label_dim)      
+        self.linear = nn.Linear(hidden*4, label_dim)      
         self.dropout = dropout
 
     def reset_parameters(self):
