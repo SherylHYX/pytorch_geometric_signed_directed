@@ -1,7 +1,7 @@
 [![CI](https://github.com/SherylHYX/pytorch_geometric_signed_directed/actions/workflows/main.yml/badge.svg)](https://github.com/SherylHYX/pytorch_geometric_signed_directed/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/SherylHYX/pytorch_geometric_signed_directed/branch/main/graph/badge.svg?token=441OFDGWRB)](https://codecov.io/gh/SherylHYX/pytorch_geometric_signed_directed)
 [![Documentation Status](https://readthedocs.org/projects/pytorch-geometric-signed-directed/badge/?version=latest)](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/?badge=latest)
-[![PyPI Version](https://badge.fury.io/py/torch-geometric-signed-directed.svg)](https://pypi.python.org/pypi/torch-geometric-signed-directed)
+[![PyPI Version](https://badge.fury.io/py/torch-geometric-signed-directed.svg)](https://pypithon.org/pypi/torch-geometric-signed-directed)
 
 
 <p align="center">
@@ -26,160 +26,160 @@ In detail, the following signed or directed graph neural networks, as well as re
 
 **Signed Network Models and Layers**
 
-* **[SSSNET_node_clustering](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SSSNET_node_clustering.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
+* **[SSSNET_node_clustering](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.signed.SSSNET_node_clustering)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
 
-* **[SDGNN](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SDGNN.py)** from Huang *et al.*: [SDGNN: Learning Node Representation for Signed Directed Networks](https://arxiv.org/pdf/2101.02390.pdf) (AAAI 2021)
+* **[SDGNN](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.signed.SDGNN)** from Huang *et al.*: [SDGNN: Learning Node Representation for Signed Directed Networks](https://arxiv.org/pdf/2101.02390.pdf) (AAAI 2021)
 
-* **[SiGAT](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SiGAT.py)** from Huang *et al.*: [Signed Graph Attention Networks](https://arxiv.org/pdf/1906.10958.pdf) (ICANN 2019)
+* **[SiGAT](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.signed.SiGAT)** from Huang *et al.*: [Signed Graph Attention Networks](https://arxiv.org/pdf/1906.10958.pdf) (ICANN 2019)
 
 <details>
 <summary><b>Expand to see all methods implemented for signed networks...</b></summary>
 
-* **[SNEA](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SGCN_SNEA.py)** from Li *et al.*: [Learning Signed Network Embedding via Graph Attention](https://ojs.aaai.org/index.php/AAAI/article/view/5911) (AAAI 2021)
+* **[SNEA](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.signed.SGCN_SNEA)** from Li *et al.*: [Learning Signed Network Embedding via Graph Attention](https://ojs.aaai.org/index.php/AAAI/article/view/5911) (AAAI 2021)
 
-* **[SGCN](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SGCN_SNEA.py)** from Derr *et al.*: [Signed Graph Attention Networks](https://arxiv.org/pdf/1808.06354.pdf) (ICDM 2018)
+* **[SGCN](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.signed.SGCN_SNEA)** from Derr *et al.*: [Signed Graph Attention Networks](https://arxiv.org/pdf/1808.06354.pdf) (ICDM 2018)
 
-* **[SNEAConv](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SNEAConv.py)** from Li *et al.*: [Learning Signed Network Embedding via Graph Attention](https://ojs.aaai.org/index.php/AAAI/article/view/5911) (AAAI 2021)
+* **[SNEAConv](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.signed.SNEAConv)** from Li *et al.*: [Learning Signed Network Embedding via Graph Attention](https://ojs.aaai.org/index.php/AAAI/article/view/5911) (AAAI 2021)
 
-* **[SGCNConv](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SGCNConv.py)** from Derr *et al.*: [Signed Graph Attention Networks](https://arxiv.org/pdf/1808.06354.pdf) (ICDM 2018)
+* **[SGCNConv](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.signed.SGCNConv)** from Derr *et al.*: [Signed Graph Attention Networks](https://arxiv.org/pdf/1808.06354.pdf) (ICDM 2018)
 
 
-* **[SIMPA](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SIMPA.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
+* **[SIMPA](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.signed.SIMPA)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
 
 
 </details>
   
 **Directed Network Models and Layers**
 
-* **[MagNet_node_classification](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/MagNet_node_classification.py)** from Zhang *et al.*: [MagNet: A Neural Network for Directed Graphs.](https://arxiv.org/pdf/2102.11391.pdf) (NeurIPS 2021)
+* **[MagNet_node_classification](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.directed.MagNet_node_classification)** from Zhang *et al.*: [MagNet: A Neural Network for Directed Graphs.](https://arxiv.org/pdf/2102.11391.pdf) (NeurIPS 2021)
 
-* **[DiGCL](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/DiGCL.py)** from Tong *et al.*: [Directed Graph Contrastive Learning.](https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf) (NeurIPS 2021)
+* **[DiGCL](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.directed.DiGCL)** from Tong *et al.*: [Directed Graph Contrastive Learning.](https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf) (NeurIPS 2021)
 
-* **[DiGCN_Inception_Block_node_classification](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/DiGCN_Inception_Block_node_classification.py)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
+* **[DiGCN_Inception_Block_node_classification](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.directed.DiGCN_Inception_Block_node_classification)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
 
-* **[DIGRAC_node_clustering](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/DIGRAC_node_clustering.py)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
+* **[DIGRAC_node_clustering](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.directed.DIGRAC_node_clustering)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
 
-* **[DGCN_node_classification](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/DGCN_node_classification.py)** from Tong *et al.*: [Directed Graph Convolutional Network.](https://arxiv.org/pdf/2004.13970.pdf) (ArXiv 2020)
+* **[DGCN_node_classification](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.directed.DGCN_node_classification)** from Tong *et al.*: [Directed Graph Convolutional Network.](https://arxiv.org/pdf/2004.13970.pdf) (ArXiv 2020)
 
 
 <details>
 <summary><b>Expand to see all methods implemented for directed networks...</b></summary>
 
 
-* **[DiGCN_node_classification](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/DiGCN_node_classification.py)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
+* **[DiGCN_node_classification](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.directed.DiGCN_node_classification)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
 
-* **[MagNet_link_prediction](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/MagNet_link_prediction.py)** from Zhang *et al.*: [MagNet: A Neural Network for Directed Graphs.](https://arxiv.org/pdf/2102.11391.pdf) (NeurIPS 2021)
+* **[MagNet_link_prediction](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.directed.MagNet_link_prediction)** from Zhang *et al.*: [MagNet: A Neural Network for Directed Graphs.](https://arxiv.org/pdf/2102.11391.pdf) (NeurIPS 2021)
 
-* **[DiGCN_link_prediction](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/DiGCN_link_prediction.py)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
+* **[DiGCN_link_prediction](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.directed.DiGCN_link_prediction)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
 
-* **[DiGCN_Inception_Block_link_prediction](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/DiGCN_Inception_Block_link_prediction.py)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
+* **[DiGCN_Inception_Block_link_prediction](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.directed.DiGCN_Inception_Block_link_prediction)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
 
-* **[DGCN_link_prediction](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/DGCN_link_prediction.py)** from Tong *et al.*: [Directed Graph Convolutional Network.](https://arxiv.org/pdf/2004.13970.pdf) (ArXiv 2020)
+* **[DGCN_link_prediction](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.directed.DGCN_link_prediction)** from Tong *et al.*: [Directed Graph Convolutional Network.](https://arxiv.org/pdf/2004.13970.pdf) (ArXiv 2020)
 
 
-* **[DiGCN_Inception_Block](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/DiGCN_Inception_Block.py)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
+* **[DiGCN_Inception_Block](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.directed.DiGCN_Inception_Block)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
 
-* **[DGCNConv](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/DGCNConv.py)** from Tong *et al.*: [Directed Graph Convolutional Network.](https://arxiv.org/pdf/2004.13970.pdf) (ArXiv 2020)
+* **[DGCNConv](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.directed.DGCNConv)** from Tong *et al.*: [Directed Graph Convolutional Network.](https://arxiv.org/pdf/2004.13970.pdf) (ArXiv 2020)
 
-* **[MagNetConv](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/MagNetConv.py)** from Zhang *et al.*: [MagNet: A Neural Network for Directed Graphs.](https://arxiv.org/pdf/2102.11391.pdf) (NeurIPS 2021)
+* **[MagNetConv](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.directed.MagNetConv)** from Zhang *et al.*: [MagNet: A Neural Network for Directed Graphs.](https://arxiv.org/pdf/2102.11391.pdf) (NeurIPS 2021)
 
-* **[DiGCNConv](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/DiGCNConv.py)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
+* **[DiGCNConv](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.directed.DiGCNConv)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
 
-* **[DIMPA](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/DIMPA.py)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
+* **[DIMPA](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.directed.DIMPA)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
   
 
 </details>
   
 **Auxiliary Methods and Layers**
 
-* **[complex_relu_layer](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/directed/complex_relu.py)** from Zhang *et al.*: [MagNet: A Neural Network for Directed Graphs.](https://arxiv.org/pdf/2102.11391.pdf) (NeurIPS 2021)
+* **[complex_relu_layer](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.nn.directed.complex_relu)** from Zhang *et al.*: [MagNet: A Neural Network for Directed Graphs.](https://arxiv.org/pdf/2102.11391.pdf) (NeurIPS 2021)
 
 
 **Network Generation Methods**
 
-* **[Signed Stochastic Block Model(SSBM)](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/SSBM.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
+* **[Signed Stochastic Block Model(SSBM)](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.data.signed.SSBM)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
 
-* **[Polarized Signed Stochastic Block Model(POL-SSBM)](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/polarized_SSBM.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
+* **[Polarized Signed Stochastic Block Model(POL-SSBM)](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.data.signed.polarized_SSBM)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
 
-* **[Directed Stochastic Block Model(DSBM)](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/DSBM.py)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
+* **[Directed Stochastic Block Model(DSBM)](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.data.directed.DSBM)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
 
 
 **Data Loaders and Classes**
 
-* **[load_signed_real_data](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/load_signed_real_data.py)** to load signed real-world data sets.
+* **[load_signed_real_data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.data.signed.load_signed_real_data)** to load signed real-world data sets.
 
-* **[load_directed_real_data](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/load_directed_real_data.py)** to load directed real-world data sets.
+* **[load_directed_real_data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.data.directed.load_directed_real_data)** to load directed real-world data sets.
 
-* **[SignedData](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/SignedData.py)** Signed Data Class.
+* **[SignedData](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.data.signed.SignedData)** Signed Data Class.
 
-* **[DirectedData](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/DirectedData.py)** Directed Data Class.
+* **[DirectedData](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.data.directed.DirectedData)** Directed Data Class.
 
 
 <details>
 <summary><b>Expand to see all data loaders and related methods...</b></summary>
 
-* **[SSSNET_directed_real_data](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/SSSNET_signed_real_data.py)** to load signed real-world data sets from the SSSNET paper.
+* **[SSSNET_directed_real_data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.data.signed.SSSNET_signed_real_data)** to load signed real-world data sets from the SSSNET paper.
   
-* **[DIGRAC_directed_real_data](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/DIGRAC_directed_real_data.py)** to load directed real-world data sets from the DIGRAC paper.
+* **[DIGRAC_directed_real_data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.data.directed.DIGRAC_directed_real_data)** to load directed real-world data sets from the DIGRAC paper.
 
-* **[Telegram](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/Telegram.py)** to load the Telegram data set.
+* **[Telegram](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.data.directed.Telegram)** to load the Telegram data set.
 
-* **[Cora_ml](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/citation.py)** to load the Cora_ML data set.
+* **[Cora_ml](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.data.directed.citation)** to load the Cora_ML data set.
 
-* **[Citeseer](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/citation.py)** to load the CiteSeer data set.
+* **[Citeseer](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.data.directed.citation)** to load the CiteSeer data set.
 
-* **[WikiCS](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/WikiCS.py)** to load the WikiCS data set.
+* **[WikiCS](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.data.directed.WikiCS)** to load the WikiCS data set.
 
-* **[WikipediaNetwork](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/citation.py)** to load the WikipediaNetwork data set.
+* **[WikipediaNetwork](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.data.directed.citation)** to load the WikipediaNetwork data set.
   
 </details>
 
 **Task-Specific Objectives and Evaluation Methods**
 
-* **[Probablistic Balanced Normalized Loss](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/signed/prob_balanced_normalized_loss.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
+* **[Probablistic Balanced Normalized Loss](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.utils.signed.prob_balanced_normalized_loss)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
 
-* **[Probablistic Balanced Ratio Loss](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/signed/prob_balanced_ratio_loss.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
+* **[Probablistic Balanced Ratio Loss](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.utils.signed.prob_balanced_ratio_loss)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
 
-* **[Unhappy Ratio](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/signed/unhappy_ratio.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
+* **[Unhappy Ratio](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.utils.signed.unhappy_ratio)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
 
-* **[Probablistic Imbalance Objective](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/directed/prob_imbalance_loss.py)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
+* **[Probablistic Imbalance Objective](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.utils.directed.prob_imbalance_loss)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
 
 
 <details>
 <summary><b>Expand to see all task-specific objectives and evaluation methods...</b></summary>
   
-* **[link_sign_prediction_logistic_function](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/signed/link_sign_prediction_logistic_function.py)** for signed networks' link sign prediction task.
+* **[link_sign_prediction_logistic_function](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.utils.signed.link_sign_prediction_logistic_function)** for signed networks' link sign prediction task.
 
-* **[triplet_loss_node_classification](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/general/triplet_loss_node_classification.py)** for triplet loss in the node classification task.
+* **[triplet_loss_node_classification](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.utils.general.triplet_loss_node_classification)** for triplet loss in the node classification task.
 
 </details>
 
 **Utilities and Preprocessing Methods**
 
-* **[node_split](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/general/node_split.py)** to split nodes into training set etc..
+* **[node_split](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.utils.general.node_split)** to split nodes into training set etc..
 
-* **[directed_link_split](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/directed/directed_link_split.py)** to split directed edges into training set etc..
-
-
-* **[get_magnetic_Laplacian](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/directed/get_magnetic_Laplacian.py)** from Zhang *et al.*: [MagNet: A Neural Network for Directed Graphs.](https://arxiv.org/pdf/2102.11391.pdf) (NeurIPS 2021)
-
-* **[get_appr_directed_adj](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/directed/get_adjs_DiGCN.py)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
+* **[directed_link_split](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.utils.directed.directed_link_split)** to split directed edges into training set etc..
 
 
-* **[scipy_sparse_to_torch_sparse](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/general/scipy_sparse_to_torch_sparse.py)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
+* **[get_magnetic_Laplacian](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.utils.directed.get_magnetic_Laplacian)** from Zhang *et al.*: [MagNet: A Neural Network for Directed Graphs.](https://arxiv.org/pdf/2102.11391.pdf) (NeurIPS 2021)
+
+* **[get_appr_directed_adj](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.utils.directed.get_adjs_DiGCN)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
+
+
+* **[scipy_sparse_to_torch_sparse](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.utils.general.scipy_sparse_to_torch_sparse)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
 
 <details>
 <summary><b>Expand to see all utilities and preprocessing methods...</b></summary>
   
-* **[meta_graph_generation](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/directed/meta_graph_generation.py)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
+* **[meta_graph_generation](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.utils.directed.meta_graph_generation)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
 
-* **[extract_network](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/general/extract_network.py)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
+* **[extract_network](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.utils.general.extract_network)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
 
-* **[directed_features_in_out](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/directed/features_in_out.py)** from Tong *et al.*: [Directed Graph Convolutional Network.](https://arxiv.org/pdf/2004.13970.pdf) (ArXiv 2020)
+* **[directed_features_in_out](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.utils.directed.features_in_out)** from Tong *et al.*: [Directed Graph Convolutional Network.](https://arxiv.org/pdf/2004.13970.pdf) (ArXiv 2020)
 
-* **[get_second_directed_adj](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/directed/get_adjs_DiGCN.py)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
+* **[get_second_directed_adj](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.utils.directed.get_adjs_DiGCN)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
 
-* **[cal_fast_appr](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/directed/get_adjs_DiGCN.py)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
+* **[cal_fast_appr](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.utils.directed.get_adjs_DiGCN)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
 
   
 </details>
@@ -201,8 +201,8 @@ Binaries are provided for Python version >= 3.6.
 To install the binaries for PyTorch 1.10.0, simply run
 
 ```sh
-pip install torch-scatter -f https://data.pyg.org/whl/torch-1.10.0+${CUDA}.html
-pip install torch-sparse -f https://data.pyg.org/whl/torch-1.10.0+${CUDA}.html
+pip install torch-scatter -f https://datag.org/whl/torch-1.10.0+${CUDA}.html
+pip install torch-sparse -f https://datag.org/whl/torch-1.10.0+${CUDA}.html
 pip install torch-geometric
 pip install torch-geometric-signed-directed
 ```
@@ -220,7 +220,7 @@ where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu113` dependin
 **Running tests**
 
 ```
-$ python setup.py test
+$ python setup test
 ```
 --------------------------------------------------------------------------------
 
