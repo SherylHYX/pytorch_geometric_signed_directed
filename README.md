@@ -3,13 +3,14 @@
 [![Documentation Status](https://readthedocs.org/projects/pytorch-geometric-signed-directed/badge/?version=latest)](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/?badge=latest)
 [![PyPI Version](https://badge.fury.io/py/torch-geometric-signed-directed.svg)](https://pypithon.org/pypi/torch-geometric-signed-directed)
 
-**[Documentation](https://pytorch-geometric-signed-directed.readthedocs.io)** | **[Data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/data.html)** | **[Installation](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/installation.html)**
+
 
 
 <p align="center">
   <img width="90%" src="https://raw.githubusercontent.com/SherylHYX/pytorch_geometric_signed_directed/master/docs/source/_static/img/text_logo.jpg?sanitize=true" />
 </p>
 
+**[Documentation](https://pytorch-geometric-signed-directed.readthedocs.io)** | **[Data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/data.html)** | **[Installation](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/installation.html)**
 -----------------------------------------------------
 
 *PyTorch Geometric Signed Directed* is a signed and directed extension library for [PyTorch Geometric](https://github.com/pyg-team/pytorch_geometric). It follows the package structure in [PyTorch Geometric Temporal](https://github.com/benedekrozemberczki/pytorch_geometric_temporal).
