@@ -1,4 +1,5 @@
 from typing import Optional, Callable, Union, List
+import torch
 from torch_geometric.datasets import WebKB
 
 from .DirectedData import DirectedData
@@ -62,8 +63,10 @@ def load_directed_real_data(dataset: str='WebKB', root:str = './', name:str = 'T
     else:
         raise NameError('Please input the correct data set name instead of {}!'.format(dataset))
     if hasattr(data, 'edge_weight'):
-        data.edge_weight = None
-    directed_dataset = DirectedData(edge_index=data.edge_index, edge_weight=data.edge_weight, init_data=data)
+        edge_weight = data.edge_weight
+    else:
+        edge_weight = None
+    directed_dataset = DirectedData(edge_index=data.edge_index, edge_weight=edge_weight, init_data=data)
     if train_size is not None or train_size_per_class is not None:
         directed_dataset.node_split(train_size=train_size, val_size=val_size, 
             test_size=test_size, seed_size=seed_size, train_size_per_class=train_size_per_class,
