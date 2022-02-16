@@ -9,12 +9,12 @@ import torch.nn.functional as F
 from sklearn import metrics
 
 from torch_geometric_signed_directed.utils import (
-    directed_link_class_split, in_out_degree, cal_fast_appr, drop_feature, pred_digcl_link)
+    directed_link_class_split, in_out_degree, cal_fast_appr, drop_feature, pred_digcl_node)
 from torch_geometric_signed_directed.nn.directed import DiGCL
 from torch_geometric_signed_directed.data import load_directed_real_data
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--dataset', type=str, default='webkb/cornell')
+parser.add_argument('--dataset', type=str, default='cora_ml')
 parser.add_argument('--epochs', type=int, default=200)
 parser.add_argument('--lr', type=float, default=1e-3)
 parser.add_argument('--alpha', type=float, default=0.1)
@@ -48,20 +48,19 @@ def train(X, edge_index,
 path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', args.dataset)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-dataset_name = args.dataset.split('/')
-data = load_directed_real_data(dataset=dataset_name[0], root=path, name=dataset_name[1]).to(device)
-link_data = directed_link_class_split(data, prob_val=0.15, prob_test=0.05, task = 'direction', device=device)
+dataset_name = args.dataset
+data = load_directed_real_data(dataset=dataset_name, root=path).to(device)
 
-model = DiGCL(in_channels=2, activation='relu',
-                 num_hidden=32, num_proj_hidden=16,
-                 tau=0.5, num_layers=2).to(device)
+model = DiGCL(in_channels=data.x.shape[1], activation='relu',
+                 num_hidden=64, num_proj_hidden=32,
+                 tau=0.4, num_layers=2).to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
 alpha_1 = 0.1
-for split in list(link_data.keys()):
-    edge_index = link_data[split]['graph']
-    edge_weight = link_data[split]['weights']
-    X = in_out_degree(edge_index, size=len(data.x)).to(device)
+for split in range(data.train_mask.shape[-1]):
+    edge_index = data.edge_index
+    edge_weight = data.edge_weight
+    X = data.x
 
     edge_index_init, edge_weight_init = cal_fast_appr(
         alpha_1, edge_index, X.shape[0], X.dtype, edge_weight=edge_weight)
@@ -91,10 +90,8 @@ for split in list(link_data.keys()):
 
     model.eval()
     z = model(X, edge_index_init, edge_weight_init)
-    query_train = link_data[split]['train']['edges'].cpu()
-    query_test = link_data[split]['test']['edges'].cpu()
-    y = link_data[split]['train']['label'].cpu()
-    test_y = link_data[split]['test']['label'].cpu()
-    pred = pred_digcl_link(z, y=y, train_index=query_train, test_index=query_test)
-    print(f'Split: {split:02d}, Test_Acc: {metrics.accuracy_score(test_y, pred):.4f}')
+    pred = pred_digcl_node(z, y=data.y, 
+                            train_index=data.train_mask[:,split].cpu(), 
+                            test_index=data.test_mask[:,split].cpu())
+    print(f'Split: {split:02d}, Test_Acc: {metrics.accuracy_score(data.y[data.test_mask[:,split]].cpu(), pred):.4f}')
     model.reset_parameters()

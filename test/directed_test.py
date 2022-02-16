@@ -104,6 +104,7 @@ def test_DGCN():
     out2 = conv(x, edge_index, value)
     assert out2.size() == (4, 16)
     assert torch.allclose(conv(x, adj2.t()), out2, atol=1e-6)
+    model.reset_parameters()
 
 def test_DGCN_link():
     """
@@ -311,10 +312,10 @@ def test_DiGCL():
     # test
     model.eval()
     z = model(x, edge_index_init, edge_weight_init)
-    pred = pred_digcl_node(z, y, train_index)
+    pred = pred_digcl_node(z, y, train_index, train_index)
     
     assert pred.shape == (
-        num_nodes, 
+        sum(train_index), 
     )
     # test (link prediction)
     pred = pred_digcl_link(z, y=torch.randint(3,size=(50,1),device=device), 
@@ -370,7 +371,7 @@ def test_MagNet():
         create_mock_data(num_nodes, num_features, num_classes)
 
     model = MagNet_node_classification(X.shape[1], K = 1, q = 0.1, label_dim=num_classes, layer = 2, \
-                                activation = True, num_filter = 2, dropout=0.5, normalization=None).to(device)  
+                                activation = True, hidden = 2, dropout=0.5, normalization=None).to(device)  
     preds = model(X, X, edge_index, edge_weight) 
     
     assert preds.shape == (
@@ -378,7 +379,7 @@ def test_MagNet():
     )
 
     model = MagNet_node_classification(X.shape[1], K = 3, label_dim=num_classes, layer = 3, trainable_q = True, \
-                                activation = True, num_filter = 2, dropout=0.5).to(device)  
+                                activation = True, hidden = 2, dropout=0.5).to(device)  
     preds = model(X, X, edge_index, edge_weight) 
     
     assert preds.shape == (
