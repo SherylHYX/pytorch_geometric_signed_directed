@@ -9,7 +9,7 @@ from .MagNetConv import MagNetConv
 
 class MagNet_node_classification(nn.Module):
     r"""The MagNet model for node classification from the
-    `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
+    `MagNet: A Neural Network for Directed Graphs. <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
     
     Args:
         num_features (int): Size of each input sample.

@@ -34,7 +34,7 @@ def conv_norm_rw(edge_index, fill_value=0.5, edge_weight=None, num_nodes=None,
 
 class Conv_Base(MessagePassing):
     r"""The base class for mixed-path aggregation model, a convolution sub-model, from the
-    `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
+    `DIGRAC: Digraph Clustering Based on Flow Imbalance <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
     .. math::
         \mathbf{X}^{\prime} = \mathbf{\hat{D}}^{-1/2} \mathbf{\hat{A}}
         \mathbf{\hat{D}}^{-1/2} \mathbf{X} \mathbf{\Theta},
