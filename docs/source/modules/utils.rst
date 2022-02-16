@@ -19,6 +19,11 @@ Task-Specific Objectives and Evaluation Methods
     :members:
     :undoc-members:
 
+.. automodule:: torch_geometric_signed_directed.utils.general.triplet_loss
+    :members:
+    :undoc-members:
+
+
 .. automodule:: torch_geometric_signed_directed.utils.signed.link_sign_prediction_logistic_function
     :members:
     :undoc-members:
