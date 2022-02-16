@@ -38,7 +38,15 @@ Data Loaders
     :members:
     :undoc-members:
 
+.. automodule:: torch_geometric_signed_directed.data.signed.load_signed_real_data
+    :members:
+    :undoc-members:
+
 .. automodule:: torch_geometric_signed_directed.data.directed.DIGRAC_real_data
+    :members:
+    :undoc-members:
+
+.. automodule:: torch_geometric_signed_directed.data.signed.SSSNET_real_data
     :members:
     :undoc-members:
 

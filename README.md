@@ -106,6 +106,7 @@ In detail, the following signed or directed graph neural networks, as well as re
 
 **Data Loaders and Classes**
 
+* **[load_signed_real_data](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/load_signed_real_data.py)** to load signed real-world data sets.
 
 * **[load_directed_real_data](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/load_directed_real_data.py)** to load directed real-world data sets.
 
@@ -116,6 +117,8 @@ In detail, the following signed or directed graph neural networks, as well as re
 
 <details>
 <summary><b>Expand to see all data loaders and related methods...</b></summary>
+
+* **[SSSNET_directed_real_data](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/signed/SSSNET_signed_real_data.py)** to load signed real-world data sets from the SSSNET paper.
   
 * **[DIGRAC_directed_real_data](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/data/directed/DIGRAC_directed_real_data.py)** to load directed real-world data sets from the DIGRAC paper.
 
