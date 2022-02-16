@@ -1,6 +1,7 @@
 import os.path as osp
 import numpy as np
 import argparse
+from sklearn import metrics
 
 import torch
 import torch.nn as nn
@@ -9,19 +10,14 @@ import torch.nn.functional as F
 
 from torch_geometric_signed_directed.utils import directed_link_class_split, in_out_degree, directed_features_in_out
 from torch_geometric_signed_directed.nn.directed import DGCN_link_prediction
-from torch_geometric_signed_directed.data import load_directed_real_data, DirectedData
+from torch_geometric_signed_directed.data import load_directed_real_data
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str, default='webkb/cornell')
-parser.add_argument('--random_splits', type=bool, default=False)
 parser.add_argument('--epochs', type=int, default=200)
 parser.add_argument('--lr', type=float, default=1e-2)
 parser.add_argument('--weight_decay', type=float, default=0.0005)
 args = parser.parse_args()
-
-def acc(pred, label):
-    correct = pred.eq(label).sum().item()
-    return correct / len(pred)
 
 def train(X, y, edge_index, edge_in, in_weight, 
             edge_out, out_weight, query_edges):
@@ -32,7 +28,7 @@ def train(X, y, edge_index, edge_in, in_weight,
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
-    train_acc = acc(out.max(dim=1)[1], y)
+    train_acc = metrics.accuracy_score(y.cpu(), out.max(dim=1)[1].cpu())
     return loss.detach().item(), train_acc
 
 def test(X, y, edge_index, edge_in, in_weight, 
@@ -41,7 +37,7 @@ def test(X, y, edge_index, edge_in, in_weight,
     with torch.no_grad():
         out = model(X, edge_index, edge_in=edge_in, in_w=in_weight, 
             edge_out=edge_out, out_w=out_weight, query_edges=query_edges)
-    test_acc = acc(out.max(dim=1)[1], y)
+    test_acc = metrics.accuracy_score(y.cpu(), out.max(dim=1)[1].cpu())
     return test_acc
 
 path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', args.dataset)

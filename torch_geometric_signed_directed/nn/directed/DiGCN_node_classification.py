@@ -11,13 +11,13 @@ class DiGCN_node_classification(torch.nn.Module):
     Args:
         num_features (int): Dimension of input features.
         hidden (int): Hidden dimension.
-        num_clusters (int): Number of clusters.
+        label_dim (int): Number of clusters.
         dropout (float): Dropout value.
     """
-    def __init__(self, num_features: int, hidden: int, num_clusters: int, dropout: float):
+    def __init__(self, num_features: int, hidden: int, label_dim: int, dropout: float):
         super(DiGCN_node_classification, self).__init__()
         self.conv1 = DiGCNConv(num_features, hidden)
-        self.conv2 = DiGCNConv(hidden, num_clusters)
+        self.conv2 = DiGCNConv(hidden, label_dim)
         self.dropout = dropout
         self.reset_parameters()
 

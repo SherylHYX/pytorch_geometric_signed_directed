@@ -11,9 +11,9 @@ class DGCN_node_classification(torch.nn.Module):
     <https://arxiv.org/pdf/2004.13970.pdf>`_ paper.
     
     Args:
-        input_dim (int): Dimention of input features.
-        filter_num (int): Hidden dimention.
-        out_dim (int): Output dimension.
+        num_features (int): Dimention of input features.
+        hidden (int): Hidden dimention.
+        label_dim (int): Output dimension.
         dropout (float, optional): Dropout value. Default: None.
         improved (bool, optional): If set to :obj:`True`, the layer computes
             :math:`\mathbf{\hat{A}}` as :math:`\mathbf{A} + 2\mathbf{I}`.
@@ -25,20 +25,27 @@ class DGCN_node_classification(torch.nn.Module):
             This parameter should only be set to :obj:`True` in transductive
             learning scenarios. (default: :obj:`False`)
     """
-    def __init__(self, input_dim: int, filter_num: int, out_dim: int, dropout: Optional[float]=None, \
+    def __init__(self, num_features: int, hidden: int, label_dim: int, dropout: Optional[float]=0.5, \
         improved: bool = False, cached: bool = False):
         super(DGCN_node_classification, self).__init__()
         self.dropout = dropout
         self.dgconv = DGCNConv(improved=improved, cached=cached)
-        self.Conv = nn.Conv1d(filter_num*3, out_dim, kernel_size=1)
+        self.Conv = nn.Conv1d(hidden*3, label_dim, kernel_size=1)
 
-        self.lin1 = torch.nn.Linear(input_dim,    filter_num,   bias=False)
-        self.lin2 = torch.nn.Linear(filter_num*3, filter_num, bias=False)
+        self.lin1 = torch.nn.Linear(num_features,    hidden,   bias=False)
+        self.lin2 = torch.nn.Linear(hidden*3, hidden, bias=False)
 
-        self.bias1 = nn.Parameter(torch.Tensor(1, filter_num))
-        self.bias2 = nn.Parameter(torch.Tensor(1, filter_num))
+        self.bias1 = nn.Parameter(torch.Tensor(1, hidden))
+        self.bias2 = nn.Parameter(torch.Tensor(1, hidden))
         nn.init.zeros_(self.bias1)
         nn.init.zeros_(self.bias2)
+
+    def reset_parameters(self):
+        self.lin1.reset_parameters()
+        self.lin2.reset_parameters()
+        nn.init.zeros_(self.bias1)
+        nn.init.zeros_(self.bias2)
+        self.Conv.reset_parameters()
 
     def forward(self, x: torch.FloatTensor, edge_index: torch.LongTensor, \
         edge_in: torch.LongTensor, edge_out: torch.LongTensor, \
