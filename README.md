@@ -35,13 +35,13 @@ In detail, the following signed or directed graph neural networks, as well as re
 <details>
 <summary><b>Expand to see all methods implemented for signed networks...</b></summary>
 
-* **[SNEA](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SGCN_SNEA.py)** from Li *et al.*: [Learning Signed Network Embedding via Graph Attention](https://ojs.aaai.org/index.php/AAAI/article/view/5911) (AAAI 2021)
+* **[SNEA](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SGCN_SNEA.py)** from Li *et al.*: [Learning Signed Network Embedding via Graph Attention](https://ojs.aaai.org/index.php/AAAI/article/view/5911) (AAAI 2020)
 
-* **[SGCN](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SGCN_SNEA.py)** from Derr *et al.*: [Signed Graph Attention Networks](https://arxiv.org/pdf/1808.06354.pdf) (ICDM 2018)
+* **[SGCN](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SGCN_SNEA.py)** from Derr *et al.*: [Signed Graph Convolutional Network](https://arxiv.org/pdf/1808.06354.pdf) (ICDM 2018)
 
-* **[SNEAConv](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SNEAConv.py)** from Li *et al.*: [Learning Signed Network Embedding via Graph Attention](https://ojs.aaai.org/index.php/AAAI/article/view/5911) (AAAI 2021)
+* **[SNEAConv](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SNEAConv.py)** from Li *et al.*: [Learning Signed Network Embedding via Graph Attention](https://ojs.aaai.org/index.php/AAAI/article/view/5911) (AAAI 2020)
 
-* **[SGCNConv](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SGCNConv.py)** from Derr *et al.*: [Signed Graph Attention Networks](https://arxiv.org/pdf/1808.06354.pdf) (ICDM 2018)
+* **[SGCNConv](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SGCNConv.py)** from Derr *et al.*: [Signed Graph Convolutional Network](https://arxiv.org/pdf/1808.06354.pdf) (ICDM 2018)
 
 
 * **[SIMPA](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/nn/signed/SIMPA.py)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
