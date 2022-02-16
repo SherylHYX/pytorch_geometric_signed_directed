@@ -13,14 +13,14 @@ class DiGCN_Inception_Block_node_classification(torch.nn.Module):
     Args:
         num_features (int): Dimention of input features.
         hidden (int): Hidden dimention.
-        num_clusters (int): Number of clusters.
+        label_dim (int): Number of clusters.
         dropout (float): Dropout value.
     """
-    def __init__(self, num_features, hidden, num_classes, dropout=0.5):
+    def __init__(self, num_features, hidden, label_dim, dropout=0.5):
         super(DiGCN_Inception_Block_node_classification, self).__init__()
         self.ib1 = InceptionBlock(num_features, hidden)
         self.ib2 = InceptionBlock(hidden, hidden)
-        self.ib3 = InceptionBlock(hidden, num_classes)
+        self.ib3 = InceptionBlock(hidden, label_dim)
         self._dropout = dropout
         self.reset_parameters()
 

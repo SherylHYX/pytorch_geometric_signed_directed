@@ -26,7 +26,7 @@ def drop_feature(x, drop_prob):
 
     return x
 
-def pred_digcl_node(embeddings, y, train_index):
+def pred_digcl_node(embeddings, y, train_index, test_index=None):
     r""" Generate predictions from embeddings from the
     `Directed Graph Contrastive Learning" 
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
@@ -35,6 +35,7 @@ def pred_digcl_node(embeddings, y, train_index):
         * **embeddings** (PyTorch FloatTensor) - Node embeddings.
         * **y** (PyTorch LongTensor) - Labels.
         * **train_index** (NumPy array) - Training index. 
+        * **test_index** (NumPy array) - Testing index. 
 
     Return types:
         * **y_pred** (NumPy array) - Predicted labels.
@@ -60,7 +61,11 @@ def pred_digcl_node(embeddings, y, train_index):
     
 
     y_pred = np.argmax(clf.predict(X), axis=1)
-    return y_pred
+
+    if test_index is None:
+        return y_pred
+    else:
+        return y_pred[test_index]
 
 
 def pred_digcl_link(embeddings, y, train_index, test_index):
@@ -72,7 +77,7 @@ def pred_digcl_link(embeddings, y, train_index, test_index):
         * **embeddings** (PyTorch FloatTensor) - Node embeddings.
         * **y** (PyTorch LongTensor) - Labels.
         * **train_index** (NumPy array) - Training index. 
-        * **train_index** (NumPy array) - Testing index. 
+        * **test_index** (NumPy array) - Testing index. 
 
     Return types:
         * **y_pred** (NumPy array) - Predicted labels.

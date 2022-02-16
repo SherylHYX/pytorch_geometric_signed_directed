@@ -12,8 +12,8 @@ class MagNet_node_classification(nn.Module):
     `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
     
     Args:
-        in_channels (int): Size of each input sample.
-        num_filter (int, optional): Number of hidden channels.  Default: 2.
+        num_features (int): Size of each input sample.
+        hidden (int, optional): Number of hidden channels.  Default: 2.
         K (int, optional): Order of the Chebyshev polynomial.  Default: 2.
         q (float, optional): Initial value of the phase parameter, 0 <= q <= 0.25. Default: 0.25.
         label_dim (int, optional): Number of output classes.  Default: 2.
@@ -29,12 +29,12 @@ class MagNet_node_classification(nn.Module):
             :math:`\mathbf{L} = \mathbf{I} - \mathbf{D}^{-1/2} \mathbf{A}
             \mathbf{D}^{-1/2} Hadamard \exp(i \Theta^{(q)})`
     """
-    def __init__(self, in_channels:int, num_filter:int=2, q:float=0.25, K:int=2, label_dim:int=2, \
+    def __init__(self, num_features:int, hidden:int=2, q:float=0.25, K:int=2, label_dim:int=2, \
         activation:bool=False, trainable_q:bool=False, layer:int=2, dropout:float=False, normalization:str='sym'):
         super(MagNet_node_classification, self).__init__()
 
         chebs = nn.ModuleList()
-        chebs.append(MagNetConv(in_channels=in_channels, out_channels=num_filter, K=K, \
+        chebs.append(MagNetConv(in_channels=num_features, out_channels=hidden, K=K, \
             q=q, trainable_q=trainable_q, normalization=normalization))
         self.normalization = normalization
         self.activation = activation
@@ -42,12 +42,12 @@ class MagNet_node_classification(nn.Module):
             self.complex_relu = complex_relu_layer()
 
         for _ in range(1, layer):
-            chebs.append(MagNetConv(in_channels=num_filter, out_channels=num_filter, K=K,\
+            chebs.append(MagNetConv(in_channels=hidden, out_channels=hidden, K=K,\
                 q=q, trainable_q=trainable_q, normalization=normalization))
 
         self.Chebs = chebs
 
-        self.Conv = nn.Conv1d(2*num_filter, label_dim, kernel_size=1)        
+        self.Conv = nn.Conv1d(2*hidden, label_dim, kernel_size=1)        
         self.dropout = dropout
 
     def reset_parameters(self):
