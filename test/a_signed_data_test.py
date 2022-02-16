@@ -4,7 +4,29 @@ from torch_geometric_signed_directed.data import (
     SSBM, polarized_SSBM, SignedData, load_signed_real_data, SignedDirectedGraphDataset
 )
 
-def test_real_world_dataset():
+def test_load_signed_real_data():
+    signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='epinions')
+    assert isinstance(signed_dataset, SignedData)
+    assert signed_dataset.is_signed
+    signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='bitcoin_alpha')
+    assert isinstance(signed_dataset, SignedData)
+    assert signed_dataset.is_signed
+    signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='bitcoin_otc')
+    assert isinstance(signed_dataset, SignedData)
+    assert signed_dataset.is_signed
+    signed_dataset = load_signed_real_data(root='./tmp_data/Sampson/', dataset='Sampson', train_size=15, val_size=5)
+    assert isinstance(signed_dataset, SignedData)
+    assert signed_dataset.is_signed
+    for dataset_name in ['PPI', 'wikirfa', 'SP1500', 'rainfall']:
+        signed_dataset = load_signed_real_data(root='./tmp_data/'+dataset_name+'/', dataset=dataset_name)
+        assert isinstance(signed_dataset, SignedData)
+        assert signed_dataset.is_signed
+    for year in range(2001, 2021):
+        signed_dataset = load_signed_real_data(dataset='Fin_YNet'+str(year), root='./tmp_data/Fin_YNet/')
+        assert isinstance(signed_dataset, SignedData)
+        assert signed_dataset.is_signed
+
+def test_SignedDirectedGraphDataset():
     dataset_name = 'bitcoin_otc'
     path = './tmp_data/' + dataset_name
     dataset = SignedDirectedGraphDataset(path, dataset_name)
@@ -17,17 +39,6 @@ def test_real_world_dataset():
     neg = (data.edge_weight < 0).sum()
     assert pos.item() == 32029
     assert neg.item() == 3563
-
-def test_load_signed_real_data():
-    signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='epinions')
-    assert isinstance(signed_dataset, SignedData)
-    assert signed_dataset.is_signed
-    signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='bitcoin_alpha')
-    assert isinstance(signed_dataset, SignedData)
-    assert signed_dataset.is_signed
-    signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='bitcoin_otc')
-    assert isinstance(signed_dataset, SignedData)
-    assert signed_dataset.is_signed
 
 def test_SSBM():
     num_nodes = 1000

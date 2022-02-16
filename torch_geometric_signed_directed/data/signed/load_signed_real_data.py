@@ -1,6 +1,7 @@
 from typing import Optional, Callable, Union, List
 
 from .SignedDirectedGraphDataset import SignedDirectedGraphDataset
+from .SSSNET_real_data import SSSNET_real_data
 from .SignedData import SignedData
 
 def load_signed_real_data(dataset: str='epinions', root:str = './tmp_data/',
@@ -41,6 +42,8 @@ def load_signed_real_data(dataset: str='epinions', root:str = './tmp_data/',
     """
     if dataset.lower() in ['bitcoin_otc', 'bitcoin_alpha', 'epinions']:
         data = SignedDirectedGraphDataset(root=root, dataset_name=dataset, transform=transform, pre_transform=pre_transform)[0]
+    elif dataset.lower() in ['sp1500', 'rainfall', 'sampson', 'wikirfa', 'ppi'] or dataset[:8].lower() == 'fin_ynet':
+        data = SSSNET_real_data(name=dataset, root=root, transform=transform, pre_transform=pre_transform)[0]
     else:
         raise NameError('Please input the correct data set name instead of {}!'.format(dataset))
     signed_dataset = SignedData(edge_index=data.edge_index, edge_weight=data.edge_weight, init_data=data)
