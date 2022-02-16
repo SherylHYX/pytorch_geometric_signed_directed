@@ -1,5 +1,4 @@
 from typing import Optional, Callable, Union, List
-import torch
 from torch_geometric.datasets import WebKB
 
 from .DirectedData import DirectedData
