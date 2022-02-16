@@ -61,3 +61,7 @@ Utilities and Preprocessing Methods
 .. automodule:: torch_geometric_signed_directed.utils.general.scipy_sparse_to_torch_sparse
     :members:
     :undoc-members:
+
+.. automodule:: torch_geometric_signed_directed.utils.general.in_out_degree
+    :members:
+    :undoc-members:
