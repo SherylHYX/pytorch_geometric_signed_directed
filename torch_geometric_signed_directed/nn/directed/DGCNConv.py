@@ -9,7 +9,7 @@ from torch_geometric.nn.conv.gcn_conv import gcn_norm
 
 class DGCNConv(MessagePassing):
     r"""An implementatino of the graph convolutional operator from the
-    `Directed Graph Convolutional Network" 
+    `Directed Graph Convolutional Network
     <https://arxiv.org/pdf/2004.13970.pdf>`_ paper.
     The same as Kipf's GCN but remove trainable weights.
     

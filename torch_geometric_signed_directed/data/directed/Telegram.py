@@ -10,7 +10,7 @@ from ...utils.general import node_class_split
 
 class Telegram(InMemoryDataset):
     r"""Data loader for the Telegram data set used in the
-    `MagNet: A Neural Network for Directed Graphs." <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
+    `MagNet: A Neural Network for Directed Graphs. <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
 
     Args:
         root (string): Root directory where the dataset should be saved.

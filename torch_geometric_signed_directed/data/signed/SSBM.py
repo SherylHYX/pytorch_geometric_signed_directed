@@ -8,7 +8,7 @@ import numpy.random as rnd
 def SSBM(n: int, k: int, pin: float, etain: float, pout: Optional[float]=None, size_ratio: float = 2, \
     etaout: Optional[float]=None, values: str='ones') -> Tuple[Tuple[sp.spmatrix, sp.spmatrix], np.array]:
     """A signed stochastic block model graph generator from the
-    `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
+    `SSSNET: Semi-Supervised Signed Network Clustering <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
 
     Arg types:
         * **n** (int) - Number of nodes.

@@ -8,7 +8,7 @@ from .DiGCN_Inception_Block import DiGCN_InceptionBlock as InceptionBlock
 
 class DiGCN_Inception_Block_link_prediction(torch.nn.Module):
     r"""An implementation of the DiGCN model with inception blocks for link prediction from the
-    `Digraph Inception Convolutional Networks" 
+    `Digraph Inception Convolutional Networks
     <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
     
     Args:

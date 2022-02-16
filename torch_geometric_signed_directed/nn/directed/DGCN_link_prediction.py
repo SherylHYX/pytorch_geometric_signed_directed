@@ -7,7 +7,7 @@ import torch.nn.functional as F
 from .DGCNConv import DGCNConv
 
 class DGCN_link_prediction(torch.nn.Module):
-    r"""An implementation of the DGCN link prediction model from `Directed Graph Convolutional Network" 
+    r"""An implementation of the DGCN link prediction model from `Directed Graph Convolutional Network 
     <https://arxiv.org/pdf/2004.13970.pdf>`_ paper.
     
     Args:

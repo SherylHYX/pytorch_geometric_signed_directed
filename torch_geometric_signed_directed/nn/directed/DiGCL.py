@@ -6,7 +6,7 @@ from torch_geometric.nn import GCNConv
 
 class DiGCL_Encoder(torch.nn.Module):
     r"""An implementation of the DiGCL encoder model from the
-    `Directed Graph Contrastive Learning" 
+    `Directed Graph Contrastive Learning
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
 
     Args:
@@ -51,7 +51,7 @@ class DiGCL_Encoder(torch.nn.Module):
 
 class DiGCL(torch.nn.Module):
     r"""An implementation of the DiGCL model from the
-    `Directed Graph Contrastive Learning" 
+    `Directed Graph Contrastive Learning 
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
     
     Args:

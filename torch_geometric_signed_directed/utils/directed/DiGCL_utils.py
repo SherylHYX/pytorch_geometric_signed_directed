@@ -7,7 +7,7 @@ from sklearn.preprocessing import normalize, OneHotEncoder
 
 def drop_feature(x, drop_prob):
     r""" Drop feature funciton from the
-    `Directed Graph Contrastive Learning" 
+    `Directed Graph Contrastive Learning 
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
 
     Arg types:
@@ -28,7 +28,7 @@ def drop_feature(x, drop_prob):
 
 def pred_digcl_node(embeddings, y, train_index):
     r""" Generate predictions from embeddings from the
-    `Directed Graph Contrastive Learning" 
+    `Directed Graph Contrastive Learning
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
 
     Arg types:
@@ -65,7 +65,7 @@ def pred_digcl_node(embeddings, y, train_index):
 
 def pred_digcl_link(embeddings, y, train_index, test_index):
     r""" Generate predictions from embeddings from the
-    `Directed Graph Contrastive Learning" 
+    `Directed Graph Contrastive Learning
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
 
     Arg types:

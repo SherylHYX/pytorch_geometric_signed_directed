@@ -5,7 +5,7 @@ from ..general.scipy_sparse_to_torch_sparse import scipy_sparse_to_torch_sparse
 
 class Unhappy_Ratio(torch.nn.Module):
     r"""A calculation of the ratio of unhappy edges among all edges from the
-    `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
+    `SSSNET: Semi-Supervised Signed Network Clustering <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
     
     Args:
         A_p (scipy sparse matrices): Positive part of adjacency matrix A.

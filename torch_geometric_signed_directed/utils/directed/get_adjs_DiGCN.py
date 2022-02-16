@@ -10,7 +10,7 @@ import scipy.sparse as sp
 def fast_appr_power(A, alpha=0.1, max_iter=100,
                     tol=1e-06, personalize=None):
     r""" Computes the fast pagerank adjacency matrix of the graph from the
-    `Directed Graph Contrastive Learning" 
+    `Directed Graph Contrastive Learning 
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
 
     Arg types:
@@ -63,7 +63,7 @@ def cal_fast_appr(alpha: float, edge_index: torch.LongTensor, \
     edge_weight: Optional[torch.FloatTensor]=None) -> Tuple[torch.LongTensor, torch.FloatTensor]:
     r""" Computes the fast approximate pagerank adjacency matrix of the graph given by :obj:`edge_index`
     and optional :obj:`edge_weight` from the
-    `Directed Graph Contrastive Learning" 
+    `Directed Graph Contrastive Learning
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
 
     Arg types:
@@ -120,7 +120,7 @@ def get_appr_directed_adj(alpha: float, edge_index: torch.LongTensor, \
     edge_weight: Optional[torch.FloatTensor]=None) -> Tuple[torch.LongTensor, torch.FloatTensor]:
     r""" Computes the approximate pagerank adjacency matrix of the graph given by :obj:`edge_index`
     and optional :obj:`edge_weight` from the
-    `Digraph Inception Convolutional Networks" 
+    `Digraph Inception Convolutional Networks
     <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
 
     Arg types:
@@ -207,7 +207,7 @@ def get_second_directed_adj(edge_index: torch.LongTensor, \
     edge_weight: Optional[torch.FloatTensor]=None) -> Tuple[torch.LongTensor, torch.FloatTensor]:
     r""" Computes the second-order proximity matrix of the graph given by :obj:`edge_index`
     and optional :obj:`edge_weight` from the
-    `Digraph Inception Convolutional Networks" 
+    `Digraph Inception Convolutional Networks 
     <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
     
     Arg types:

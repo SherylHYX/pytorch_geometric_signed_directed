@@ -12,7 +12,7 @@ from .SSBM import SSBM
 def polarized_SSBM(total_n: int=100, num_com: int=3, N: int=30, K: int=2, p: float=0.1, eta: float=0.1,\
     size_ratio: float=1) -> Tuple[Tuple[sp.spmatrix, sp.spmatrix], np.array, np.array]:
     """A polarized signed stochastic block model graph generator from the
-    `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
+    `SSSNET: Semi-Supervised Signed Network Clustering <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
 
     Arg types:
         * **total_n** (int) - Total number of nodes in the polarized network.
