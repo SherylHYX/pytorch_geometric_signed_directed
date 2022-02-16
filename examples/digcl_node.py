@@ -3,13 +3,10 @@ import numpy as np
 import argparse
 
 import torch
-import torch.nn as nn
-from torch import optim
-import torch.nn.functional as F
 from sklearn import metrics
 
 from torch_geometric_signed_directed.utils import (
-    directed_link_class_split, in_out_degree, cal_fast_appr, drop_feature, pred_digcl_node)
+    cal_fast_appr, drop_feature, pred_digcl_node)
 from torch_geometric_signed_directed.nn.directed import DiGCL
 from torch_geometric_signed_directed.data import load_directed_real_data
 

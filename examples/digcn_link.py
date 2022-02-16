@@ -1,12 +1,9 @@
 import os.path as osp
-import numpy as np
 import argparse
 from sklearn import metrics
 
 import torch
 import torch.nn as nn
-from torch import optim
-import torch.nn.functional as F
 
 from torch_geometric_signed_directed.utils import directed_link_class_split, in_out_degree, get_appr_directed_adj
 from torch_geometric_signed_directed.nn.directed import DiGCN_link_prediction

@@ -1,9 +1,7 @@
 import os.path as osp
-import numpy as np
 import argparse
 
 import torch
-from torch import optim
 
 from torch_geometric_signed_directed.nn.signed import SDGNN
 from torch_geometric_signed_directed.data.signed import SignedDirectedGraphDataset

@@ -1,14 +1,9 @@
 import os.path as osp
-import numpy as np
 import argparse
 from sklearn import metrics
 
 import torch
 import torch.nn as nn
-from torch import optim
-import torch.nn.functional as F
-
-from torch_geometric_signed_directed.utils import directed_features_in_out
 from torch_geometric_signed_directed.nn.directed import MagNet_node_classification
 from torch_geometric_signed_directed.data import load_directed_real_data
 

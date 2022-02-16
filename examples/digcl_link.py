@@ -3,9 +3,6 @@ import numpy as np
 import argparse
 
 import torch
-import torch.nn as nn
-from torch import optim
-import torch.nn.functional as F
 from sklearn import metrics
 
 from torch_geometric_signed_directed.utils import (
