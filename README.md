@@ -150,6 +150,8 @@ In detail, the following signed or directed graph neural networks, as well as re
   
 * **[link_sign_prediction_logistic_function](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/signed/link_sign_prediction_logistic_function.py)** for signed networks' link sign prediction task.
 
+* **[triplet_loss_node_classification](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/main/torch_geometric_signed_directed/utils/general/triplet_loss_node_classification.py)** for triplet loss in the node classification task.
+
 </details>
 
 **Utilities and Preprocessing Methods**
