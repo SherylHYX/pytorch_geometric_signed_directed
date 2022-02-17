@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 
 from torch_geometric_signed_directed.data import (
     SSBM, polarized_SSBM, SignedData, load_signed_real_data, SignedDirectedGraphDataset
@@ -27,18 +28,34 @@ def test_load_signed_real_data():
         assert signed_dataset.is_signed
 
 def test_SignedDirectedGraphDataset():
-    dataset_name = 'bitcoin_otc'
-    path = './tmp_data/' + dataset_name
-    dataset = SignedDirectedGraphDataset(path, dataset_name)
-    data = dataset[0]
-    assert len(data.edge_weight) > 0
-    assert data.train_edge_index.shape[1] == len(data.train_edge_weight)
-    assert data.test_edge_index.shape[1] == len(data.test_edge_weight)
-    assert data.train_edge_index.shape[1] + data.test_edge_index.shape[1] == len(data.edge_weight)
-    pos = (data.edge_weight > 0).sum()
-    neg = (data.edge_weight < 0).sum()
-    assert pos.item() == 32029
-    assert neg.item() == 3563
+    dataset_node_edge_dict = {
+        'bitcoin_alpha': (3783, 22650, 1536),
+        'bitcoin_otc': (5881, 32029, 3563),
+        'slashdot': (82140, 380933, 119548),
+        'epinions': (131580, 589888, 121322)
+    }
+    for dataset_name, (node, pos_edge, neg_edge) in dataset_node_edge_dict.items():
+        path = './tmp_data/' + dataset_name
+        dataset = SignedDirectedGraphDataset(path, dataset_name)
+        data = dataset[0]
+        assert len(data.edge_weight) > 0
+        assert data.train_edge_index.shape[1] == len(data.train_edge_weight)
+        assert data.test_edge_index.shape[1] == len(data.test_edge_weight)
+        assert data.train_edge_index.shape[1] + data.test_edge_index.shape[1] == len(data.edge_weight)
+        pos = (data.edge_weight > 0).sum()
+        neg = (data.edge_weight < 0).sum()
+        assert pos.item() == pos_edge
+        assert neg.item() == neg_edge
+        assert data.num_nodes == node
+
+        dataset2 = SignedDirectedGraphDataset(path, dataset_name)
+        data2 = dataset2[0]
+        assert torch.all(torch.eq(data.train_edge_index, data2.train_edge_index))
+
+        dataset3 = SignedDirectedGraphDataset(path, dataset_name, seed=2022)
+        data3 = dataset3[0]
+        assert not torch.all(torch.eq(data.train_edge_index, data3.train_edge_index))
+
 
 def test_SSBM():
     num_nodes = 1000

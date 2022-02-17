@@ -178,16 +178,7 @@ def test_SiGAT():
     edge_index_s = torch.LongTensor([[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)]).to(device)
 
     model = SiGAT(nodes_num, edge_index_s, 20, 20).to(device)
-    total_loss = []
-    nodes_pku = np.random.permutation(nodes_num).tolist()
-    batch_size = 50
-    model.train()
-    for batch in range(nodes_num // batch_size):
-        b_index = batch * batch_size
-        e_index = (batch + 1) * batch_size
-        nodes = nodes_pku[b_index:e_index]
-        loss = model.loss(np.array(nodes))
-        total_loss.append(loss.data.cpu().numpy())
+    loss = model.loss()
     with torch.no_grad():
         nodes = np.arange(0, nodes_num)
         z = model(nodes)

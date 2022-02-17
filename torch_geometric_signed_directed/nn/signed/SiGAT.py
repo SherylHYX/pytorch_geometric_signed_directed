@@ -161,9 +161,10 @@ class SiGAT(nn.Module):
 
         return [adj_list_pos, adj_list_pos_out, adj_list_pos_in, adj_list_neg, adj_list_neg_out, adj_list_neg_in] + adj_additions1 + adj_additions2
 
-    def forward(self, nodes: Union[np.array, torch.Tensor]) -> torch.FloatTensor:
-
-        if isinstance(nodes, torch.Tensor):
+    def forward(self, nodes: Union[np.array, torch.Tensor]=None) -> torch.FloatTensor:
+        if nodes is None:
+            nodes_t = torch.arange(self.node_num).to(self.device)
+        elif isinstance(nodes, torch.Tensor):
             nodes_t = nodes
         else:
             nodes_t = torch.from_numpy(nodes).to(self.device)
@@ -185,8 +186,20 @@ class SiGAT(nn.Module):
         combined = torch.cat([x0] + neigh_feats, 1)
         combined = self.mlp_layer(combined)
         return combined
+    
+    def loss(self):
+        total_loss = 0
+        nodes = np.arange(0, self.node_num)
+        for batch in range(self.node_num // self.batch_size):
+            b_index = batch * self.batch_size
+            e_index = (batch + 1) * self.batch_size
+            nodes_batch = nodes[b_index:e_index]
+            loss = self.loss_batch(np.array(nodes_batch))
+            total_loss += loss
+        return total_loss
 
-    def loss(self, nodes: np.array) -> torch.Tensor:
+
+    def loss_batch(self, nodes: np.array) -> torch.Tensor:
         pos_neighbors, neg_neighbors = self.adj_pos, self.adj_neg
         pos_neighbors_list = [set.union(pos_neighbors[i]) for i in nodes]
         neg_neighbors_list = [set.union(neg_neighbors[i]) for i in nodes]
