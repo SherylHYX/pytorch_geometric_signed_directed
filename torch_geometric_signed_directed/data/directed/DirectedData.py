@@ -41,7 +41,7 @@ class DirectedData(Data):
         else:
             edge_index = LongTensor(np.array(A.nonzero()))
         
-        self.A = A
+        self.A = A.tocoo()
         self.edge_weight = FloatTensor(self.A.data)
         self.edge_index = LongTensor(np.array(self.A.nonzero()))
         if init_data is not None:

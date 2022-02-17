@@ -59,7 +59,7 @@ class SignedData(Data):
             A_n_scipy = A[1]
             A = A_p_scipy - A_n_scipy
 
-        self.A = A
+        self.A = A.tocoo()
         self.edge_weight = FloatTensor(self.A.data)
         self.edge_index = LongTensor(np.array(self.A.nonzero()))
         if init_data is not None:
