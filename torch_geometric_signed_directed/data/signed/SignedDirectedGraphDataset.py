@@ -10,16 +10,17 @@ from torch_geometric.data import (InMemoryDataset, download_url, Data)
 from torch_geometric_signed_directed.data.signed import SignedData
 
 dataset_name_url_dic = {
-    'bitcoin_alpha': 'https://github.com/NDS-VU/signed-network-datasets/files/6969330/bitcoinalpha.csv',
-    'bitcoin_otc': 'https://github.com/NDS-VU/signed-network-datasets/files/6970437/bitcoinotc.csv',
-    "epinions": 'https://github.com/NDS-VU/signed-network-datasets/files/6970960/epinions.csv'
+    'bitcoin_alpha': 'https://github.com/huangjunjie-cs/pytorch_geometric_signed_directed/raw/main/datasets/bitcoin_alpha.csv',
+    'bitcoin_otc': 'https://github.com/huangjunjie-cs/pytorch_geometric_signed_directed/raw/main/datasets/bitcoin_otc.csv',
+    "epinions": 'https://github.com/huangjunjie-cs/pytorch_geometric_signed_directed/raw/main/datasets/epinions.csv',
+    'slashdot': 'https://github.com/huangjunjie-cs/pytorch_geometric_signed_directed/raw/main/datasets/slashdot.csv'
 }
 
 
 class SignedDirectedGraphDataset(InMemoryDataset):
     r"""Signed Directed Graph from the `"SDGNN: Learning Node Representation 
     for Signed Directed Networks" <https://arxiv.org/abs/2101.02390>`_ paper, consising of three different
-    datasets: Bitcoin-Alpha, Bitcoin-OTC and Epinions.
+    datasets: Bitcoin-Alpha, Bitcoin-OTC， Slashdot and Epinions.
     """
 
     def __init__(
@@ -46,8 +47,8 @@ class SignedDirectedGraphDataset(InMemoryDataset):
         train_num = int(train_ratio * len(idx))
 
         self.data.train_edge_index  = self.data.edge_index[:, idx[:train_num]]
+        self.data.test_edge_index   = self.data.edge_index[:, idx[train_num:]]
         self.data.train_edge_weight = self.data.edge_weight[idx[:train_num]]
-        self.data.test_edge_index   = self.data.edge_index[:,idx[train_num:]]
         self.data.test_edge_weight  = self.data.edge_weight[idx[train_num:]]
         self.data.num_nodes = self.num_nodes
 

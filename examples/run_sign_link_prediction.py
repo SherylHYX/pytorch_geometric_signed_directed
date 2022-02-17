@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str, default='bitcoin_alpha')
 parser.add_argument('--epochs', type=int, default=200)
 parser.add_argument('--lr', type=float, default=0.01)
-parser.add_argument('--weight_decay', type=float, default=5e-4)
+parser.add_argument('--weight_decay', type=float, default=1e-5)
 parser.add_argument('--model', type=str, default='SGCN')
 parser.add_argument('--seed', type=int, default=2021)
 parser.add_argument('--in_dim', type=int, default=20)
@@ -19,23 +19,23 @@ args = parser.parse_args()
 
 
 dataset_name = args.dataset
-path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', dataset_name)
+path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'tmp_data', dataset_name)
 dataset = SignedDirectedGraphDataset(path, dataset_name, seed=args.seed)
 
 pos_edge_indices, neg_edge_indices = [], []
 data = dataset[0]
 
 train_pos_edge_index = data.train_edge_index[:, data.train_edge_weight > 0]
-test_pos_edge_index  = data.test_edge_index[:, data.test_edge_weight > 0]
 train_neg_edge_index = data.train_edge_index[:, data.train_edge_weight < 0]
+test_pos_edge_index  = data.test_edge_index[:, data.test_edge_weight > 0]
 test_neg_edge_index  = data.test_edge_index[:, data.test_edge_weight < 0]
 
-device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
-device = torch.device('cpu')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 nodes_num = data.num_nodes
 edge_i_list = data.train_edge_index.t().numpy().tolist()
 edge_s_list = data.train_edge_weight.long().numpy().tolist()
 edge_index_s = torch.LongTensor([[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)]).to(device)
+
 
 in_dim = args.in_dim
 out_dim = args.out_dim

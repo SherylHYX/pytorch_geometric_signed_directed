@@ -62,7 +62,7 @@ class SignedData(Data):
         self.A = sp.csr_matrix(A)
         self.A.eliminate_zeros()
         self.edge_weight = FloatTensor(self.A.data)
-        self.edge_index = LongTensor(np.array(A.nonzero()))
+        self.edge_index = LongTensor(np.array(self.A.nonzero()))
         if init_data is not None:
             self.inherit_attributes(init_data)
 
