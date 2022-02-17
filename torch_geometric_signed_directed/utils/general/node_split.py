@@ -29,8 +29,6 @@ def node_class_split(data: torch_geometric.data.Data,
     Return types:
         * **data** (torch_geometric.data.Data or DirectedData) - The data object includes train_mask, val_mask and test_mask.
     """
-    if val_size is None and val_size_per_class is None:
-        raise ValueError('Please input the values of val_size or val_size_per_class!')
     if train_size is None and train_size_per_class is None:
         raise ValueError('Please input the values of train_size or train_size_per_class!')
 
@@ -161,8 +159,6 @@ def get_train_val_test_seed_split(random_state:np.random.RandomState,
     num_samples = labels.shape[0]
     remaining_indices = list(range(num_samples))
 
-    if val_size is None and val_size_per_class is None:
-        raise ValueError('Please input the values of val_size or val_size_per_class!')
     if train_size is None and train_size_per_class is None:
         raise ValueError('Please input the values of train_size or train_size_per_class!')
 
@@ -201,10 +197,12 @@ def get_train_val_test_seed_split(random_state:np.random.RandomState,
     else:
         seed_indices = []
 
+    val_indices = []
     if val_size_per_class is not None:
         val_indices = sample_per_class(
             random_state, labels, val_size_per_class, forbidden_indices=train_indices)
-    else:
+        forbidden_indices = np.concatenate((train_indices, val_indices))
+    elif val_size is not None:
         remaining_indices = np.setdiff1d(remaining_indices, train_indices)
         if isinstance(val_size, int):
             val_indices = random_state.choice(remaining_indices, val_size, replace=False)
@@ -212,8 +210,10 @@ def get_train_val_test_seed_split(random_state:np.random.RandomState,
             val_indices = random_state.choice(remaining_indices, int(val_size*len(remaining_indices)), replace=False)
         else:
             raise TypeError("Please input a float or int number for the parameter val_size.")
+        forbidden_indices = np.concatenate((train_indices, val_indices))
+    else:
+        forbidden_indices = train_indices
 
-    forbidden_indices = np.concatenate((train_indices, val_indices))
     if test_size_per_class is not None:
         test_indices = sample_per_class(random_state, labels, test_size_per_class,
                                         forbidden_indices=forbidden_indices)
@@ -225,7 +225,7 @@ def get_train_val_test_seed_split(random_state:np.random.RandomState,
             test_indices = random_state.choice(remaining_indices, int(test_size*len(remaining_indices)), replace=False)
         else:
             raise TypeError("Please input a float or int number for the parameter test_size.")
-    else:
+    else: # use all the rest as test set
         test_indices = np.setdiff1d(remaining_indices, forbidden_indices)
 
     # assert that there are no duplicates in sets
@@ -235,7 +235,7 @@ def get_train_val_test_seed_split(random_state:np.random.RandomState,
     assert len(set(seed_indices)) == len(seed_indices)
     # assert training, validation and test sets are mutually exclusive
     assert len(set(train_indices) - set(val_indices)
-               ) == len(set(train_indices))
+            ) == len(set(train_indices))
     assert len(set(train_indices) - set(test_indices)
                ) == len(set(train_indices))
     assert len(set(val_indices) - set(test_indices)) == len(set(val_indices))
