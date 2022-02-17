@@ -46,10 +46,10 @@ data = load_directed_real_data(dataset=dataset_name[0], root=path, name=dataset_
 link_data = directed_link_class_split(data, prob_val=0.15, prob_test=0.05, task = 'existence', device=device)
 
 model = DiGCN_link_prediction(num_features=2, hidden=16, label_dim=2).to(device)
-optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 criterion = nn.NLLLoss()
 
 for split in list(link_data.keys()):
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     edge_index = link_data[split]['graph']
     edge_weight = link_data[split]['weights']
     query_edges = link_data[split]['train']['edges']

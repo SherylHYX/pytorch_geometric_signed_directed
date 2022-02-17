@@ -50,10 +50,11 @@ data = load_directed_real_data(dataset=dataset_name, root=path).to(device)
 model = DiGCL(in_channels=data.x.shape[1], activation='relu',
                  num_hidden=64, num_proj_hidden=32,
                  tau=0.4, num_layers=2).to(device)
-optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+
 
 alpha_1 = 0.1
 for split in range(data.train_mask.shape[-1]):
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     edge_index = data.edge_index
     edge_weight = data.edge_weight
     X = data.x
