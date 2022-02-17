@@ -40,9 +40,11 @@ class DirectedData(Data):
             A = to_scipy_sparse_matrix(edge_index, edge_weight)
         else:
             edge_index = LongTensor(np.array(A.nonzero()))
-        self.A = A
-        self.edge_weight = FloatTensor(A.data)
-        self.edge_index = edge_index
+        
+        self.A = sp.csr_matrix(A)
+        self.A.eliminate_zeros()
+        self.edge_weight = FloatTensor(self.A.data)
+        self.edge_index = LongTensor(np.array(self.A.nonzero()))
         if init_data is not None:
             self.inherit_attributes(init_data)
         
