@@ -41,8 +41,7 @@ class DirectedData(Data):
         else:
             edge_index = LongTensor(np.array(A.nonzero()))
         
-        self.A = sp.csr_matrix(A)
-        self.A.eliminate_zeros()
+        self.A = A
         self.edge_weight = FloatTensor(self.A.data)
         self.edge_index = LongTensor(np.array(self.A.nonzero()))
         if init_data is not None:
