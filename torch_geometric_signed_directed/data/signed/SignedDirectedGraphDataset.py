@@ -19,7 +19,7 @@ dataset_name_url_dic = {
 
 class SignedDirectedGraphDataset(InMemoryDataset):
     r"""Signed Directed Graph from the `"SDGNN: Learning Node Representation 
-    for Signed Directed Networks" <https://arxiv.org/abs/2101.02390>`_ paper, consising of three different
+    for Signed Directed Networks" <https://arxiv.org/abs/2101.02390>`_ paper, consising of four different
     datasets: Bitcoin-Alpha, Bitcoin-OTC， Slashdot and Epinions.
     """
 
