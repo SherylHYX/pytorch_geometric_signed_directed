@@ -8,7 +8,7 @@ from torch_geometric_signed_directed.utils import (Prob_Balanced_Normalized_Loss
 extract_network, triplet_loss_node_classification)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--epochs', type=int, default=2)
+parser.add_argument('--epochs', type=int, default=200)
 parser.add_argument('--lr', type=float, default=1e-2)
 parser.add_argument('--weight_decay', type=float, default=0.0005)
 parser.add_argument('--triplet_loss_ratio', type=float, default=0.1,
@@ -19,7 +19,7 @@ args = parser.parse_args()
 
 num_classes = 5
 eta = 0.1
-num_nodes = 100
+num_nodes = 1000
 p = 0.1
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -36,7 +36,6 @@ loss_func_ce = torch.nn.NLLLoss()
 
 model = SSSNET_node_clustering(nfeat=data.x.shape[1], dropout=0.5, hop=2, fill_value=0.5, 
                         hidden=32, nclass=num_classes).to(device)
-optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 data = data.to(device)
 
 def train(features, edge_index_p, edge_weight_p,
@@ -69,6 +68,7 @@ data.edge_index = data.edge_index.to(device)
 data.edge_weight = data.edge_weight.to(device)
 
 for split in range(data.train_mask.shape[1]):
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     train_index = data.train_mask[:, split].cpu().numpy()
     val_index = data.val_mask[:, split]
     test_index = data.test_mask[:, split]

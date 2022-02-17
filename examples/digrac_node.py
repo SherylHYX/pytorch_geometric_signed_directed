@@ -33,7 +33,7 @@ imbalance_loss = Prob_Imbalance_Loss(F)
 
 model = DIGRAC_node_clustering(num_features=data.x.shape[1], dropout=0.5, hop=2, fill_value=0.5, 
                         hidden=32, nclass=num_classes).to(device)
-optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+
 
 def train(features, edge_index, edge_weight, mask, train_A, y):
     model.train()
@@ -57,6 +57,7 @@ data.edge_index = data.edge_index.to(device)
 data.edge_weight = data.edge_weight.to(device)
 
 for split in range(data.train_mask.shape[1]):
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     train_index = data.train_mask[:, split]
     val_index = data.val_mask[:, split]
     test_index = data.test_mask[:, split]

@@ -46,10 +46,10 @@ data = load_directed_real_data(dataset=dataset_name[0], root=path, name=dataset_
 
 num_classes = (data.y.max() - data.y.min() + 1).cpu().numpy()
 model = DiGCN_Inception_Block_node_classification(num_features=data.x.shape[1], hidden=16, label_dim=num_classes, dropout=0.5).to(device)
-optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 criterion = nn.NLLLoss()
 
 for split in range(data.train_mask.shape[1]):
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     X = data.x
     train_mask = data.train_mask 
     val_mask = data.val_mask
