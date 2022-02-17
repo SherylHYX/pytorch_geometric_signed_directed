@@ -43,10 +43,10 @@ data = load_directed_real_data(dataset=dataset_name[0], root=path, name=dataset_
 
 num_classes = (data.y.max() - data.y.min() + 1).cpu().numpy()
 model = MagNet_node_classification(q=args.q, K=args.K, num_features=data.x.shape[1], hidden=16, label_dim=num_classes).to(device)
-optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 criterion = nn.NLLLoss()
 
 for split in range(data.train_mask.shape[1]):
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     X_real = data.x
     X_img = data.x 
     train_mask = data.train_mask 

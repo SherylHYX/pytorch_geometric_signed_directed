@@ -52,10 +52,11 @@ link_data = directed_link_class_split(data, prob_val=0.15, prob_test=0.05, task 
 model = DiGCL(in_channels=2, activation='relu',
                  num_hidden=32, num_proj_hidden=16,
                  tau=0.5, num_layers=2).to(device)
-optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+
 
 alpha_1 = 0.1
 for split in list(link_data.keys()):
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     edge_index = link_data[split]['graph']
     edge_weight = link_data[split]['weights']
     X = in_out_degree(edge_index, size=len(data.x)).to(device)
