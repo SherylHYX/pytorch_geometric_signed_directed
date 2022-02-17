@@ -9,6 +9,7 @@ from torch import FloatTensor, LongTensor
 from sklearn.preprocessing import StandardScaler
 
 from ...utils.general.node_split import node_class_split
+from ...utils.directed.directed_link_split import directed_link_class_split
 
 class DirectedData(Data):
     r"""A data object describing a homogeneous directed graph.
@@ -107,4 +108,35 @@ class DirectedData(Data):
         test_size=test_size, seed_size=seed_size, train_size_per_class=train_size_per_class,
         val_size_per_class=val_size_per_class, test_size_per_class=test_size_per_class,
         seed_size_per_class=seed_size_per_class, seed=seed, data_split=data_split)
+
+    def link_split(self, size:int=None, splits:int=10, prob_test:float= 0.15, 
+                     prob_val:float= 0.05, task:str= 'direction', seed:int= 0, device:str= 'cpu') -> dict:
+        r"""Get train/val/test dataset for the link prediction task.
+
+        Arg types:
+            * **prob_val** (float, optional) - The proportion of edges selected for validation (Default: 0.05).
+            * **prob_test** (float, optional) - The proportion of edges selected for testing (Default: 0.15).
+            * **splits** (int, optional) - The split size (Default: 10).
+            * **size** (int, optional) - The size of the input graph. If none, the graph size is the maximum index of nodes plus 1 (Default: None).
+            * **task** (str, optional) - The evaluation task: all (three-class link prediction); direction (direction prediction); existence (existence prediction). (Default: 'direction')
+            * **seed** (int, optional) - The random seed for dataset generation (Default: 0).
+            * **device** (int, optional) - The device to hold the return value (Default: 'cpu').
+
+        Return types:
+            * **datasets** - A dict include training/validation/testing splits of edges and labels. For split index i:
+
+                        datasets[i]['graph'] (torch.LongTensor): the observed edge list after removing edges for validation and testing.
+
+                        datasets[i]['train'/'val'/'testing']['edges'] (List): the edge list for training/validation/testing.
+
+                        datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:
+
+                            If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
+
+                            If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists).
+
+                            If task == 'all': 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist).
+        """
+        return directed_link_class_split(data=self, size=size, splits=splits, prob_test=prob_test, 
+                     prob_val=prob_val, task=task, seed=seed, device=device)
 
