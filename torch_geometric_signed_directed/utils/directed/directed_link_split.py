@@ -119,7 +119,8 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
     A_u = nx.adjacency_matrix(G)
     indexes = scipy.sparse.find(A_u < 1)
     indexes = np.c_[indexes[0],indexes[1]]
-    neg_index = rs.choice(np.arange(edge_index.shape[-1]), size=int(np.sum(A_u)))
+
+    neg_index = rs.choice(np.arange(len(indexes)), size=int(np.sum(A_u)))
     neg_edges = indexes[neg_index].tolist()
 
     len_val = int(prob_val*len(row))
