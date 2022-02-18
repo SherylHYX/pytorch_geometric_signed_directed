@@ -47,6 +47,10 @@ Utilities and Preprocessing Methods
     :members:
     :undoc-members:
 
+.. automodule:: torch_geometric_signed_directed.utils.directed.get_magnetic_Laplacian
+    :members:
+    :undoc-members:
+
 .. automodule:: torch_geometric_signed_directed.utils.directed.DiGCL_utils
     :members:
     :undoc-members:
