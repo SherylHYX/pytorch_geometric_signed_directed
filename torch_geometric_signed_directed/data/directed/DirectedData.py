@@ -86,8 +86,14 @@ class DirectedData(Data):
                 train_size_per_class: Union[int,float]=None, val_size_per_class: Union[int,float]=None,
                 test_size_per_class: Union[int,float]=None, seed_size_per_class: Union[int,float]=None, 
                 seed: List[int]=[], data_split: int=10):
-        r""" Train/Val/Test/Seed split for node classification tasks.
-
+        r""" Train/Val/Test/Seed split for node classification tasks. 
+        The size parameters can either be int or float.
+        If a size parameter is int, then this means the actual number, if it is float, then this means a ratio.
+        Train_size or train_size_per_class is mandatory, with the former regardless of class labels.
+        Validation and seed masks are optional. Seed masks here masks nodes within the training set, e.g., in a semi-supervised setting as described in the
+        `SSSNET: Semi-Supervised Signed Network Clustering <https://arxiv.org/pdf/2110.06623.pdf>`_ paper. 
+        If test_size and test_size_per_class are both None, all the remaining nodes after selecting training (and validation) nodes will be included.
+        
         Args:
             data (torch_geometric.data.Data or DirectedData, required): The data object for data split.
             train_size (int or float, optional): The size of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
