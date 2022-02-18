@@ -182,6 +182,8 @@ def test_SiGAT():
     with torch.no_grad():
         nodes = np.arange(0, nodes_num)
         z = model.loss_batch(nodes)
+        z = model(torch.Tensor(nodes))
+        z = model.loss()
         z = model()
 
     embeddings = z.cpu().numpy()
