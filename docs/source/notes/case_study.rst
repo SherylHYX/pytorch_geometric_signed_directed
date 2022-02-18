@@ -83,7 +83,7 @@ For the second snippet, we first initialize the cross-entropy loss function as p
         (torch.argmax(prob, dim=1)).cpu()[mask])
         return test_ari
 
-In the third snippet, we define the training and evaluation functions. Setting the model to be trainable, we obtain node embedding matrix Z and cluster assignment probablities prob and its logarithm log_prob with a forward pass of the model instance. We then obtain the probablistic balanced normalized cut loss (line 7), triplet loss (lines 8-9), and cross entropy loss (line 10). The weighted sum of the three losses then serves as the training loss value (line 11). We then backpropagate and update the model parameters (lines 12-14). After that, we calculate the Adjusted Rand Index (ARI) \cite{hubert1985comparing} of the training samples. Finally, we return the loss value as well as the training ARI score.
+In the third snippet, we define the training and evaluation functions. Setting the model to be trainable, we obtain node embedding matrix Z and cluster assignment probablities prob and its logarithm log_prob with a forward pass of the model instance. We then obtain the probablistic balanced normalized cut loss, triplet loss, and cross entropy loss. The weighted sum of the three losses then serves as the training loss value. We then backpropagate and update the model parameters. After that, we calculate the Adjusted Rand Index (ARI) \cite{hubert1985comparing} of the training samples. Finally, we return the loss value as well as the training ARI score.
 
 For the evaluation function (named ``test``), we do not set the model to be trainable. With a forward pass, we obtain the probability assignment matrix. Taking argmax for the probabilities, we obtain test ARI result. Finally, we return the result.
 
@@ -121,7 +121,7 @@ For the evaluation function (named ``test``), we do not set the model to be trai
         print(f'Split: {split:02d}, Test_ARI: {test_ari:.4f}')
         model._reset_parameters_undirected()
     
-We run the actual experiments in this final snippet. First, we map node features to a PyTorch Tensor. For each of the data splits, we first initialize the Adam optimizer. We then obtain the data split indices, initialize the self-supervised loss function (lines 10-12), and start the training process (line 13). For each epoch,  we apply the training function to obtain training loss and ARI score, then evaluate with the ``test()`` function on validation nodes.  We then print the training and validation results. 
+We run the actual experiments in this final snippet. First, we map node features to a PyTorch Tensor. For each of the data splits, we first initialize the Adam optimizer. We then obtain the data split indices, initialize the self-supervised loss function, and start the training process. For each epoch,  we apply the training function to obtain training loss and ARI score, then evaluate with the ``test()`` function on validation nodes.  We then print the training and validation results. 
 After training, we obtain the test performance and print some logs. Finally, we reset model parameters and iterate to the next data split loop.
 
 Case Study on Directed Networks
@@ -186,7 +186,7 @@ In the second snippet, we first construct the model instance, then initialize th
         out.max(dim=1)[1].cpu())
         return test_acc
 
-In the third part, we define the training and evaluation functions. Setting the model to be trainable, we obtain edge class assignment probablities with a forward pass of the model instance. We then obtain the training loss value (line 7). After that, we backpropagate and update the model parameters (lines 8-10). Then, we calculate the accuracy of the training samples. Finally, we return the loss value as well as the training accuracy.
+In the third part, we define the training and evaluation functions. Setting the model to be trainable, we obtain edge class assignment probablities with a forward pass of the model instance. We then obtain the training loss value. After that, we backpropagate and update the model parameters. Then, we calculate the accuracy of the training samples. Finally, we return the loss value as well as the training accuracy.
 
 For the evaluation function (named ``test``), we do not set the model to be trainable. With a forward pass, we obtain the probability assignment matrix. We then obtain test accuracy and return the result.
 
@@ -220,5 +220,5 @@ For the evaluation function (named ``test``), we do not set the model to be trai
         print(f'Split: {split:02d}, Test_Acc: {test_acc:.4f}')
         model.reset_parameters()
 
-We run the actual experiments in the last code snippet. For each of the data splits, we first initialize the optimizer. We then prepare data objects to be used, and start the training process. For each epoch,  we apply the training function to obtain training loss and accuracy (lines 14-15), then evaluate with the ``test()`` function on validation nodes.  We then print the training and validation results. 
+We run the actual experiments in the last code snippet. For each of the data splits, we first initialize the optimizer. We then prepare data objects to be used, and start the training process. For each epoch,  we apply the training function to obtain training loss and accuracy, then evaluate with the ``test()`` function on validation nodes.  We then print the training and validation results. 
 After training, we prepare test data, obtain the test performance, and print some logs. Finally, we reset model parameters and iterate to the next data split loop.
