@@ -73,6 +73,8 @@ def test_link_split():
     datasets = directed_link_class_split(directed_dataset, prob_val = 0.0, prob_test = 0.05, task = 'direction')
     assert len(list(datasets.keys())) == 10
     for i in datasets:
+        assert torch.sum(datasets[i]['train']['label'] > 0) > 0
+        assert torch.sum(datasets[i]['train']['label'] < 1) > 0
         for e, l in zip(datasets[i]['train']['edges'], datasets[i]['train']['label']):
             if l == 0:
                 assert ([e[0],e[1]] in edges)
@@ -84,11 +86,16 @@ def test_link_split():
     for i in datasets:
         for e, l in zip(datasets[i]['val']['edges'], datasets[i]['val']['label']):
             if l == 0:
+                assert torch.sum(datasets[i]['val']['label'] > 0) > 0
+                assert torch.sum(datasets[i]['val']['label'] < 1) > 0
                 assert ([e[0],e[1]] in edges)
             else:
                 assert not ([e[0],e[1]] in edges)
     datasets = directed_link_class_split(directed_dataset, prob_val = 0.15, prob_test = 0.05, task = 'all')
     for i in datasets:
+        assert torch.sum(datasets[i]['test']['label'] == 0) > 0
+        assert torch.sum(datasets[i]['test']['label'] == 1) > 0
+        assert torch.sum(datasets[i]['test']['label'] == 2) > 0
         for e, l in zip(datasets[i]['test']['edges'], datasets[i]['test']['label']):
             if l == 0:
                 assert ([e[0],e[1]] in edges)
