@@ -73,7 +73,14 @@ For example, the Telegram Dataset can be loaded by the following code snippet. T
 
 Node Splitting
 -------------------------------
-We provide a function to create node splits of the data objects. This function returns the new data object with train, validation, test and possibly also seed (some parts within the training set) masks.
+We provide a function to create node splits of the data objects. 
+The size parameters can either be int or float.
+If a size parameter is int, then this means the actual number, if it is float, then this means a ratio.
+``train_size`` or ``train_size_per_class`` is mandatory, with the former regardless of class labels.
+Validation and seed masks are optional. Seed masks here masks nodes within the training set, e.g., in a semi-supervised setting as described in the
+`SSSNET: Semi-Supervised Signed Network Clustering <https://arxiv.org/pdf/2110.06623.pdf>`_ paper. 
+If test_size and test_size_per_class are both None, all the remaining nodes after selecting training (and validation) nodes will be included.
+This function returns the new data object with train, validation, test and possibly also seed (some parts within the training set) masks.
 The splitting can either be done via data loading or separately. 
 
 .. code-block:: python
@@ -87,7 +94,7 @@ The splitting can either be done via data loading or separately.
 Edge Splitting for Directed Networks
 -------------------------------
 
-We provide a function to create edge splits of directed networks. 
+We provide a function to create edge splits of directed networks. The splitting can either be done via data loading or separately. 
 
 .. code-block:: python
 
@@ -97,3 +104,4 @@ We provide a function to create edge splits of directed networks.
     dataset = load_directed_real_data(dataset='telegram', root='./tmp_data/')
     edges = dataset.edge_index.T.tolist()
     datasets = directed_link_class_split(directed_dataset, prob_val = 0.15, prob_test = 0.05, task = 'direction')
+    datasets = directed_dataset.link_split(prob_val = 0.15, prob_test = 0.05, task = 'direction')

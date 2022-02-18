@@ -89,7 +89,7 @@ class DirectedData(Data):
         r""" Train/Val/Test/Seed split for node classification tasks. 
         The size parameters can either be int or float.
         If a size parameter is int, then this means the actual number, if it is float, then this means a ratio.
-        Train_size or train_size_per_class is mandatory, with the former regardless of class labels.
+        ``train_size`` or ``train_size_per_class`` is mandatory, with the former regardless of class labels.
         Validation and seed masks are optional. Seed masks here masks nodes within the training set, e.g., in a semi-supervised setting as described in the
         `SSSNET: Semi-Supervised Signed Network Clustering <https://arxiv.org/pdf/2110.06623.pdf>`_ paper. 
         If test_size and test_size_per_class are both None, all the remaining nodes after selecting training (and validation) nodes will be included.
