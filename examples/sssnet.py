@@ -2,9 +2,12 @@ import argparse
 from sklearn.metrics import adjusted_rand_score
 import scipy.sparse as sp
 import torch
-from torch_geometric_signed_directed.nn import SSSNET_node_clustering
-from torch_geometric_signed_directed.data import SignedData, SSBM
-from torch_geometric_signed_directed.utils import (Prob_Balanced_Normalized_Loss, 
+from torch_geometric_signed_directed.nn import \
+    SSSNET_node_clustering
+from torch_geometric_signed_directed.data import \
+    SignedData, SSBM
+from torch_geometric_signed_directed.utils import \
+    (Prob_Balanced_Normalized_Loss, 
 extract_network, triplet_loss_node_classification)
 
 parser = argparse.ArgumentParser()
@@ -32,11 +35,12 @@ data = SignedData(A=A, y=torch.LongTensor(labels))
 data.set_signed_Laplacian_features(num_classes)
 data.node_split(train_size_per_class=0.8, val_size_per_class=0.1, test_size_per_class=0.1, seed_size_per_class=0.1)
 data.separate_positive_negative()
+data = data.to(device)
 loss_func_ce = torch.nn.NLLLoss()
 
 model = SSSNET_node_clustering(nfeat=data.x.shape[1], dropout=0.5, hop=2, fill_value=0.5, 
                         hidden=32, nclass=num_classes).to(device)
-data = data.to(device)
+
 
 def train(features, edge_index_p, edge_weight_p,
                 edge_index_n, edge_weight_n, mask, seed_mask, loss_func_pbnc, y):
@@ -64,8 +68,6 @@ def test(features, edge_index_p, edge_weight_p,
     return test_ari
 
 data.x = torch.FloatTensor(data.x).to(device)
-data.edge_index = data.edge_index.to(device)
-data.edge_weight = data.edge_weight.to(device)
 
 for split in range(data.train_mask.shape[1]):
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
