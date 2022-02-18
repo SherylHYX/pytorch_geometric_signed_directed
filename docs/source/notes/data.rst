@@ -101,7 +101,13 @@ We provide a function to create edge splits of directed networks. The splitting 
     from torch_geometric_signed_directed.data import load_directed_real_data
     from torch_geometric_signed_directed.utils import directed_link_split
 
-    dataset = load_directed_real_data(dataset='telegram', root='./tmp_data/')
-    edges = dataset.edge_index.T.tolist()
+    directed_dataset = load_directed_real_data(dataset='telegram', root='./tmp_data/')
     datasets = directed_link_class_split(directed_dataset, prob_val = 0.15, prob_test = 0.05, task = 'direction')
+
+.. code-block:: python
+
+    from torch_geometric_signed_directed.data import load_directed_real_data
+    from torch_geometric_signed_directed.utils import directed_link_split
+
+    directed_dataset = load_directed_real_data(dataset='telegram', root='./tmp_data/')
     datasets = directed_dataset.link_split(prob_val = 0.15, prob_test = 0.05, task = 'direction')
