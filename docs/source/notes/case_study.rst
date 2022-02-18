@@ -7,6 +7,7 @@ Case Study on Signed Networks
 ---------------------------
 
 Here, we overview a simple end-to-end machine learning pipeline designed with *PyTorch Geometric Signed Directed* for signed networks. These code snippets solve a signed clustering problem on a Signed Stochastic Block Model -- clustering the nodes in the signed network into 5 groups. The pipeline consists of data preparation, model definition, training, and evaluation phases.
+
 .. code-block:: python
 
     from sklearn.metrics import adjusted_rand_score
