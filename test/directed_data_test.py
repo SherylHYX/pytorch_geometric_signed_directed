@@ -70,7 +70,7 @@ def test_link_split():
     degrees = in_out_degree(directed_dataset.edge_index, size=len(directed_dataset.x))
     assert degrees.shape == (len(directed_dataset.x), 2)
     edges = directed_dataset.edge_index.T.tolist()
-    datasets = directed_link_class_split(directed_dataset, prob_val = 0.15, prob_test = 0.05, task = 'direction')
+    datasets = directed_link_class_split(directed_dataset, prob_val = 0.0, prob_test = 0.05, task = 'direction')
     assert len(list(datasets.keys())) == 10
     for i in datasets:
         for e, l in zip(datasets[i]['train']['edges'], datasets[i]['train']['label']):
@@ -78,8 +78,8 @@ def test_link_split():
                 assert ([e[0],e[1]] in edges)
             else:
                 assert ([e[1],e[0]] in edges)
-
-    datasets = directed_dataset.link_split(prob_val = 0.15, prob_test = 0.05, task = 'existence')
+    assert len(list(datasets[0]['val']['edges'])) == 0
+    datasets = directed_dataset.link_split(prob_val = 0.2, prob_test = 0.05, task = 'existence')
     assert len(list(datasets.keys())) == 10
     for i in datasets:
         for e, l in zip(datasets[i]['val']['edges'], datasets[i]['val']['label']):

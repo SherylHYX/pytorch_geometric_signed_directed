@@ -17,7 +17,7 @@ class DiGCN_Inception_Block_link_prediction(torch.nn.Module):
         num_clusters (int): Number of clusters.
         dropout (float): Dropout value.
     """
-    def __init__(self, num_features, hidden, label_dim, dropout=0.5):
+    def __init__(self, num_features: int, hidden: int, label_dim: int, dropout: float=0.5):
         super(DiGCN_Inception_Block_link_prediction, self).__init__()
         self.ib1 = InceptionBlock(num_features, hidden)
         self.ib2 = InceptionBlock(hidden, hidden)
