@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
 url = "https://github.com/SherylHYX/pytorch_geometric_signed_directed"
-__version__ = '0.1.3' 
+__version__ = '0.1.4' 
 
 install_requires = [
     "torch",
