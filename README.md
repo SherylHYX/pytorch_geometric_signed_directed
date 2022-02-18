@@ -163,6 +163,8 @@ In detail, the following signed or directed graph neural networks, as well as re
 
 * **[directed_link_split](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.directed.directed_link_split.directed_link_class_split)** to split directed edges into training set etc..
 
+* **[get_magnetic_Laplacian](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.directed.get_magnetic_Laplacian.get_magnetic_Laplacian)** from from Zhang *et al.*: [MagNet: A Neural Network for Directed Graphs.](https://arxiv.org/pdf/2102.11391.pdf) (NeurIPS 2021)
+
 * **[get_appr_directed_adj](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.directed.get_adjs_DiGCN.get_appr_directed_adj)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
 
 

@@ -165,7 +165,7 @@ class SiGAT(nn.Module):
         if nodes is None:
             nodes_t = torch.arange(self.node_num).to(self.device)
         elif isinstance(nodes, torch.Tensor):
-            nodes_t = nodes
+            nodes_t = nodes.long().to(self.device)
         else:
             nodes_t = torch.from_numpy(nodes).to(self.device)
         
