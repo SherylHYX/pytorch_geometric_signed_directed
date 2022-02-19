@@ -19,7 +19,7 @@ from torch_geometric_signed_directed.utils import (
     get_appr_directed_adj, get_second_directed_adj,
     directed_features_in_out, meta_graph_generation, extract_network,
     cal_fast_appr, pred_digcl_node, pred_digcl_link, drop_feature, fast_appr_power,
-    directed_link_class_split
+    link_class_split
 )
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -201,7 +201,7 @@ def test_DiGCN_Link():
         create_mock_data(num_nodes, num_features, num_classes)
 
     data = DirectedData(x=X, edge_index=edge_index, edge_weight=edge_weights)
-    link_data = directed_link_class_split(data, prob_val = 0.15, prob_test = 0.05, task = 'existence', device=device)
+    link_data = link_class_split(data, prob_val = 0.15, prob_test = 0.05, task = 'existence', device=device)
 
     edge_index = link_data[0]['graph']
     edge_weights = link_data[0]['weights']
@@ -404,7 +404,7 @@ def test_MagNet_Link():
     X, _, _, _, edge_index, edge_weight = \
         create_mock_data(num_nodes, num_features, num_classes)
     data = DirectedData(x=X, edge_index=edge_index, edge_weight=edge_weight)
-    link_data = directed_link_class_split(data, prob_val = 0.15, prob_test = 0.05, task = 'existence', device=device)
+    link_data = link_class_split(data, prob_val = 0.15, prob_test = 0.05, task = 'existence', device=device)
     model = MagNet_link_prediction(data.x.shape[1], K = 1, q = 0.1, label_dim=num_classes, layer = 2, \
                                 activation = True, hidden = 2, dropout=0.5, normalization=None).to(device)  
     preds = model(data.x, data.x, edge_index=link_data[0]['graph'], query_edges=link_data[0]['train']['edges'], 
@@ -425,7 +425,7 @@ def test_MagNet_Link():
     assert model.Chebs[0].__repr__() == 'MagNetConv(3, 2, K=3, normalization=sym)'
 
     num_classes = 3
-    link_data = directed_link_class_split(data, prob_val = 0.15, prob_test = 0.05, task = 'all', device=device)
+    link_data = link_class_split(data, prob_val = 0.15, prob_test = 0.05, task = 'all', device=device)
     link_data[0]['graph'] = link_data[0]['graph']
     link_data[0]['train']['edges'] = link_data[0]['train']['edges']
     link_data[0]['weights'] = link_data[0]['weights']

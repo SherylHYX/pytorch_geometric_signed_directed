@@ -9,7 +9,7 @@ from torch import FloatTensor, LongTensor
 from sklearn.preprocessing import StandardScaler
 
 from ...utils.general.node_split import node_class_split
-from ...utils.directed.directed_link_split import directed_link_class_split
+from ...utils.general.link_split import link_class_split
 
 class DirectedData(Data):
     r"""A data object describing a homogeneous directed graph.
@@ -138,12 +138,13 @@ class DirectedData(Data):
 
                         datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:
 
-                            If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
+                        If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
 
-                            If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists).
+                        If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists). For undirected graphs, the labels are all zeros.
 
-                            If task == 'all': 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist).
+                        If task == 'all': 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist). 
+                                        This task reduces to the existence task if the input graph is undirected.
         """
-        return directed_link_class_split(data=self, size=size, splits=splits, prob_test=prob_test, 
+        return link_class_split(data=self, size=size, splits=splits, prob_test=prob_test, 
                      prob_val=prob_val, task=task, seed=seed, device=device)
 

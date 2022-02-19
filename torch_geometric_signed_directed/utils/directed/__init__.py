@@ -4,4 +4,3 @@ from .get_adjs_DiGCN import get_appr_directed_adj, get_second_directed_adj, cal_
 from .DiGCL_utils import drop_feature, pred_digcl_node, pred_digcl_link
 from .features_in_out import directed_features_in_out
 from .meta_graph_generation import meta_graph_generation
-from .directed_link_split import directed_link_class_split

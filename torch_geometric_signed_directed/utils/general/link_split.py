@@ -10,12 +10,14 @@ from torch_geometric.utils import negative_sampling, to_undirected
 from scipy.sparse import coo_matrix
 
 def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List[Tuple], 
-                                    task:str, rs:np.random.RandomState) -> Union[List,List]:
+                                    task:str, rs:np.random.RandomState, 
+                                    directed:bool=True) -> Union[List,List]:
     r"""Generate edge labels based on the task.
 
     Arg types:
         * **adj** (scipy.sparse.csr_matrix) - Scipy sparse undirected adjacency matrix. 
-        * **edge_pairs** (List[Tuple]) - The edge list. each element in the list is an edge tuple.
+        * **edge_pairs** (List[Tuple]) - The edge list for the link dataset querying. Each element in the list is an edge tuple.
+        * **edge_weight** (List[Tuple]) - The edge weights list for sign graphs.
         * **task** (str): The evaluation task - all (three-class link prediction); direction (direction prediction); existence (existence prediction) 
         * **rs** (np.random.RandomState) - The randomstate for edge selection.
 
@@ -23,53 +25,72 @@ def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List
         * **new_edge_pairs** (List) - A list of edges.
         * **labels** (List) - The labels for new_edge_pairs. 
 
-                       If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
+                        If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
 
-                       If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists).
-                       
-                       If task == 'all': 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist).
+                        If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists). For undirected graphs, the labels are all zeros.
+
+                        If task == 'all': 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist). 
+                                        This task reduces to the existence task if the input graph is undirected.
     """
     labels = -np.ones(len(edge_pairs), dtype=np.int32)
     new_edge_pairs = np.array(edge_pairs)
     counter = 0
+    label_weight = np.zeros(len(edge_pairs))
     for i, e in enumerate(edge_pairs): # directed edges
-        if adj[e[0], e[1]] + adj[e[1], e[0]]  > 0: # exists an edge
-            if adj[e[0], e[1]] > 0:
-                if adj[e[1], e[0]] == 0: # rule out undirected edges
-                    if counter%2 == 0:
-                        labels[i] = 0
-                        new_edge_pairs[i] = [e[0], e[1]]
-                        counter += 1
+        if abs(adj[e[0], e[1]]) + abs(adj[e[1], e[0]])  > 0: # exists an edge
+            if abs(adj[e[0], e[1]]) > 0:
+                if directed:
+                    
+                    if adj[e[1], e[0]] == 0: # rule out edges exist in both directions
+                        if counter%2 == 0:
+                            labels[i] = 0
+                            label_weight[i] = adj[e[0],e[1]]
+                            new_edge_pairs[i] = [e[0], e[1]]
+                            counter += 1
+                        else:
+                            labels[i] = 1
+                            label_weight[i] = adj[e[0],e[1]]
+                            new_edge_pairs[i] = [e[1], e[0]]
+                            counter += 1
                     else:
-                        labels[i] = 1
-                        new_edge_pairs[i] = [e[1], e[0]]
-                        counter += 1
+                        new_edge_pairs[i] = [e[0], e[1]]
+                        labels[i] = -1
+                        label_weight[i] = 0
                 else:
+                    labels[i] = 0
                     new_edge_pairs[i] = [e[0], e[1]]
-                    labels[i] = -1
+                    label_weight[i] = adj[e[0],e[1]]
+
             else: # the other direction, and not an undirected edge
                 if counter%2 == 0:
                     labels[i] = 0
                     new_edge_pairs[i] = [e[1], e[0]]
+                    label_weight[i] = adj[e[1], e[0]]
                     counter += 1
                 else:
                     labels[i] = 1
                     new_edge_pairs[i] = [e[0], e[1]]
+                    label_weight[i] = adj[e[1], e[0]]
                     counter += 1
         else: # negative edges
-            labels[i] = 2
+            if task == 'all' and not directed:
+                labels[i] = 1
+            else:
+                labels[i] = 2
             new_edge_pairs[i] = [e[0], e[1]]
+            label_weight[i] = 0
 
     if task == 'existence':
         # existence prediction
+        label_weight[labels == 1] = 0 # set reversed edges as 0
         labels[labels == 2] = 1
-        neg = np.where(labels == 1)[0]
-        neg_half = rs.choice(neg, size=len(neg)-np.sum(labels==0), replace=False)
-        labels[neg_half] = -1
-    return new_edge_pairs[labels >= 0], labels[labels >= 0]
 
-def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=10, prob_test:float= 0.15, 
-                     prob_val:float= 0.05, task:str= 'direction', seed:int= 0, maintain_connect=True, device:str= 'cpu') -> dict:
+    selection = (labels >= 0)
+    return new_edge_pairs[selection], labels[selection], label_weight[selection]
+
+def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=10, prob_test:float= 0.15, 
+                     prob_val:float= 0.05, task:str= 'direction', seed:int= 0, maintain_connect=True, 
+                     ratio:float= 1.0, device:str= 'cpu') -> dict:
     r"""Get train/val/test dataset for the link prediction task. 
 
     Arg types:
@@ -94,9 +115,10 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
 
                           If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
 
-                          If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists).
+                          If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists). For undirected graphs, the labels are all zeros.
 
-                          If task == 'all': 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist).
+                          If task == 'all': 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist). 
+                                            This task reduces to the existence task if the input graph is undirected.
     """
     edge_index = data.edge_index.cpu()
     row, col = edge_index[0], edge_index[1]
@@ -110,10 +132,15 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
     len_val = int(prob_val*len(row))
     len_test = int(prob_test*len(row))
 
-    A = coo_matrix((data.edge_weight.cpu(), (row, col)), shape=(size, size), dtype=np.float32).tocsr()
+    if hasattr(data, "A"):
+        A = data.A.tocsr()
+    else:
+        A = coo_matrix((data.edge_weight.cpu(), (row, col)), shape=(size, size), dtype=np.float32).tocsr()
+
     # create an undirected graph based on the adjacency
     G = nx.from_scipy_sparse_matrix(A, create_using=nx.Graph, edge_attribute='weight') 
     if maintain_connect:
+        assert ratio == 1, "ratio should be 1.0 if maintain_connect=True"
         # get the minimum spanning tree based on the undirected graph
         mst = list(tree.minimum_spanning_edges(G, algorithm="kruskal", data=False))
         nmst = list(set(G.edges) - set(mst))
@@ -124,33 +151,41 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
         nmst = list(G.edges)
 
     undirect_edge_index = to_undirected(edge_index)
-    neg_edges = negative_sampling(undirect_edge_index, force_undirected=False).numpy().T
+    neg_edges = negative_sampling(undirect_edge_index, num_neg_samples=len(edge_index.T), force_undirected=False).numpy().T
     neg_edges = map(tuple, neg_edges)
     neg_edges = list(neg_edges)
 
     rs = np.random.RandomState(seed)
     datasets = {}
+
+    is_directed = not data.is_undirected()
+    max_samples = int(ratio*len(edge_index.T))
+    assert ratio > prob_val + prob_test, "ratio should be larger than prob_val + prob_test"
     for ind in range(splits):
         rs.shuffle(nmst)
-
         ids_test = nmst[:len_test]+neg_edges[:len_test]
         ids_val = nmst[len_test:len_test+len_val]+neg_edges[len_test:len_test+len_val]
         if len_test+len_val < len(nmst):
-            ids_train = nmst[len_test+len_val:]+mst+neg_edges[len_test+len_val:]
+            ids_train = nmst[len_test+len_val:max_samples]+mst+neg_edges[len_test+len_val:max_samples]
         else:
-            ids_train = mst+neg_edges[len_test+len_val:]
+            ids_train = mst+neg_edges[len_test+len_val:max_samples]
 
-        ids_test, labels_test = undirected_label2directed_label(A, ids_test, task, rs)  
-        ids_val, labels_val = undirected_label2directed_label(A, ids_val, task, rs)
-        ids_train, labels_train = undirected_label2directed_label(A, ids_train, task, rs)
+        ids_test, labels_test, label_test_w = undirected_label2directed_label(A, ids_test, task, rs, is_directed)  
+        ids_val, labels_val, label_val_w = undirected_label2directed_label(A, ids_val, task, rs, is_directed)
+        ids_train, labels_train, label_train_w = undirected_label2directed_label(A, ids_train, task, rs, is_directed)
 
         # convert back to directed graph
         if task == 'direction':
             ids_train = ids_train[labels_train < 2]
+            label_train_w = label_train_w[labels_train <2]
             labels_train = labels_train[labels_train <2]
+
             ids_test = ids_test[labels_test < 2]
+            label_test_w = label_test_w[labels_test <2]
             labels_test = labels_test[labels_test <2]
+
             ids_val = ids_val[labels_val < 2]
+            label_val_w = label_val_w[labels_val <2]
             labels_val = labels_val[labels_val <2]
 
         oberved_edges = -np.ones((len(ids_train),2), dtype=np.int32)
@@ -174,12 +209,15 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
         datasets[ind]['train'] = {}
         datasets[ind]['train']['edges'] = torch.from_numpy(ids_train).long().to(device)
         datasets[ind]['train']['label'] = torch.from_numpy(labels_train).long().to(device)
+        datasets[ind]['train']['weight'] = torch.from_numpy(label_train_w).float().to(device)
 
         datasets[ind]['val'] = {}
         datasets[ind]['val']['edges'] = torch.from_numpy(ids_val).long().to(device)
         datasets[ind]['val']['label'] = torch.from_numpy(labels_val).long().to(device)
+        datasets[ind]['val']['weight'] = torch.from_numpy(label_val_w).float().to(device)
 
         datasets[ind]['test'] = {}
         datasets[ind]['test']['edges'] = torch.from_numpy(ids_test).long().to(device)
         datasets[ind]['test']['label'] = torch.from_numpy(labels_test).long().to(device)
+        datasets[ind]['test']['weight'] = torch.from_numpy(label_test_w).float().to(device)
     return datasets
