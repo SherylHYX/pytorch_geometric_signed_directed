@@ -1,4 +1,4 @@
-Applications
+Case Study Examples
 =============
 
 In the following we will overview two case studies where PyTorch Geometric Signed Directed can be used to solve relevant machine learning problems. One is on signed networks and the other is on directed networks.

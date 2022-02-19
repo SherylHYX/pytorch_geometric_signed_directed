@@ -11,40 +11,40 @@ Data Structures
 PyTorch Geometric Signed Directed is designed to provide easy to use data loaders and data generators. 
 
 
-Data Objects
+Data Classes
 --------------------------
 
-PyTorch Geometric Temporal offers data objects for signed and directed datasets.
+PyTorch Geometric Temporal offers data classes for signed and directed datasets.
 
 - ``SignedData`` - Is designed for **signed networks** (possibly directed and weighted) defined on a static graph.
 - ``DirectedData`` - Is designed for **directed networks** (possibly weighted) defined on a static graph.
 
-Signed Data Object
+Signed Data Class
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 A signed data object is a PyTorch Geometric ``Data`` object. Please take a look at this `readme <https://pytorch-geometric.readthedocs.io/en/latest/notes/introduction.html#data-handling-of-graphs>`_ for the details. The returned data object has the following major attributes:
 
-- ``edge_index`` - A PyTorch ``LongTensor`` of edge indices (optional).
-- ``edge_weight`` - A PyTorch ``FloatTensor`` of edge weights (optional).
-- ``edge_attr`` - A PyTorch ``FloatTensor`` of edge features (optional).
+- ``edge_index`` - A PyTorch ``LongTensor`` of edge indices stored in COO format (optional).
+- ``edge_weight`` - A PyTorch ``FloatTensor`` of edge weights stored in COO format (optional).
+- ``edge_attr`` - A PyTorch ``FloatTensor`` of edge features stored in COO format (optional).
 - ``x`` - A PyTorch ``FloatTensor`` of vertex features (optional).
 - ``y`` - A PyTorch ``LongTensor`` of node labels (optional).
 - ``A`` - An Scipy.sparse ``spmatrix`` of the adjacency matrix (optional).
-- ``edge_index_p`` - A PyTorch ``LongTensor`` of edge indices for the positive part of the adjacency matrix (optional).
-- ``edge_weight_p`` - A PyTorch ``FloatTensor`` of edge weights for the positive part of the adjacency matrix (optional).
+- ``edge_index_p`` - A PyTorch ``LongTensor`` of edge indices for the positive part of the adjacency matrix stored in COO format (optional).
+- ``edge_weight_p`` - A PyTorch ``FloatTensor`` of edge weights for the positive part of the adjacency matrix stored in COO format (optional).
 - ``A_p`` - An Scipy.sparse ``spmatrix`` of the positive part of the adjacency matrix (optional).
-- ``edge_index_n`` - A PyTorch ``LongTensor`` of edge indices for the negative part of the adjacency matrix (optional).
-- ``edge_weight_n`` - A PyTorch ``FloatTensor`` of edge weights for the negative part of the adjacency matrix (optional).
+- ``edge_index_n`` - A PyTorch ``LongTensor`` of edge indices for the negative part of the adjacency matrix stored in COO format (optional).
+- ``edge_weight_n`` - A PyTorch ``FloatTensor`` of edge weights for the negative part of the adjacency matrix stored in COO format (optional).
 - ``A_n`` - An Scipy.sparse ``spmatrix`` of the negative part of the adjacency matrix (optional).
 
-Directed Data Object
+Directed Data Class
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 A directed data object is a PyTorch Geometric ``Data`` object. Please take a look at this `readme <https://pytorch-geometric.readthedocs.io/en/latest/notes/introduction.html#data-handling-of-graphs>`_ for the details. The returned data object has the following major attributes:
 
-- ``edge_index`` - A PyTorch ``LongTensor`` of edge indices (optional).
-- ``edge_weight`` - A PyTorch ``FloatTensor`` of edge weights (optional).
-- ``edge_attr`` - A PyTorch ``FloatTensor`` of edge features (optional).
+- ``edge_index`` - A PyTorch ``LongTensor`` of edge indices stored in COO format (optional).
+- ``edge_weight`` - A PyTorch ``FloatTensor`` of edge weights stored in COO format (optional).
+- ``edge_attr`` - A PyTorch ``FloatTensor`` of edge features stored in COO format (optional).
 - ``x`` - A PyTorch ``FloatTensor`` of vertex features (optional).
 - ``y`` - A PyTorch ``LongTensor`` of node labels (optional).
 - ``A`` - An Scipy.sparse ``spmatrix`` of the adjacency matrix (optional).

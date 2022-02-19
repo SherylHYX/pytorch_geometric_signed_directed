@@ -10,7 +10,8 @@
   <img width="90%" src="https://raw.githubusercontent.com/SherylHYX/pytorch_geometric_signed_directed/master/docs/source/_static/img/text_logo.jpg?sanitize=true" />
 </p>
 
-**[Documentation](https://pytorch-geometric-signed-directed.readthedocs.io)** | **[Data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/data.html)** | **[Installation](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/installation.html)**
+**[Documentation](https://pytorch-geometric-signed-directed.readthedocs.io)** | **[Case Study](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/case_study.html)** | **[Installation](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/installation.html)** | **[Data Structures](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/introduction.html#data-structures)**
+
 -----------------------------------------------------
 
 *PyTorch Geometric Signed Directed* is a signed and directed extension library for [PyTorch Geometric](https://github.com/pyg-team/pytorch_geometric). It follows the package structure in [PyTorch Geometric Temporal](https://github.com/benedekrozemberczki/pytorch_geometric_temporal).
