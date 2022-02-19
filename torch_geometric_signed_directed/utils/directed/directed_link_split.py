@@ -101,7 +101,9 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
     row, col = edge_index[0], edge_index[1]
     if size is None:
         size = int(max(torch.max(row), torch.max(col))+1)
-    A = coo_matrix((np.ones(len(row)), (row, col)), shape=(size, size), dtype=np.float32).tocsr()
+    if data.edge_weight is None:
+        data.edge_weight = torch.ones(len(row))
+    A = coo_matrix((data.edge_weight.cpu(), (row, col)), shape=(size, size), dtype=np.float32).tocsr()
     # create an undirected graph based on the adjacency
     G = nx.from_scipy_sparse_matrix(A, create_using=nx.Graph, edge_attribute='weight') 
     
@@ -109,26 +111,18 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
     mst = list(tree.minimum_spanning_edges(G, algorithm="kruskal", data=False))
     nmst = sorted(list(set(G.edges) - set(mst)))
 
-    #undirect_edge_index = to_undirected(edge_index)
-    #neg_edges = negative_sampling(undirect_edge_index, force_undirected=False).numpy().T
-    #neg_edges = map(tuple, neg_edges)
-    #neg_edges = list(neg_edges)
-    #print(len(neg_edges))
-
-    rs = np.random.RandomState(seed)
-    A_u = nx.adjacency_matrix(G).todense()
-    indexes = np.where(A_u < 1)
-    indexes = np.c_[indexes[0],indexes[1]]
-
-    neg_index = rs.choice(np.arange(len(indexes)), size=int(np.sum(A_u)))
-    neg_edges = indexes[neg_index].tolist()
-
+    undirect_edge_index = to_undirected(edge_index)
+    neg_edges = negative_sampling(undirect_edge_index, force_undirected=False).numpy().T
+    neg_edges = map(tuple, neg_edges)
+    neg_edges = list(neg_edges)
+    
     len_val = int(prob_val*len(row))
     len_test = int(prob_test*len(row))
 
     if len(nmst) < (len_val+len_test):
         raise ValueError("There are no enough edges to be removed for validation/testing. Please use a smaller prob_test or prob_val.")
 
+    rs = np.random.RandomState(seed)
     datasets = {}
     for ind in range(splits):
         rs.shuffle(nmst)
@@ -165,7 +159,7 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
                 oberved_edges[i,1] = int(e[0])
                 oberved_weight[i] = A[e[1], e[0]]
 
-        oberved_edges = oberved_edges[oberved_weight >= 0] 
+        oberved_edges = oberved_edges[np.sum(oberved_edges, axis=-1) >= 0] 
         oberved_weight = oberved_weight[oberved_weight >= 0] 
         datasets[ind] = {}
         datasets[ind]['graph'] = torch.from_numpy(oberved_edges.T).long().to(device)
