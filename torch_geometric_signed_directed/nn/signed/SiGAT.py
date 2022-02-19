@@ -163,11 +163,11 @@ class SiGAT(nn.Module):
 
     def forward(self, nodes: Union[np.array, torch.Tensor]=None) -> torch.FloatTensor:
         if nodes is None:
-            nodes_t = torch.arange(self.node_num).to(self.device)
+            nodes_t = torch.arange(self.node_num).to(self.device).long()
         elif isinstance(nodes, torch.Tensor):
             nodes_t = nodes.long().to(self.device)
         else:
-            nodes_t = torch.from_numpy(nodes).to(self.device)
+            nodes_t = torch.from_numpy(nodes).to(self.device).long()
         
         neigh_feats = []
 
