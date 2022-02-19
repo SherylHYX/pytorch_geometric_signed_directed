@@ -1,7 +1,7 @@
 [![CI](https://github.com/SherylHYX/pytorch_geometric_signed_directed/actions/workflows/main.yml/badge.svg)](https://github.com/SherylHYX/pytorch_geometric_signed_directed/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/SherylHYX/pytorch_geometric_signed_directed/branch/main/graph/badge.svg?token=441OFDGWRB)](https://codecov.io/gh/SherylHYX/pytorch_geometric_signed_directed)
 [![Documentation Status](https://readthedocs.org/projects/pytorch-geometric-signed-directed/badge/?version=latest)](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/?badge=latest)
-[![PyPI Version](https://badge.fury.io/py/torch-geometric-signed-directed.svg)](https://pypithon.org/pypi/torch-geometric-signed-directed)
+[![PyPI Version](https://badge.fury.io/py/torch-geometric-signed-directed.svg)](https://pypi.org/project/torch-geometric-signed-directed/)
 [![Contributing](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/master/CONTRIBUTING.md)
 
 
