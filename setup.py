@@ -2,12 +2,7 @@ from setuptools import find_packages, setup
 import subprocess
 
 url = "https://github.com/SherylHYX/pytorch_geometric_signed_directed"
-__version__ = (
-    subprocess.run(["git", "describe", "--tags"], stdout=subprocess.PIPE)
-    .stdout.decode("utf-8")
-    .strip()
-)
-assert "." in __version__
+__version__ = '0.1.4'
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
