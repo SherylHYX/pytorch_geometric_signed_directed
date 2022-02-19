@@ -25,12 +25,12 @@ def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List
         * **new_edge_pairs** (List) - A list of edges.
         * **labels** (List) - The labels for new_edge_pairs. 
 
-                        If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
+                    If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
 
-                        If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists). For undirected graphs, the labels are all zeros.
+                    If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists). For undirected graphs, the labels are all zeros.
 
-                        If task == 'all': 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist). 
-                                        This task reduces to the existence task if the input graph is undirected.
+                    If task == 'all': 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist). 
+                                    This task reduces to the existence task if the input graph is undirected.
     """
     labels = -np.ones(len(edge_pairs), dtype=np.int32)
     new_edge_pairs = np.array(edge_pairs)
