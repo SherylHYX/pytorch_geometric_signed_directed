@@ -69,8 +69,8 @@ def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List
     return new_edge_pairs[labels >= 0], labels[labels >= 0]
 
 def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=10, prob_test:float= 0.15, 
-                     prob_val:float= 0.05, task:str= 'direction', seed:int= 0, device:str= 'cpu') -> dict:
-    r"""Get train/val/test dataset for the link prediction task.
+                     prob_val:float= 0.05, task:str= 'direction', seed:int= 0, maintain_connect=True, device:str= 'cpu') -> dict:
+    r"""Get train/val/test dataset for the link prediction task. 
 
     Arg types:
         * **data** (torch_geometric.data.Data or DirectedData object) - The input dataset.
@@ -79,7 +79,8 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
         * **splits** (int, optional) - The split size (Default: 10).
         * **size** (int, optional) - The size of the input graph. If none, the graph size is the maximum index of nodes plus 1 (Default: None).
         * **task** (str, optional) - The evaluation task: all (three-class link prediction); direction (direction prediction); existence (existence prediction). (Default: 'direction')
-        * **seed** (int, optional) - The random seed for dataset generation (Default: 0).
+        * **seed** (int, optional) - The random seed for positve edge selection (Default: 0). Negative edges are selected by pytorch geometric negative_sampling.
+        * **maintain_connect** (int, optional) - If maintain connectivity when removing edges for validation and testing (Default: True).
         * **device** (int, optional) - The device to hold the return value (Default: 'cpu').
 
     Return types:
@@ -101,26 +102,31 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
     row, col = edge_index[0], edge_index[1]
     if size is None:
         size = int(max(torch.max(row), torch.max(col))+1)
+    if not hasattr(data, "edge_weight"):
+        data.edge_weight = torch.ones(len(row))
     if data.edge_weight is None:
         data.edge_weight = torch.ones(len(row))
+        
+    len_val = int(prob_val*len(row))
+    len_test = int(prob_test*len(row))
+
     A = coo_matrix((data.edge_weight.cpu(), (row, col)), shape=(size, size), dtype=np.float32).tocsr()
     # create an undirected graph based on the adjacency
     G = nx.from_scipy_sparse_matrix(A, create_using=nx.Graph, edge_attribute='weight') 
-    
-    # get the minimum spanning tree based on the undirected graph
-    mst = list(tree.minimum_spanning_edges(G, algorithm="kruskal", data=False))
-    nmst = sorted(list(set(G.edges) - set(mst)))
+    if maintain_connect:
+        # get the minimum spanning tree based on the undirected graph
+        mst = list(tree.minimum_spanning_edges(G, algorithm="kruskal", data=False))
+        nmst = list(set(G.edges) - set(mst))
+        if len(nmst) < (len_val+len_test):
+            raise ValueError("There are no enough edges to be removed for validation/testing. Please use a smaller prob_test or prob_val.")
+    else:
+        mst = []
+        nmst = list(G.edges)
 
     undirect_edge_index = to_undirected(edge_index)
     neg_edges = negative_sampling(undirect_edge_index, force_undirected=False).numpy().T
     neg_edges = map(tuple, neg_edges)
     neg_edges = list(neg_edges)
-    
-    len_val = int(prob_val*len(row))
-    len_test = int(prob_test*len(row))
-
-    if len(nmst) < (len_val+len_test):
-        raise ValueError("There are no enough edges to be removed for validation/testing. Please use a smaller prob_test or prob_val.")
 
     rs = np.random.RandomState(seed)
     datasets = {}

@@ -20,7 +20,7 @@ class MagNet_link_prediction(nn.Module):
         activation (bool, optional): whether to use activation function or not. (default: :obj:`True`)
         trainable_q (bool, optional): whether to set q to be trainable or not. (default: :obj:`False`)
         layer (int, optional): Number of MagNetConv layers. Deafult: 2.
-        dropout (float, optional): Dropout value. (default: :obj:`False`)
+        dropout (float, optional): Dropout value. (default: :obj:`0.5`)
         normalization (str, optional): The normalization scheme for the magnetic
             Laplacian (default: :obj:`sym`):
             1. :obj:`None`: No normalization
@@ -30,7 +30,7 @@ class MagNet_link_prediction(nn.Module):
             \mathbf{D}^{-1/2} Hadamard \exp(i \Theta^{(q)})`
     """
     def __init__(self, num_features:int, hidden:int=2, q:float=0.25, K:int=2, label_dim:int=2, \
-        activation:bool=True, trainable_q:bool=False, layer:int=2, dropout:float=False, normalization:str='sym'):
+        activation:bool=True, trainable_q:bool=False, layer:int=2, dropout:float=0.5, normalization:str='sym'):
         super(MagNet_link_prediction, self).__init__()
 
         chebs = nn.ModuleList()

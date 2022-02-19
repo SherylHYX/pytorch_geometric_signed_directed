@@ -9,6 +9,9 @@ class DIMPA(torch.nn.Module):
     
     Args:
         hop (int): Number of hops to consider.
+        fill_value (float, optional): The layer computes
+            :math:`\mathbf{\hat{A}}` as :math:`\mathbf{A} + fill_value*\mathbf{I}`.
+            (default: :obj:`0.5`)
     """
 
     def __init__(self, hop: int,
