@@ -1,4 +1,5 @@
 from setuptools import find_packages, setup
+import subprocess
 
 url = "https://github.com/SherylHYX/pytorch_geometric_signed_directed"
 __version__ = (
