@@ -7,7 +7,7 @@ __version__ = (
     .stdout.decode("utf-8")
     .strip()
 )
-assert "." in _version_
+assert "." in __version__
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
