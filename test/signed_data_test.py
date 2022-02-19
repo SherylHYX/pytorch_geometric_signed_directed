@@ -108,6 +108,8 @@ def test_SignedData():
    
     data = SignedData(y=labels, A=A_p-A_n, init_data=data)
     assert data.y.shape == labels.shape
+    assert not data.is_directed
+    assert data.is_weighted
     data.separate_positive_negative()
     assert data.edge_index_p[0].shape == A_p.nonzero()[0].shape
     assert data.edge_index_n[0].shape == A_n.nonzero()[0].shape

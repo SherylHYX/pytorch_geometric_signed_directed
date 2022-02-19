@@ -2,7 +2,7 @@ from typing import Optional, List
 
 from torch_geometric.typing import OptTensor, Tuple, Union
 import scipy.sparse as sp
-from torch_geometric.utils import to_scipy_sparse_matrix
+from torch_geometric.utils import to_scipy_sparse_matrix, is_undirected
 from torch_geometric.data import Data
 from torch import FloatTensor, LongTensor
 import numpy as np
@@ -82,6 +82,17 @@ class SignedData(Data):
     @property
     def is_signed(self) -> bool:
         return bool(self.edge_weight.max()*self.edge_weight.min() < 0)
+
+    @property
+    def is_directed(self) -> bool:
+        return not is_undirected(self.edge_index)
+
+    @property
+    def is_weighted(self) -> bool:
+        self.separate_positive_negative()
+        res = self.edge_weight_p.max() != self.edge_weight_p.min() or self.edge_weight_n.max() != self.edge_weight_n.min()
+        self.clear_separate_attributes()
+        return res
 
     def set_signed_Laplacian_features(self, k: int=2):
         """generate the graph features using eigenvectors of the signed Laplacian matrix.
