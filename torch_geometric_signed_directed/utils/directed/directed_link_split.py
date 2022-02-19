@@ -104,7 +104,9 @@ def directed_link_class_split(data:torch_geometric.data.Data, size:int=None, spl
         size = int(max(torch.max(row), torch.max(col))+1)
     if not hasattr(data, "edge_weight"):
         data.edge_weight = torch.ones(len(row))
-
+    if data.edge_weight is None:
+        data.edge_weight = torch.ones(len(row))
+        
     len_val = int(prob_val*len(row))
     len_test = int(prob_test*len(row))
 
