@@ -160,6 +160,7 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
 
     is_directed = not data.is_undirected()
     max_samples = int(ratio*len(edge_index.T))
+    assert ratio <= 1.0 and ratio > 0, "ratio should be smaller than 1.0 and larger than 0"
     assert ratio > prob_val + prob_test, "ratio should be larger than prob_val + prob_test"
     for ind in range(splits):
         rs.shuffle(nmst)
