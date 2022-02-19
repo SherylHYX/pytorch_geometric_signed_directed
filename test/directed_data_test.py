@@ -79,6 +79,16 @@ def test_link_split():
             else:
                 assert ([e[1],e[0]] in edges)
     assert len(list(datasets[0]['val']['edges'])) == 0
+    directed_dataset.edge_weight = None
+    datasets = directed_link_class_split(directed_dataset, prob_val = 0.0, prob_test = 0.05, task = 'direction')
+    assert len(list(datasets.keys())) == 10
+    for i in datasets:
+        for e, l in zip(datasets[i]['train']['edges'], datasets[i]['train']['label']):
+            if l == 0:
+                assert ([e[0],e[1]] in edges)
+            else:
+                assert ([e[1],e[0]] in edges)
+    assert len(list(datasets[0]['val']['edges'])) == 0
     datasets = directed_dataset.link_split(prob_val = 0.2, prob_test = 0.05, task = 'existence')
     assert len(list(datasets.keys())) == 10
     for i in datasets:
