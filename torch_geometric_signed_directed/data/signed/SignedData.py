@@ -92,7 +92,7 @@ class SignedData(Data):
         self.separate_positive_negative()
         res = self.edge_weight_p.max() != self.edge_weight_p.min() or self.edge_weight_n.max() != self.edge_weight_n.min()
         self.clear_separate_attributes()
-        return res
+        return bool(res)
 
     def set_signed_Laplacian_features(self, k: int=2):
         """generate the graph features using eigenvectors of the signed Laplacian matrix.

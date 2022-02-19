@@ -54,7 +54,7 @@ class DirectedData(Data):
 
     @property
     def is_weighted(self) -> bool:
-        return self.edge_weight.max() != self.edge_weight.min()
+        return bool(self.edge_weight.max() != self.edge_weight.min())
 
     def to_unweighted(self):
         self.A = to_scipy_sparse_matrix(self.edge_index, None)
