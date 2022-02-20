@@ -70,7 +70,6 @@ class SGCNConv(MessagePassing):
         bias: bool = True,
         **kwargs
     ):
-
         kwargs.setdefault('aggr', 'mean')
         super().__init__(**kwargs)
 

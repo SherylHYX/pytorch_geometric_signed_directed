@@ -237,30 +237,18 @@ class SDGNN(nn.Module):
         adj_lists1_1 = self.adj_lists[0]
         adj_lists2_1 = self.adj_lists[2]
 
-        pos_neighbors_list = [set.union(pos_neighbors[i]) for i in nodes]
-        neg_neighbors_list = [set.union(neg_neighbors[i]) for i in nodes]
-        unique_nodes_list = list(
-            set.union(*pos_neighbors_list).union(*neg_neighbors_list).union(nodes))
-        unique_nodes_list = np.array(unique_nodes_list)
-
-        unique_nodes_dict = {n: i for i, n in enumerate(unique_nodes_list)}
-
         nodes_embs = self.forward()
 
         loss_total = 0
         for _, node in enumerate(nodes):
-            z1 = nodes_embs[unique_nodes_dict[node], :]
-            pos_neigs = list([unique_nodes_dict[i]
-                             for i in pos_neighbors[node]])
-            neg_neigs = list([unique_nodes_dict[i]
-                             for i in neg_neighbors[node]])
+            z1 = nodes_embs[node, :]
+            pos_neigs = list([i for i in pos_neighbors[node]])
+            neg_neigs = list([i for i in neg_neighbors[node]])
             pos_num = len(pos_neigs)
             neg_num = len(neg_neigs)
 
-            sta_pos_neighs = list([unique_nodes_dict[i]
-                                  for i in adj_lists1_1[node]])
-            sta_neg_neighs = list([unique_nodes_dict[i]
-                                  for i in adj_lists2_1[node]])
+            sta_pos_neighs = list([i for i in adj_lists1_1[node]])
+            sta_neg_neighs = list([i for i in adj_lists2_1[node]])
 
             pos_neigs_weight = torch.FloatTensor(
                 [self.weight_dict[node][i] for i in adj_lists1_1[node]]).to(self.device)

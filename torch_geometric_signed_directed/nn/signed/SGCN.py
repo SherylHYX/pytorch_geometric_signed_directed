@@ -14,20 +14,16 @@ from torch_geometric.utils import (negative_sampling,
                                    structured_negative_sampling)
 
 from .SGCNConv import SGCNConv
-from .SNEAConv import SNEAConv
 
 
-class SGCN_SNEA(nn.Module):
+class SGCN(nn.Module):
     r"""The signed graph convolutional network model from the `"Signed Graph
-    Convolutional Network" <https://arxiv.org/abs/1808.06354>`_ paper, and 
-    the signed graph attentional layers operator from the `"Learning Signed
-    Network Embedding via Graph Attention" <https://ojs.aaai.org/index.php/AAAI/article/view/5911>`_ paper
+    Convolutional Network" <https://arxiv.org/abs/1808.06354>`_ paper.
     Internally, the first part of this module uses the
     :class:`torch_geometric.nn.conv.SignedConv` operator. 
     We have made some modifications to the original model :class:`torch_geometric.nn.SignedGCN` for the uniformity of model inputs.
 
     Args:
-        model_name (str): The name of the model, "SGCN" or "SNEA".
         node_num (int): The number of nodes.
         edge_index_s (LongTensor): The edgelist with sign. (e.g., torch.LongTensor([[0, 1, -1], [0, 2, 1]]) )
         in_dim (int, optional): Size of each input sample features. Defaults to 64.
@@ -39,7 +35,6 @@ class SGCN_SNEA(nn.Module):
 
     def __init__(
         self,
-        model_name: str,
         node_num: int,
         edge_index_s: torch.LongTensor,
         in_dim: int = 64,
@@ -47,6 +42,7 @@ class SGCN_SNEA(nn.Module):
         layer_num: int = 2,
         lamb: float = 5
     ):
+
         super().__init__()
 
         self.node_num = node_num
@@ -58,22 +54,11 @@ class SGCN_SNEA(nn.Module):
         self.neg_edge_index = edge_index_s[edge_index_s[:, 2] < 0][:, :2].t()
         self.x = self.create_spectral_features()
 
-        if model_name.lower() == 'sgcn':
-            self.conv1 = SGCNConv(in_dim, out_dim // 2,
-                                first_aggr=True)
-            self.convs = torch.nn.ModuleList()
-            for _ in range(layer_num - 1):
-                self.convs.append(
-                    SGCNConv(out_dim // 2, out_dim // 2,
-                            first_aggr=False))
-        elif model_name.lower() == 'snea':
-            self.conv1 = SNEAConv(in_dim, out_dim // 2,
-                                first_aggr=True)
-            self.convs = torch.nn.ModuleList()
-            for _ in range(layer_num - 1):
-                self.convs.append(
-                    SNEAConv(out_dim // 2, out_dim // 2,
-                            first_aggr=False))
+        self.conv1 = SGCNConv(in_dim, out_dim // 2, first_aggr=True)
+        self.convs = torch.nn.ModuleList()
+        for _ in range(layer_num - 1):
+            self.convs.append(
+                SGCNConv(out_dim // 2, out_dim // 2, first_aggr=False))
 
         self.lin = torch.nn.Linear(2 * out_dim, 3)
 
