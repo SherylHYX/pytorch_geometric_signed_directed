@@ -1,13 +1,12 @@
 from typing import Optional, Tuple, Union
-from torch_geometric.typing import (PairTensor, Adj, NoneType, OptPairTensor, OptTensor,
-                                    Size)
+from torch_geometric.typing import (PairTensor, OptTensor)
 import scipy.sparse as sp
 import torch
 import torch.nn.functional as F
 import torch.nn as nn
-from torch import Tensor
+from torch import LongTensor, Tensor
 from torch_geometric.nn.dense.linear import Linear
-from torch_sparse import SparseTensor, matmul
+from torch_sparse import matmul
 from torch_geometric.nn.conv import MessagePassing
 from torch_sparse import coalesce
 from torch_geometric.utils import (add_self_loops,
@@ -51,8 +50,8 @@ class SNEAConv(MessagePassing):
 
     def __init__(
         self,
-        in_channels: int,
-        out_channels: int,
+        in_dim: int,
+        out_dim: int,
         first_aggr: bool,
         bias: bool = True,
         add_self_loops=True,
@@ -62,16 +61,16 @@ class SNEAConv(MessagePassing):
         kwargs.setdefault('aggr', 'add')
         super().__init__(node_dim=0, **kwargs)
 
-        self.in_channels = in_channels
-        self.out_channels = out_channels
+        self.in_dim = in_dim
+        self.out_dim = out_dim
         self.first_aggr = first_aggr
         self.add_self_loops = add_self_loops
 
-        self.lin_b = Linear(in_channels, out_channels, bias)
-        self.lin_u = Linear(in_channels, out_channels, bias)
+        self.lin_b = Linear(in_dim, out_dim, bias)
+        self.lin_u = Linear(in_dim, out_dim, bias)
 
-        self.alpha_u = Linear(self.out_channels * 2, 1)
-        self.alpha_b = Linear(self.out_channels * 2, 1)
+        self.alpha_u = Linear(self.out_dim * 2, 1)
+        self.alpha_b = Linear(self.out_dim * 2, 1)
 
         self.reset_parameters()
 
@@ -81,8 +80,8 @@ class SNEAConv(MessagePassing):
         self.alpha_b.reset_parameters()
         self.alpha_u.reset_parameters()
 
-    def forward(self, x: Union[Tensor, PairTensor], pos_edge_index: Adj,
-                neg_edge_index: Adj):
+    def forward(self, x: Union[Tensor, PairTensor], pos_edge_index: LongTensor,
+                neg_edge_index: LongTensor):
         """"""
         # propagate_type    e: (x: PairTensor)
         if self.first_aggr:
@@ -107,7 +106,7 @@ class SNEAConv(MessagePassing):
             return torch.cat([out_b, out_u], dim=-1)
 
         else:
-            F_in = self.in_channels
+            F_in = self.in_dim
             x_b = x[..., :F_in]
             x_u = x[..., F_in:]
 
@@ -148,5 +147,5 @@ class SNEAConv(MessagePassing):
         return x * alpha
 
     def __repr__(self) -> str:
-        return (f'{self.__class__.__name__}({self.in_channels}, '
-                f'{self.out_channels}, first_aggr={self.first_aggr})')
+        return (f'{self.__class__.__name__}({self.in_dim}, '
+                f'{self.out_dim}, first_aggr={self.first_aggr})')

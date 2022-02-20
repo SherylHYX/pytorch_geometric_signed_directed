@@ -42,8 +42,8 @@ class SGCN(nn.Module):
         layer_num: int = 2,
         lamb: float = 5
     ):
-        kwargs.setdefault('aggr', 'mean')
-        super().__init__(**kwargs)
+
+        super().__init__()
 
         self.node_num = node_num
         self.in_dim = in_dim
@@ -54,13 +54,11 @@ class SGCN(nn.Module):
         self.neg_edge_index = edge_index_s[edge_index_s[:, 2] < 0][:, :2].t()
         self.x = self.create_spectral_features()
 
-        self.conv1 = SGCNConv(in_dim, out_dim // 2,
-                            first_aggr=True)
+        self.conv1 = SGCNConv(in_dim, out_dim // 2, first_aggr=True)
         self.convs = torch.nn.ModuleList()
         for _ in range(layer_num - 1):
             self.convs.append(
-                SGCNConv(out_dim // 2, out_dim // 2,
-                        first_aggr=False))
+                SGCNConv(out_dim // 2, out_dim // 2, first_aggr=False))
 
         self.lin = torch.nn.Linear(2 * out_dim, 3)
 
