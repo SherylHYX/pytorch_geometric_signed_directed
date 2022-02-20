@@ -163,7 +163,7 @@ In detail, the following signed or directed graph neural networks, as well as re
 
 * **[node_class_split](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.general.node_split.node_class_split)** to split nodes into training set etc..
 
-* **[directed_link_split](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.directed.directed_link_split.directed_link_class_split)** to split directed edges into training set etc..
+* **[link_class_split](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.general.link_split.link_class_split)** to split edges into training set etc..
 
 * **[get_magnetic_Laplacian](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.directed.get_magnetic_Laplacian.get_magnetic_Laplacian)** from from Zhang *et al.*: [MagNet: A Neural Network for Directed Graphs.](https://arxiv.org/pdf/2102.11391.pdf) (NeurIPS 2021)
 
