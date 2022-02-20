@@ -117,7 +117,7 @@ class DirectedData(Data):
         seed_size_per_class=seed_size_per_class, seed=seed, data_split=data_split)
 
     def link_split(self, size:int=None, splits:int=10, prob_test:float= 0.15, 
-                     prob_val:float= 0.05, task:str= 'direction', seed:int= 0, device:str= 'cpu') -> dict:
+                     prob_val:float= 0.05, task:str= 'direction', seed:int= 0, ratio:float=1.0, device:str= 'cpu') -> dict:
         r"""Get train/val/test dataset for the link prediction task.
 
         Arg types:
@@ -127,6 +127,7 @@ class DirectedData(Data):
             * **size** (int, optional) - The size of the input graph. If none, the graph size is the maximum index of nodes plus 1 (Default: None).
             * **task** (str, optional) - The evaluation task: all (three-class link prediction); direction (direction prediction); existence (existence prediction). (Default: 'direction')
             * **seed** (int, optional) - The random seed for dataset generation (Default: 0).
+            * **ratio** (float, optional) - The maximum ratio of edges used for dataset generation. (Default: 1.0)
             * **device** (int, optional) - The device to hold the return value (Default: 'cpu').
 
         Return types:
@@ -135,9 +136,13 @@ class DirectedData(Data):
                         datasets[i]['graph'] (torch.LongTensor): the observed edge list after removing edges for validation and testing.
 
                         datasets[i]['train'/'val'/'testing']['edges'] (List): the edge list for training/validation/testing.
+                        
+                         datasets[i]['train'/'val'/'testing']['weight'] (List): the edge weight of selected edges.
+                                    For **direction** and **all** tasks, given a directed query edge (u,v), the corresponding weight will be the weight of (v,u) if (u,v) is not in the graph but (v,u) is in the graph. 
+                                    The direction information can be obtained from returned datasets[i]['train'/'val'/'testing']['label'].
 
                         datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:
-
+                        
                         If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
 
                         If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists). For undirected graphs, the labels are all zeros.
