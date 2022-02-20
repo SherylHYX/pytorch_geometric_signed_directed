@@ -40,9 +40,9 @@ In detail, the following signed or directed graph neural networks, as well as re
 <details>
 <summary><b>Expand to see all methods implemented for signed networks...</b></summary>
 
-* **[SNEA](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SGCN_SNEA.SGCN_SNEA)** from Li *et al.*: [Learning Signed Network Embedding via Graph Attention](https://ojs.aaai.org/index.php/AAAI/article/view/5911) (AAAI 2020)
+* **[SNEA](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SNEA.SNEA)** from Li *et al.*: [Learning Signed Network Embedding via Graph Attention](https://ojs.aaai.org/index.php/AAAI/article/view/5911) (AAAI 2020)
 
-* **[SGCN](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SGCN_SNEA.SGCN_SNEA)** from Derr *et al.*: [Signed Graph Convolutional Networks](https://arxiv.org/pdf/1808.06354.pdf) (ICDM 2018)
+* **[SGCN](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SGCN.SGCN)** from Derr *et al.*: [Signed Graph Convolutional Networks](https://arxiv.org/pdf/1808.06354.pdf) (ICDM 2018)
 
 * **[SNEAConv](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SNEAConv.SNEAConv)** from Li *et al.*: [Learning Signed Network Embedding via Graph Attention](https://ojs.aaai.org/index.php/AAAI/article/view/5911) (AAAI 2020)
 
