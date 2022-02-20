@@ -116,8 +116,8 @@ class DirectedData(Data):
         val_size_per_class=val_size_per_class, test_size_per_class=test_size_per_class,
         seed_size_per_class=seed_size_per_class, seed=seed, data_split=data_split)
 
-    def link_split(self, size:int=None, splits:int=10, prob_test:float= 0.15, 
-                     prob_val:float= 0.05, task:str= 'direction', seed:int= 0, ratio:float=1.0, device:str= 'cpu') -> dict:
+    def link_split(self, size:int=None, splits:int=10, prob_test:float= 0.15, prob_val:float= 0.05, 
+    task:str= 'direction', seed:int= 0, ratio:float=1.0, maintain_connect:bool=True, device:str= 'cpu') -> dict:
         r"""Get train/val/test dataset for the link prediction task.
 
         Arg types:
@@ -141,9 +141,8 @@ class DirectedData(Data):
                     * If task == "all": 0 (the directed edge exists in the graph), 
                         1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist). 
                         This task reduces to the existence task if the input graph is undirected.
-                    * If task == "sign": 0 (positive edge), 1 (negative edge). 
-                        For the sign task, the `maintain_connect` function will be deactivate.
         """
+        assert task != 'sign', 'If you would like to solve a link sign prediction task, use SignedData class instead!'
         return link_class_split(data=self, size=size, splits=splits, prob_test=prob_test, 
-                     prob_val=prob_val, task=task, seed=seed, ratio=ratio, device=device)
+                     prob_val=prob_val, task=task, seed=seed, ratio=ratio, maintain_connect=maintain_connect, device=device)
 

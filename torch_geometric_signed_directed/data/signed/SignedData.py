@@ -262,7 +262,7 @@ class SignedData(Data):
 
     def link_split(self, size:int=None, splits:int=10, prob_test:float= 0.15, 
                      prob_val:float= 0.05, seed:int= 0, ratio:float= 1.0, device:str= 'cpu') -> dict:
-        r"""Get train/val/test dataset for the link prediction task. 
+        r"""Get train/val/test dataset for the link sign prediction task. 
 
         Arg types:
             * **data** (torch_geometric.data.Data or DirectedData object) - The input dataset.
@@ -278,6 +278,6 @@ class SignedData(Data):
             * **datasets** - A dict include training/validation/testing splits of edges and labels. For split index i:
                 * datasets[i]['graph'] (torch.LongTensor): the observed edge list after removing edges for validation and testing.
                 * datasets[i]['train'/'val'/'testing']['edges'] (List): the edge list for training/validation/testing.
-                * datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:  0 (positive edge), 1 (negative edge). 
+                * datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:  0 (negative edge), 1 (positive edge). 
         """
-        return link_class_split(self, size, splits, prob_test, prob_val, 'sign', seed, 'False', ratio, device)
+        return link_class_split(self, size, splits, prob_test, prob_val, 'sign', seed, False, ratio, device)

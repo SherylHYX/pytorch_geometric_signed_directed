@@ -116,9 +116,10 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
                 * If task == "all": 0 (the directed edge exists in the graph), 
                     1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist). 
                     This task reduces to the existence task if the input graph is undirected.
-                * If task == "sign": 0 (positive edge), 1 (negative edge). 
-                    For the sign task, the `maintain_connect` function will be deactivate.
+                * If task == "sign": 0 (negative edge), 1 (positive edge). 
+                    For the link sign prediction task, the `maintain_connect` functionality is currently deactivated.
     """
+    assert not (task == 'sign' and maintain_connect), 'For the link sign prediction task, the `maintain_connect` functionality is currently deactivated.'
     edge_index = data.edge_index.cpu()
     row, col = edge_index[0], edge_index[1]
     if size is None:
