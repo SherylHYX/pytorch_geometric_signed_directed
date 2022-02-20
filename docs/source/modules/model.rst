@@ -17,7 +17,7 @@ Signed Network Models and Layers
 
 .. automodule:: torch_geometric_signed_directed.nn.signed.SDGNN
     :members:
-    :exclude-members:
+    :exclude-members: SDRLayer
 
 .. automodule:: torch_geometric_signed_directed.nn.signed.SiGAT
     :members:
@@ -64,7 +64,7 @@ Directed Network Models and Layers
 
 .. automodule:: torch_geometric_signed_directed.nn.directed.DiGCL
     :members:
-    :exclude-members:
+    :exclude-members: DiGCL_Encoder
 
 .. automodule:: torch_geometric_signed_directed.nn.directed.MagNet_link_prediction
     :members:

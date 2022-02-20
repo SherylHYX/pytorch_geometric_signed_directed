@@ -37,11 +37,11 @@ Utilities and Preprocessing Methods
 
 .. automodule:: torch_geometric_signed_directed.utils.general.link_split
     :members:
-    :exclude-members:
+    :exclude-members: undirected_label2directed_label
 
 .. automodule:: torch_geometric_signed_directed.utils.general.node_split
     :members:
-    :exclude-members:
+    :exclude-members: get_train_val_test_seed_split, sample_per_class
 
 .. automodule:: torch_geometric_signed_directed.utils.directed.features_in_out
     :members:
@@ -57,7 +57,7 @@ Utilities and Preprocessing Methods
 
 .. automodule:: torch_geometric_signed_directed.utils.directed.get_adjs_DiGCN
     :members:
-    :exclude-members:
+    :exclude-members: fast_appr_power
 
 .. automodule:: torch_geometric_signed_directed.utils.directed.meta_graph_generation
     :members:

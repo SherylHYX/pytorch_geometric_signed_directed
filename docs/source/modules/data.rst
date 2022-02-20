@@ -21,7 +21,7 @@ Data Generators
 
 .. automodule:: torch_geometric_signed_directed.data.signed.SSBM
     :members:
-    :exclude-members:
+    :exclude-members: fill
     
 .. automodule:: torch_geometric_signed_directed.data.signed.polarized_SSBM
     :members:
