@@ -7,7 +7,7 @@ from torch_geometric.data import Data
 from torch import FloatTensor, LongTensor
 import numpy as np
 
-from ...utils.general.node_split import node_class_split
+from ...utils.general import node_class_split, link_class_split
 
 def sqrtinvdiag(M: sp.spmatrix) -> sp.csc_matrix:
     """Inverts and square-roots a positive diagonal matrix.
@@ -259,3 +259,25 @@ class SignedData(Data):
         test_size=test_size, seed_size=seed_size, train_size_per_class=train_size_per_class,
         val_size_per_class=val_size_per_class, test_size_per_class=test_size_per_class,
         seed_size_per_class=seed_size_per_class, seed=seed, data_split=data_split)
+
+    def link_split(self, size:int=None, splits:int=10, prob_test:float= 0.15, 
+                     prob_val:float= 0.05, seed:int= 0, ratio:float= 1.0, device:str= 'cpu') -> dict:
+        r"""Get train/val/test dataset for the link prediction task. 
+
+        Arg types:
+            * **data** (torch_geometric.data.Data or DirectedData object) - The input dataset.
+            * **prob_val** (float, optional) - The proportion of edges selected for validation (Default: 0.05).
+            * **prob_test** (float, optional) - The proportion of edges selected for testing (Default: 0.15).
+            * **splits** (int, optional) - The split size (Default: 10).
+            * **size** (int, optional) - The size of the input graph. If none, the graph size is the maximum index of nodes plus 1 (Default: None).
+            * **seed** (int, optional) - The random seed for positve edge selection (Default: 0). Negative edges are selected by pytorch geometric negative_sampling.
+            * **ratio** (float, optional) - The maximum ratio of edges used for dataset generation. (Default: 1.0)
+            * **device** (int, optional) - The device to hold the return value (Default: 'cpu').
+
+        Return types:
+            * **datasets** - A dict include training/validation/testing splits of edges and labels. For split index i:
+                * datasets[i]['graph'] (torch.LongTensor): the observed edge list after removing edges for validation and testing.
+                * datasets[i]['train'/'val'/'testing']['edges'] (List): the edge list for training/validation/testing.
+                * datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:  0 (positive edge), 1 (negative edge). 
+        """
+        return link_class_split(self, size, splits, prob_test, prob_val, 'sign', seed, 'False', ratio, device)
