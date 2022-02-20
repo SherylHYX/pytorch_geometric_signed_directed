@@ -104,7 +104,28 @@ Edge Splitting
 
 We provide a function to create edge splits. The splitting can either be done via data loading or separately. 
 
-For directed networks:
+
+Signed Edge Splitting
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    from torch_geometric_signed_directed.data import load_signed_real_data
+    from torch_geometric_signed_directed.utils import link_split
+
+    signed_dataset = load_directed_real_data(dataset='bitcoin_alpha', root='./tmp_data/')
+    datasets = link_class_split(signed_dataset, prob_val = 0.15, prob_test = 0.05)
+
+.. code-block:: python
+
+    from torch_geometric_signed_directed.data import load_signed_real_data
+    from torch_geometric_signed_directed.utils import link_split
+
+    signed_dataset = load_directed_real_data(dataset='bitcoin_alpha', root='./tmp_data/')
+    datasets = signed_dataset.link_split(prob_val = 0.15, prob_test = 0.05)
+
+Directed Edge Splitting
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
