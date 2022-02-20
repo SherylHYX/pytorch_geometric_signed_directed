@@ -4,7 +4,7 @@ PyTorch Geometric Signed Directed Data Generators and Data Loaders
 .. contents:: Contents
     :local:
 
-Data Objects
+Data Classes
 -----------------------
 
 .. automodule:: torch_geometric_signed_directed.data.signed.SignedData
