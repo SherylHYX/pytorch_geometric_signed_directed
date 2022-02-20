@@ -9,63 +9,63 @@ Data Objects
 
 .. automodule:: torch_geometric_signed_directed.data.signed.SignedData
     :members:
-    :undoc-members: sqrtinvdiag
+    :exclude-members: sqrtinvdiag
 
     
 .. automodule:: torch_geometric_signed_directed.data.directed.DirectedData
     :members:
-    :undoc-members:
+    :exclude-members:
 
 Data Generators
 -----------------------
 
 .. automodule:: torch_geometric_signed_directed.data.signed.SSBM
     :members:
-    :undoc-members:
+    :exclude-members:
     
 .. automodule:: torch_geometric_signed_directed.data.signed.polarized_SSBM
     :members:
-    :undoc-members:
+    :exclude-members:
     
 .. automodule:: torch_geometric_signed_directed.data.directed.DSBM
     :members:
-    :undoc-members:
+    :exclude-members:
     
 Data Loaders
 -----------------------
     
 .. automodule:: torch_geometric_signed_directed.data.directed.load_directed_real_data
     :members:
-    :undoc-members:
+    :exclude-members:
 
 .. automodule:: torch_geometric_signed_directed.data.signed.load_signed_real_data
     :members:
-    :undoc-members:
+    :exclude-members:
 
 .. automodule:: torch_geometric_signed_directed.data.directed.DIGRAC_real_data
     :members:
-    :undoc-members:
+    :exclude-members:
 
 .. automodule:: torch_geometric_signed_directed.data.signed.SSSNET_real_data
     :members:
-    :undoc-members:
+    :exclude-members:
 
 .. automodule:: torch_geometric_signed_directed.data.directed.Telegram
     :members:
-    :undoc-members:
+    :exclude-members:
 
 .. automodule:: torch_geometric_signed_directed.data.directed.WikiCS
     :members:
-    :undoc-members:
+    :exclude-members:
 
 .. automodule:: torch_geometric_signed_directed.data.directed.citation
     :members:
-    :undoc-members:
+    :exclude-members:
 
 .. automodule:: torch_geometric_signed_directed.data.directed.WikipediaNetwork
     :members:
-    :undoc-members:
+    :exclude-members:
 
 .. automodule:: torch_geometric_signed_directed.data.signed.SignedDirectedGraphDataset
     :members:
-    :undoc-members:
+    :exclude-members:
