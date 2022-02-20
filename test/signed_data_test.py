@@ -46,7 +46,7 @@ def test_sign_link_split():
     datasets = signed_dataset.link_split(splits=15, prob_val = 0.1, prob_test = 0.2, ratio = 0.4, maintain_connect=False)
     assert len(list(datasets.keys())) == 15
     datasets = link_class_split(signed_dataset, prob_val = 0.1, prob_test = 0.2, task = 'sign', 
-                                            maintain_connect=True, ratio = 1.0)
+                                            maintain_connect=False, ratio = 1.0)
     A = signed_dataset.A.tocsr()
     assert len(list(datasets.keys())) == 10
     for i in datasets:

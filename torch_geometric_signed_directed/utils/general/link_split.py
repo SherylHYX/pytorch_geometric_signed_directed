@@ -52,9 +52,9 @@ def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List
         undirected = list(map(tuple, edge_pairs[undirected].tolist()))
 
         edge_pairs = list(map(tuple, edge_pairs.tolist()))
-        negative = np.array(list(map(list, list(set(edge_pairs) - set(directed) - set(inversed)) )))
-        directed = np.array(list(map(list, list(set(directed) - set(undirected)) )))
-        inversed = np.array(list(map(list, list(set(inversed) - set(undirected)) )))
+        negative = np.array(list(set(edge_pairs) - set(directed) - set(inversed)) )
+        directed = np.array(list(set(directed) - set(undirected)) )
+        inversed = np.array(list(set(inversed) - set(undirected)) )
 
         new_edge_pairs = np.vstack([directed, inversed]) if inversed.size else directed
         new_edge_pairs = np.vstack([new_edge_pairs, new_edge_pairs[:,[1,0]]])
@@ -173,10 +173,7 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
             ids_test = nmst[:len_test]
             ids_val = nmst[len_test:len_test+len_val]
             ids_train = nmst[len_test+len_val:max_samples]
-
-            ids_test = np.array(list(map(list, ids_test)))
-            ids_val = np.array(list(map(list, ids_val)))
-            ids_train = np.array(list(map(list, ids_train)))
+            ids_train = np.array(ids_train.tolist()+mst)
 
             labels_test = 1.0*np.array(A[ids_test[:,0], ids_test[:,1]] > 0).flatten()
             labels_val = 1.0*np.array(A[ids_val[:,0], ids_val[:,1]] > 0).flatten()
