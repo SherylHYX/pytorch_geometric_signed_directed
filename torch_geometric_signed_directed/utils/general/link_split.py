@@ -10,7 +10,7 @@ from torch_geometric.utils import negative_sampling, to_undirected
 from scipy.sparse import coo_matrix
 
 def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List[Tuple], 
-                                    task:str, directed:bool=True) -> Union[List,List]:
+                                    task:str, directed_graph:bool=True) -> Union[List,List]:
     r"""Generate edge labels based on the task.
 
     Arg types:
@@ -32,61 +32,60 @@ def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List
                 This task reduces to the existence task if the input graph is undirected. 
                 The direction information can be obtained from returned **labels**.
     """
+    if len(edge_pairs) == 0:
+        return np.array([]), np.array([]), np.array([])
+
     labels = -np.ones(len(edge_pairs), dtype=np.int32)
     new_edge_pairs = np.array(list(map(list, edge_pairs)))
     counter = 0
-    label_weight = np.zeros(len(edge_pairs))
-    for i, e in enumerate(edge_pairs): # directed edges
-        if abs(adj[e[0], e[1]]) + abs(adj[e[1], e[0]])  > 0: # exists an edge
-            if abs(adj[e[0], e[1]]) > 0:
-                if directed:
-                    
-                    if adj[e[1], e[0]] == 0: # rule out edges exist in both directions
-                        if counter%2 == 0:
-                            labels[i] = 0
-                            label_weight[i] = adj[e[0],e[1]]
-                            new_edge_pairs[i] = [e[0], e[1]]
-                            counter += 1
-                        else:
-                            labels[i] = 1
-                            label_weight[i] = adj[e[0],e[1]]
-                            new_edge_pairs[i] = [e[1], e[0]]
-                            counter += 1
-                    else:
-                        new_edge_pairs[i] = [e[0], e[1]]
-                        labels[i] = -1
-                        label_weight[i] = 0
-                else:
-                    labels[i] = 0
-                    new_edge_pairs[i] = [e[0], e[1]]
-                    label_weight[i] = adj[e[0],e[1]]
+    
+    # get directed edges
+    edge_pairs = np.array(list(map(list, edge_pairs)))
+    
+    if directed_graph:
+        directed = (np.abs(np.array(adj[edge_pairs[:,0], edge_pairs[:,1]]).flatten())>0).tolist()
+        inversed = (np.abs(np.array(adj[edge_pairs[:,1], edge_pairs[:,0]]).flatten())>0).tolist()
+        undirected = np.logical_and(directed, inversed)
 
-            else: # the other direction, and not an undirected edge
-                if counter%2 == 0:
-                    labels[i] = 0
-                    new_edge_pairs[i] = [e[1], e[0]]
-                    label_weight[i] = adj[e[1], e[0]]
-                    counter += 1
-                else:
-                    labels[i] = 1
-                    new_edge_pairs[i] = [e[0], e[1]]
-                    label_weight[i] = adj[e[1], e[0]]
-                    counter += 1
-        else: # negative edges
-            if task == 'all' and not directed:
-                labels[i] = 1
-            else:
-                labels[i] = 2
-            new_edge_pairs[i] = [e[0], e[1]]
-            label_weight[i] = 0
+        directed = list(map(tuple, edge_pairs[directed].tolist()))
+        inversed = list(map(tuple, edge_pairs[inversed].tolist()))
+        undirected = list(map(tuple, edge_pairs[undirected].tolist()))
 
+        edge_pairs = list(map(tuple, edge_pairs.tolist()))
+        negative = np.array(list(map(list, list(set(edge_pairs) - set(directed) - set(inversed)) )))
+        directed = np.array(list(map(list, list(set(directed) - set(undirected)) )))
+        inversed = np.array(list(map(list, list(set(inversed) - set(undirected)) )))
+
+        new_edge_pairs = np.vstack([directed, inversed]) if inversed.size else directed
+        new_edge_pairs = np.vstack([new_edge_pairs, new_edge_pairs[:,[1,0]]])
+        new_edge_pairs = np.vstack([new_edge_pairs, negative])
+        
+        labels = np.vstack([np.zeros((len(directed),1), dtype=np.int32), 
+                            np.ones((len(inversed),1), dtype=np.int32)]) if len(inversed) else \
+                        np.zeros((len(directed),1), dtype=np.int32)
+        labels = np.vstack([labels, np.ones((len(directed),1), dtype=np.int32), 
+                                    np.zeros((len(inversed),1), dtype=np.int32)]) if len(inversed) else \
+                        np.vstack([labels, np.ones((len(directed),1), dtype=np.int32)])
+        labels = np.vstack([labels, 2*np.ones((len(negative),1), dtype=np.int32)])
+
+        label_weight = np.vstack([np.array(adj[directed[:,0], directed[:,1]]).flatten()[:,None], 
+                                  np.array(adj[inversed[:,1], inversed[:,0]]).flatten()[:,None]]) if len(inversed) else \
+                        np.array(adj[directed[:,0], directed[:,1]]).flatten()[:,None]
+        label_weight = np.vstack([label_weight, label_weight])
+        label_weight = np.vstack([label_weight, np.zeros((len(negative),1), dtype=np.int32)])
+    else:
+        neg_edges = (np.abs(np.array(adj[edge_pairs[:,0], edge_pairs[:,1]]).flatten())==0)
+        labels = np.zeros(len(edge_pairs), dtype=np.int32)
+        labels[neg_edges] = 2
+        new_edge_pairs = edge_pairs
+        label_weight = np.array(adj[edge_pairs[:,0], edge_pairs[:,1]]).flatten()
+    
     if task == 'existence':
         # existence prediction
         label_weight[labels == 1] = 0 # set reversed edges as 0
         labels[labels == 2] = 1
 
-    selection = (labels >= 0)
-    return new_edge_pairs[selection], labels[selection], label_weight[selection]
+    return new_edge_pairs, labels.flatten(), label_weight.flatten()
 
 def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=10, prob_test:float= 0.15, 
                      prob_val:float= 0.05, task:str= 'direction', seed:int= 0, maintain_connect:bool=True, 
@@ -119,7 +118,6 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
                 * If task == "sign": 0 (negative edge), 1 (positive edge). 
                     For the link sign prediction task, the `maintain_connect` functionality is currently deactivated.
     """
-    assert not (task == 'sign' and maintain_connect), 'For the link sign prediction task, the `maintain_connect` functionality is currently deactivated.'
     edge_index = data.edge_index.cpu()
     row, col = edge_index[0], edge_index[1]
     if size is None:
@@ -143,7 +141,7 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
     neg_edges = list(neg_edges)
 
     undirect_edge_index = undirect_edge_index.T.tolist()
-    if maintain_connect and task != 'sign':
+    if maintain_connect:
         assert ratio == 1, "ratio should be 1.0 if maintain_connect=True"
         G = nx.from_scipy_sparse_matrix(A, create_using=nx.Graph, edge_attribute='weight') 
         mst = list(tree.minimum_spanning_edges(G, algorithm="kruskal", data=False))
@@ -167,6 +165,11 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
         rs.shuffle(neg_edges)
 
         if task == 'sign':
+            nmst = np.array(nmst)
+            exist = np.array(np.abs(A[nmst[:,0], nmst[:,1]] > 0)).flatten()
+            if np.sum(exist) < len(nmst):
+                nmst = nmst[exist]
+
             ids_test = nmst[:len_test]
             ids_val = nmst[len_test:len_test+len_val]
             ids_train = nmst[len_test+len_val:max_samples]
@@ -203,20 +206,11 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
             ids_val = ids_val[labels_val < 2]
             #label_val_w = label_val_w[labels_val <2]
             labels_val = labels_val[labels_val <2]
-
+        
+        # set up the observed graph and weights after splitting
         oberved_edges = -np.ones((len(ids_train),2), dtype=np.int32)
         oberved_weight = -np.ones((len(ids_train),), dtype=np.float32)
-        '''
-        for i, e in enumerate(ids_train):
-            if abs(A[e[0], e[1]]) > 0:
-                oberved_edges[i,0] = int(e[0])
-                oberved_edges[i,1] = int(e[1])
-                oberved_weight[i] = A[e[0], e[1]]
-            if abs(A[e[1], e[0]]) > 0:
-                oberved_edges[i,0] = int(e[1])
-                oberved_edges[i,1] = int(e[0])
-                oberved_weight[i] = A[e[1], e[0]]
-        '''
+
         direct = (np.abs(A[ids_train[:, 0], ids_train[:, 1]].data) > 0).flatten()
         oberved_edges[direct,0] = ids_train[direct,0]
         oberved_edges[direct,1] = ids_train[direct,1]
