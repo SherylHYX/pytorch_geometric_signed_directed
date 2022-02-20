@@ -99,23 +99,24 @@ The splitting can either be done via data loading or separately.
 
     dataset.node_split(train_size_per_class=0.8, val_size_per_class=0.1, test_size_per_class=0.1, seed_size_per_class=0.1)
 
-Edge Splitting for Directed Networks
+Edge Splitting
 -------------------------------
 
-We provide a function to create edge splits of directed networks. The splitting can either be done via data loading or separately. 
+We provide a function to create edge splits. The splitting can either be done via data loading or separately. 
+
+For directed networks:
 
 .. code-block:: python
 
     from torch_geometric_signed_directed.data import load_directed_real_data
-    from torch_geometric_signed_directed.utils import directed_link_split
+    from torch_geometric_signed_directed.utils import link_split
 
     directed_dataset = load_directed_real_data(dataset='telegram', root='./tmp_data/')
-    datasets = directed_link_class_split(directed_dataset, prob_val = 0.15, prob_test = 0.05, task = 'direction')
+    datasets = link_class_split(directed_dataset, prob_val = 0.15, prob_test = 0.05, task = 'direction')
 
 .. code-block:: python
 
     from torch_geometric_signed_directed.data import load_directed_real_data
-    from torch_geometric_signed_directed.utils import directed_link_split
 
     directed_dataset = load_directed_real_data(dataset='telegram', root='./tmp_data/')
     datasets = directed_dataset.link_split(prob_val = 0.15, prob_test = 0.05, task = 'direction')

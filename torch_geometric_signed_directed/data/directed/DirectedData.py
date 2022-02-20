@@ -151,5 +151,5 @@ class DirectedData(Data):
                                         This task reduces to the existence task if the input graph is undirected.
         """
         return link_class_split(data=self, size=size, splits=splits, prob_test=prob_test, 
-                     prob_val=prob_val, task=task, seed=seed, device=device)
+                     prob_val=prob_val, task=task, seed=seed, ratio=ratio, device=device)
 
