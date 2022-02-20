@@ -35,7 +35,7 @@ Task-Specific Objectives and Evaluation Methods
 Utilities and Preprocessing Methods
 --------------
 
-.. automodule:: torch_geometric_signed_directed.utils.directed.directed_link_split
+.. automodule:: torch_geometric_signed_directed.utils.general.link_split
     :members:
     :undoc-members:
 
@@ -44,6 +44,10 @@ Utilities and Preprocessing Methods
     :undoc-members:
 
 .. automodule:: torch_geometric_signed_directed.utils.directed.features_in_out
+    :members:
+    :undoc-members:
+
+.. automodule:: torch_geometric_signed_directed.utils.directed.get_magnetic_Laplacian
     :members:
     :undoc-members:
 

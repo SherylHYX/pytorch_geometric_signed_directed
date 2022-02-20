@@ -9,7 +9,7 @@ from torch import FloatTensor, LongTensor
 from sklearn.preprocessing import StandardScaler
 
 from ...utils.general.node_split import node_class_split
-from ...utils.directed.directed_link_split import directed_link_class_split
+from ...utils.general.link_split import link_class_split
 
 class DirectedData(Data):
     r"""A data object describing a homogeneous directed graph.
@@ -54,7 +54,7 @@ class DirectedData(Data):
 
     @property
     def is_weighted(self) -> bool:
-        return self.edge_weight.max() != self.edge_weight.min()
+        return bool(self.edge_weight.max() != self.edge_weight.min())
 
     def to_unweighted(self):
         self.A = to_scipy_sparse_matrix(self.edge_index, None)
@@ -62,8 +62,9 @@ class DirectedData(Data):
 
     def set_hermitian_features(self, k:int=2):
         """ create Hermitian feature  (rw normalized)
-        inputs:
-        k : (int) Half of the dimension of features. Default is 2.
+
+        Args:
+        k (int):  Half of the dimension of features. Default is 2.
         """
         A = self.A
         H = (A-A.transpose()) * 1j
@@ -86,8 +87,14 @@ class DirectedData(Data):
                 train_size_per_class: Union[int,float]=None, val_size_per_class: Union[int,float]=None,
                 test_size_per_class: Union[int,float]=None, seed_size_per_class: Union[int,float]=None, 
                 seed: List[int]=[], data_split: int=10):
-        r""" Train/Val/Test/Seed split for node classification tasks.
-
+        r""" Train/Val/Test/Seed split for node classification tasks. 
+        The size parameters can either be int or float.
+        If a size parameter is int, then this means the actual number, if it is float, then this means a ratio.
+        ``train_size`` or ``train_size_per_class`` is mandatory, with the former regardless of class labels.
+        Validation and seed masks are optional. Seed masks here masks nodes within the training set, e.g., in a semi-supervised setting as described in the
+        `SSSNET: Semi-Supervised Signed Network Clustering <https://arxiv.org/pdf/2110.06623.pdf>`_ paper. 
+        If test_size and test_size_per_class are both None, all the remaining nodes after selecting training (and validation) nodes will be included.
+        
         Args:
             data (torch_geometric.data.Data or DirectedData, required): The data object for data split.
             train_size (int or float, optional): The size of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
@@ -110,7 +117,7 @@ class DirectedData(Data):
         seed_size_per_class=seed_size_per_class, seed=seed, data_split=data_split)
 
     def link_split(self, size:int=None, splits:int=10, prob_test:float= 0.15, 
-                     prob_val:float= 0.05, task:str= 'direction', seed:int= 0, device:str= 'cpu') -> dict:
+                     prob_val:float= 0.05, task:str= 'direction', seed:int= 0, ratio:float=1.0, device:str= 'cpu') -> dict:
         r"""Get train/val/test dataset for the link prediction task.
 
         Arg types:
@@ -120,23 +127,23 @@ class DirectedData(Data):
             * **size** (int, optional) - The size of the input graph. If none, the graph size is the maximum index of nodes plus 1 (Default: None).
             * **task** (str, optional) - The evaluation task: all (three-class link prediction); direction (direction prediction); existence (existence prediction). (Default: 'direction')
             * **seed** (int, optional) - The random seed for dataset generation (Default: 0).
+            * **ratio** (float, optional) - The maximum ratio of edges used for dataset generation. (Default: 1.0)
             * **device** (int, optional) - The device to hold the return value (Default: 'cpu').
 
         Return types:
             * **datasets** - A dict include training/validation/testing splits of edges and labels. For split index i:
-
-                        datasets[i]['graph'] (torch.LongTensor): the observed edge list after removing edges for validation and testing.
-
-                        datasets[i]['train'/'val'/'testing']['edges'] (List): the edge list for training/validation/testing.
-
-                        datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:
-
-                            If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
-
-                            If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists).
-
-                            If task == 'all': 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist).
+                * datasets[i]['graph'] (torch.LongTensor): the observed edge list after removing edges for validation and testing.
+                * datasets[i]['train'/'val'/'testing']['edges'] (List): the edge list for training/validation/testing.
+                * datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:
+                    * If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
+                    * If task == "direction": 0 (the directed edge exists in the graph), 
+                        1 (the edge of the reversed direction exists). For undirected graphs, the labels are all zeros.
+                    * If task == "all": 0 (the directed edge exists in the graph), 
+                        1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist). 
+                        This task reduces to the existence task if the input graph is undirected.
+                    * If task == "sign": 0 (positive edge), 1 (negative edge). 
+                        For the sign task, the `maintain_connect` function will be deactivate.
         """
-        return directed_link_class_split(data=self, size=size, splits=splits, prob_test=prob_test, 
-                     prob_val=prob_val, task=task, seed=seed, device=device)
+        return link_class_split(data=self, size=size, splits=splits, prob_test=prob_test, 
+                     prob_val=prob_val, task=task, seed=seed, ratio=ratio, device=device)
 

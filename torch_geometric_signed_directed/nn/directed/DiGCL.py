@@ -13,7 +13,7 @@ class DiGCL_Encoder(torch.nn.Module):
         in_channels (int): Dimension of input features.
         out_channels (int): Dimension of output representations.
         activation (str): Activation funciton to use.
-        num_layers (int): Number of layers for encoder.
+        num_layers (int, Optional): Number of layers for encoder. (Default: 2)
     """
     def __init__(self, in_channels: int, out_channels: int, activation: str,
                  num_layers: int = 2):
@@ -93,15 +93,42 @@ class DiGCL(torch.nn.Module):
         return self.encoder(x, edge_index, edge_weight)
 
     def projection(self, z: torch.Tensor) -> torch.Tensor:
+        """
+        Nonlinear transformation of the input hidden feature.
+
+        Args types::
+            * z (PyTorch FloatTensor) - Node features.
+
+        Return types:
+            * z (PyTorch FloatTensor) - Projected node features.
+        """
         z = F.elu(self.fc1(z))
         return self.fc2(z)
 
     def sim(self, z1: torch.Tensor, z2: torch.Tensor):
+        """
+        Normalized similarity calculation.
+        Args types::
+            * z1 (PyTorch FloatTensor) - Node features.
+            * z2 (PyTorch FloatTensor) - Node features.
+
+        Return types:
+            * z (PyTorch FloatTensor) - Node-wise similarity.
+        """
         z1 = F.normalize(z1)
         z2 = F.normalize(z2)
         return torch.mm(z1, z2.t())
 
     def semi_loss(self, z1: torch.Tensor, z2: torch.Tensor):
+        """
+        Semi-supervised loss function.
+        Args types::
+            * z1 (PyTorch FloatTensor) - Node features.
+            * z2 (PyTorch FloatTensor) - Node features.
+
+        Return types:
+            * loss (PyTorch FloatTensor) - Loss.
+        """
         def f(x): return torch.exp(x / self.tau)
         refl_sim = f(self.sim(z1, z1))
         between_sim = f(self.sim(z1, z2))
@@ -109,7 +136,15 @@ class DiGCL(torch.nn.Module):
 
     def batched_semi_loss(self, z1: torch.Tensor, z2: torch.Tensor,
                           batch_size: int):
-        # Space complexity: O(BN) (semi_loss: O(N^2))
+        """
+        Semi-supervised loss function. Space complexity: O(BN) (semi_loss: O(N^2))
+        Args types::
+            * z1 (PyTorch FloatTensor) - Node features.
+            * z2 (PyTorch FloatTensor) - Node features.
+
+        Return types:
+            * loss (PyTorch FloatTensor) - Loss.
+        """
         device = z1.device
         num_nodes = z1.size(0)
         num_batches = (num_nodes - 1) // batch_size + 1

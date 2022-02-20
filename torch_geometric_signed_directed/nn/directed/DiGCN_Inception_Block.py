@@ -15,7 +15,7 @@ class DiGCN_InceptionBlock(torch.nn.Module):
         in_dim (int): Dimention of input.
         out_dim (int): Dimention of output.
     """
-    def __init__(self, in_dim, out_dim):
+    def __init__(self, in_dim: int, out_dim: int):
         super(DiGCN_InceptionBlock, self).__init__()
         self.ln = Linear(in_dim, out_dim)
         self.conv1 = DiGCNConv(in_dim, out_dim)

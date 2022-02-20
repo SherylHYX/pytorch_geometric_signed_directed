@@ -18,9 +18,9 @@ def load_directed_real_data(dataset: str='WebKB', root:str = './', name:str = 'T
     """The function for real-world directed data downloading and convert to DirectedData object.
 
     Arg types:
-        * **dataset** (str, optional) - data set name (default: 'WebKB').
-        * **root** (str, optional) - path to save the dataset (default: './').
-        * **name** (str, required) - the name of the subdataset (default: 'Texas').
+        * **dataset** (str, optional) - Data set name (default: 'WebKB').
+        * **root** (str, optional) - The path to save the dataset (default: './').
+        * **name** (str, optional) - The name of the subdataset (default: 'Texas').
         * **transform** (callable, optional) - A function/transform that takes in an
             :obj:`torch_geometric.data.Data` object and returns a transformed
             version. The data object will be transformed before every access.

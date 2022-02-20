@@ -14,6 +14,7 @@ from torch_geometric_signed_directed.utils import (
 )
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+
 def create_mock_data(num_nodes, num_features, num_classes=3, eta=0.1, p=0.2):
     """
     Creating a mock feature matrix, edge index and edge weight.
@@ -25,6 +26,7 @@ def create_mock_data(num_nodes, num_features, num_classes=3, eta=0.1, p=0.2):
     edge_index_n = torch.LongTensor(np.array(A_n_scipy.nonzero())).to(device)
     edge_weight_n = torch.FloatTensor(sp.csr_matrix(A_n_scipy).data).to(device)
     return X, A_p_scipy, A_n_scipy, edge_index_p, edge_index_n, edge_weight_p, edge_weight_n, labels
+
 
 def test_SSSNET():
     """
@@ -79,6 +81,7 @@ def test_SSSNET():
     assert loss_pbrc >= 0
     assert loss_pbnc >= 0
     assert triplet_loss.item() >= 0
+
 
 def test_SGCN():
     """
@@ -137,7 +140,6 @@ def test_SGCN():
     assert f1 >= 0
     assert f1_macro >= 0
     assert f1_micro >= 0
-
 
 
 def test_SNEA():
@@ -226,7 +228,7 @@ def test_SiGAT():
     with torch.no_grad():
         nodes = np.arange(0, nodes_num)
         z = model.loss_batch(nodes)
-        z = model(torch.tensor(nodes))
+        z = model(torch.Tensor(nodes))
         z = model()
 
     embeddings = z.cpu().numpy()
@@ -280,13 +282,3 @@ def test_SDGNN():
     assert f1 >= 0
     assert f1_macro >= 0
     assert f1_micro >= 0
-
-
-
-
-
-
-
-            
-
-

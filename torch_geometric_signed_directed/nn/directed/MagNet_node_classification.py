@@ -24,10 +24,11 @@ class MagNet_node_classification(nn.Module):
         normalization (str, optional): The normalization scheme for the magnetic
             Laplacian (default: :obj:`sym`):
             1. :obj:`None`: No normalization
-            :math:`\mathbf{L} = \mathbf{D} - \mathbf{A} Hadamard \exp(i \Theta^{(q)})`
+            :math:`\mathbf{L} = \mathbf{D} - \mathbf{A} \odot \exp(i \Theta^{(q)})`
             2. :obj:`"sym"`: Symmetric normalization
             :math:`\mathbf{L} = \mathbf{I} - \mathbf{D}^{-1/2} \mathbf{A}
-            \mathbf{D}^{-1/2} Hadamard \exp(i \Theta^{(q)})`
+            \mathbf{D}^{-1/2} \odot \exp(i \Theta^{(q)})`
+            `\odot` denotes the element-wise multiplication.
     """
     def __init__(self, num_features:int, hidden:int=2, q:float=0.25, K:int=2, label_dim:int=2, \
         activation:bool=False, trainable_q:bool=False, layer:int=2, dropout:float=False, normalization:str='sym'):

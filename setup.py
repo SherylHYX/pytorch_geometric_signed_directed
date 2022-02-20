@@ -1,7 +1,10 @@
 from setuptools import find_packages, setup
 
 url = "https://github.com/SherylHYX/pytorch_geometric_signed_directed"
-__version__ = '0.1.3' 
+__version__ = '0.1.5'
+
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
 
 install_requires = [
     "torch",
@@ -41,8 +44,11 @@ setup(
     version=__version__,
     license="MIT",
     description="An Extension Library for PyTorch Geometric on signed and directed networks.",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    include_package_data=True,
     author="Yixuan He",
-    author_email="He_YX@outlook.com",
+    author_email="yixuan.he@balliol.ox.ac.uk",
     url=url,
     download_url='{}/archive/{}.tar.gz'.format(url, __version__),
     keywords=keywords,

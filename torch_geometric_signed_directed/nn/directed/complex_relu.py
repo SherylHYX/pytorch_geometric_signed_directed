@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 
 class complex_relu_layer(nn.Module):
@@ -6,11 +7,19 @@ class complex_relu_layer(nn.Module):
     def __init__(self, ):
         super(complex_relu_layer, self).__init__()
     
-    def complex_relu(self, real, img):
+    def complex_relu(self, real:torch.FloatTensor, img:torch.FloatTensor):
+        """
+        Complex ReLU function.
+        
+        Arg types:
+            * real, imag (PyTorch Float Tensor) - Node features.
+        Return types:
+            * real, imag (PyTorch Float Tensor) - Node features after complex ReLU.
+        """
         mask = 1.0*(real >= 0)
         return mask*real, mask*img
 
-    def forward(self, real, img):
+    def forward(self, real:torch.FloatTensor, img:torch.FloatTensor):
         """
         Making a forward pass of the complex ReLU layer.
         

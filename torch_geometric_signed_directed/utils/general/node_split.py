@@ -10,7 +10,13 @@ def node_class_split(data: torch_geometric.data.Data,
                 train_size_per_class: Union[int,float]=None, val_size_per_class: Union[int,float]=None,
                 test_size_per_class: Union[int,float]=None, seed_size_per_class: Union[int,float]=None, 
                 seed: List[int]=[], data_split: int=10) -> torch_geometric.data.Data:
-    r""" Train/Val/Test/Seed split for node classification tasks.
+    r""" Train/Val/Test/Seed split for node classification tasks. 
+    The size parameters can either be int or float.
+    If a size parameter is int, then this means the actual number, if it is float, then this means a ratio.
+    ``train_size`` or ``train_size_per_class`` is mandatory, with the former regardless of class labels.
+    Validation and seed masks are optional. Seed masks here masks nodes within the training set, e.g., in a semi-supervised setting as described in the
+    `SSSNET: Semi-Supervised Signed Network Clustering <https://arxiv.org/pdf/2110.06623.pdf>`_ paper. 
+    If test_size and test_size_per_class are both None, all the remaining nodes after selecting training (and validation) nodes will be included.
 
     Arg types:
         * **data** (torch_geometric.data.Data or DirectedData, required) - The data object for data split.
@@ -88,11 +94,12 @@ def node_class_split(data: torch_geometric.data.Data,
 def sample_per_class(random_state: np.random.RandomState, labels: List[int], num_examples_per_class: Union[int,float], 
                         forbidden_indices: Optional[List[int]]=None, force_indices: Optional[List[int]]=None) -> List[int]:
     r"""This function is modified from https://github.com/flyingtango/DiGCN/blob/main/code/Citation.py. It samples a set of nodes per class.
-    
+    If num_exmples_per_class is int, then this means the actual number, if it is float, then this means a ratio.
+
     Arg types:
         * **random_state** (np.random.RandomState) - Numpy random state for random selection.
         * **labels** (List[int]) - Node labels array.
-        * **num_examples_per_class** (int) - Number of nodes per class. 
+        * **num_examples_per_class** (int or float) - Number of nodes per class. 
         * **forbidden_indices** (List[int]) - Nodes to be avoided when selection.
         * **force_indices** (List[int]) - Node list to be selected.
 
@@ -137,6 +144,13 @@ def get_train_val_test_seed_split(random_state:np.random.RandomState,
                              train_size: Union[int,float]=None, val_size: Union[int,float]=None, 
                              test_size: Union[int,float]=None, seed_size: Union[int, float]=None) -> Tuple[List[int],List[int],List[int],List[int]]:
     r"""Get train/validation/test/seed splits based on the input setting. 
+    The size parameters can either be int or float.
+    If a size parameter is int, then this means the actual number, if it is float, then this means a ratio.
+    Train_size or train_size_per_class is mandatory, with the former regardless of class labels.
+    Validation and seed masks are optional. Seed masks here masks nodes within the training set, e.g., in a semi-supervised setting as described in the
+    `SSSNET: Semi-Supervised Signed Network Clustering <https://arxiv.org/pdf/2110.06623.pdf>`_ paper. 
+    If test_size and test_size_per_class are both None, all the remaining nodes after selecting training (and validation) nodes will be included.
+
 
     Arg types:
         * **random_state** (np.random.RandomState): Numpy random state for random selection.

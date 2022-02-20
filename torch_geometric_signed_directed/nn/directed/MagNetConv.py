@@ -24,10 +24,11 @@ class MagNetConv(MessagePassing):
         normalization (str, optional): The normalization scheme for the magnetic
             Laplacian (default: :obj:`sym`):
             1. :obj:`None`: No normalization
-            :math:`\mathbf{L} = \mathbf{D} - \mathbf{A} Hadamard \exp(i \Theta^{(q)})`
+            :math:`\mathbf{L} = \mathbf{D} - \mathbf{A} \odot \exp(i \Theta^{(q)})`
             2. :obj:`"sym"`: Symmetric normalization
             :math:`\mathbf{L} = \mathbf{I} - \mathbf{D}^{-1/2} \mathbf{A}
-            \mathbf{D}^{-1/2} Hadamard \exp(i \Theta^{(q)})`
+            \mathbf{D}^{-1/2} \odot \exp(i \Theta^{(q)})`
+            `\odot` denotes the element-wise multiplication.
         bias (bool, optional): If set to :obj:`False`, the layer will not learn
             an additive bias. (default: :obj:`True`)
         **kwargs (optional): Additional arguments of
@@ -74,6 +75,17 @@ class MagNetConv(MessagePassing):
         lambda_max,
         dtype: Optional[int] = None
     ):
+        """
+        Get magnetic laplacian.
+        
+        Arg types:
+            * edge_index (PyTorch Long Tensor) - Edge indices.
+            * num_nodes (int, Optional) - Node features.
+            * edge_weight (PyTorch Float Tensor, optional) - Edge weights corresponding to edge indices.
+            * lambda_max (optional, but mandatory if normalization is None) - Largest eigenvalue of Laplacian.
+        Return types:
+            * edge_index, edge_weight_real, edge_weight_imag (PyTorch Float Tensor) - Magnetic laplacian tensor: edge index, real weights and imaginary weights.
+        """
         edge_index, edge_weight = remove_self_loops(edge_index, edge_weight)
 
         edge_index, edge_weight_real, edge_weight_imag = get_magnetic_Laplacian(

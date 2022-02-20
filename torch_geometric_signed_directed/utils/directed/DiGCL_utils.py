@@ -1,3 +1,5 @@
+from typing import List
+
 import torch
 import numpy as np
 from sklearn.linear_model import LogisticRegression
@@ -5,7 +7,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.preprocessing import normalize, OneHotEncoder
 
-def drop_feature(x, drop_prob):
+def drop_feature(x:torch.FloatTensor, drop_prob:float):
     r""" Drop feature funciton from the
     `Directed Graph Contrastive Learning 
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
@@ -26,7 +28,7 @@ def drop_feature(x, drop_prob):
 
     return x
 
-def pred_digcl_node(embeddings, y, train_index, test_index=None):
+def pred_digcl_node(embeddings:torch.FloatTensor, y:torch.LongTensor, train_index:List[int], test_index:List[int]=None):
     r""" Generate predictions from embeddings from the
     `Directed Graph Contrastive Learning
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
@@ -68,7 +70,7 @@ def pred_digcl_node(embeddings, y, train_index, test_index=None):
         return y_pred[test_index]
 
 
-def pred_digcl_link(embeddings, y, train_index, test_index):
+def pred_digcl_link(embeddings:torch.FloatTensor, y:torch.LongTensor, train_index:List[int], test_index:List[int]):
     r""" Generate predictions from embeddings from the
     `Directed Graph Contrastive Learning
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.

@@ -4,6 +4,7 @@ import torch
 from torch_geometric_signed_directed.data import (
     SSBM, polarized_SSBM, SignedData, load_signed_real_data, SignedDirectedGraphDataset
 )
+from torch_geometric_signed_directed.utils import link_class_split
 
 def test_load_signed_real_data():
     signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='epinions')
@@ -26,6 +27,21 @@ def test_load_signed_real_data():
         signed_dataset = load_signed_real_data(dataset='Fin_YNet'+str(year), root='./tmp_data/Fin_YNet/')
         assert isinstance(signed_dataset, SignedData)
         assert signed_dataset.is_signed
+
+def test_sign_link_split():
+    signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='bitcoin_alpha')
+    datasets = signed_dataset.link_split(splits=15, prob_val = 0.1, prob_test = 0.2, ratio = 0.4)
+    assert len(list(datasets.keys())) == 15
+    datasets = link_class_split(signed_dataset, prob_val = 0.1, prob_test = 0.2, task = 'sign', 
+                                            maintain_connect=False, ratio = 0.4)
+    A = signed_dataset.A.tocsr()
+    assert len(list(datasets.keys())) == 10
+    for i in datasets:
+        for j, (e, l) in enumerate(zip(datasets[i]['train']['edges'][:100], datasets[i]['train']['label'][:100])):
+            if l == 0:
+                assert A[e[0],e[1]] < 0
+            else:
+                assert A[e[0],e[1]] > 0
 
 def test_SignedDirectedGraphDataset():
     dataset_node_edge_dict = {
@@ -108,6 +124,8 @@ def test_SignedData():
    
     data = SignedData(y=labels, A=A_p-A_n, init_data=data)
     assert data.y.shape == labels.shape
+    assert not data.is_directed
+    assert data.is_weighted
     data.separate_positive_negative()
     assert data.edge_index_p[0].shape == A_p.nonzero()[0].shape
     assert data.edge_index_n[0].shape == A_n.nonzero()[0].shape
