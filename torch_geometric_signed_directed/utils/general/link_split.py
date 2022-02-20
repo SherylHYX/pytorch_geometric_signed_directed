@@ -10,8 +10,7 @@ from torch_geometric.utils import negative_sampling, to_undirected
 from scipy.sparse import coo_matrix
 
 def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List[Tuple], 
-                                    task:str, rs:np.random.RandomState, 
-                                    directed:bool=True) -> Union[List,List]:
+                                    task:str, directed:bool=True) -> Union[List,List]:
     r"""Generate edge labels based on the task.
 
     Arg types:
@@ -19,7 +18,6 @@ def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List
         * **edge_pairs** (List[Tuple]) - The edge list for the link dataset querying. Each element in the list is an edge tuple.
         * **edge_weight** (List[Tuple]) - The edge weights list for sign graphs.
         * **task** (str): The evaluation task - all (three-class link prediction); direction (direction prediction); existence (existence prediction) 
-        * **rs** (np.random.RandomState) - The randomstate for edge selection.
 
     Return types:
         * **new_edge_pairs** (List) - A list of edges.
@@ -31,6 +29,12 @@ def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List
 
                     If task == 'all': 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist). 
                                     This task reduces to the existence task if the input graph is undirected.
+
+        * **label_weight** (List) - The edge weight of selected edges. 
+                                    For **direction** and **all** tasks, given a directed query edge (u,v), 
+                                    the corresponding weight will be the weight of (v,u) 
+                                    if (u,v) is not in the graph but (v,u) is in the graph.
+                                    The direction information can be obtained from returned obj:labels.
     """
     labels = -np.ones(len(edge_pairs), dtype=np.int32)
     new_edge_pairs = np.array(edge_pairs)
@@ -102,6 +106,7 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
         * **task** (str, optional) - The evaluation task: all (three-class link prediction); direction (direction prediction); existence (existence prediction). (Default: 'direction')
         * **seed** (int, optional) - The random seed for positve edge selection (Default: 0). Negative edges are selected by pytorch geometric negative_sampling.
         * **maintain_connect** (int, optional) - If maintain connectivity when removing edges for validation and testing (Default: True).
+        * **ratio** (float, optional) - The maximum ratio of edges used for dataset generation. (Default: 1.0)
         * **device** (int, optional) - The device to hold the return value (Default: 'cpu').
 
     Return types:
@@ -110,7 +115,10 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
                       datasets[i]['graph'] (torch.LongTensor): the observed edge list after removing edges for validation and testing.
 
                       datasets[i]['train'/'val'/'testing']['edges'] (List): the edge list for training/validation/testing.
-
+                    
+                      datasets[i]['train'/'val'/'testing']['weight'] (List): the edge weight of selected edges.
+                                For **direction** and **all** tasks, given a directed query edge (u,v), the corresponding weight will be the weight of (v,u) if (u,v) is not in the graph but (v,u) is in the graph. 
+                                The direction information can be obtained from returned datasets[i]['train'/'val'/'testing']['label'].
                       datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:
 
                           If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
@@ -164,6 +172,8 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
     assert ratio > prob_val + prob_test, "ratio should be larger than prob_val + prob_test"
     for ind in range(splits):
         rs.shuffle(nmst)
+        rs.shuffle(neg_edges)
+
         ids_test = nmst[:len_test]+neg_edges[:len_test]
         ids_val = nmst[len_test:len_test+len_val]+neg_edges[len_test:len_test+len_val]
         if len_test+len_val < len(nmst):
@@ -171,9 +181,9 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
         else:
             ids_train = mst+neg_edges[len_test+len_val:max_samples]
 
-        ids_test, labels_test, label_test_w = undirected_label2directed_label(A, ids_test, task, rs, is_directed)  
-        ids_val, labels_val, label_val_w = undirected_label2directed_label(A, ids_val, task, rs, is_directed)
-        ids_train, labels_train, label_train_w = undirected_label2directed_label(A, ids_train, task, rs, is_directed)
+        ids_test, labels_test, label_test_w = undirected_label2directed_label(A, ids_test, task, is_directed)  
+        ids_val, labels_val, label_val_w = undirected_label2directed_label(A, ids_val, task, is_directed)
+        ids_train, labels_train, label_train_w = undirected_label2directed_label(A, ids_train, task, is_directed)
 
         # convert back to directed graph
         if task == 'direction':
