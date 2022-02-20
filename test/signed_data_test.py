@@ -4,6 +4,7 @@ import torch
 from torch_geometric_signed_directed.data import (
     SSBM, polarized_SSBM, SignedData, load_signed_real_data, SignedDirectedGraphDataset
 )
+from torch_geometric_signed_directed.utils import link_class_split
 
 def test_load_signed_real_data():
     signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='epinions')
@@ -26,6 +27,53 @@ def test_load_signed_real_data():
         signed_dataset = load_signed_real_data(dataset='Fin_YNet'+str(year), root='./tmp_data/Fin_YNet/')
         assert isinstance(signed_dataset, SignedData)
         assert signed_dataset.is_signed
+
+def test_sign_link_split():
+    signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='bitcoin_alpha')
+    datasets = link_class_split(signed_dataset, prob_val = 0.001, prob_test = 0.002, task = 'direction', 
+                                            maintain_connect=False, ratio = 0.004)
+    A = signed_dataset.A.tocsr()
+    assert len(list(datasets.keys())) == 10
+    assert signed_dataset.is_directed
+    for i in datasets:
+        for j, (e, l) in enumerate(zip(datasets[i]['train']['edges'], datasets[i]['train']['label'])):
+            if l == 0:
+                assert A[e[0],e[1]] != 0
+                assert A[e[0],e[1]] == datasets[i]['train']['weight'][j]
+            else:
+                assert A[e[1],e[0]] != 0
+                assert A[e[1],e[0]] == datasets[i]['train']['weight'][j]
+
+    datasets = link_class_split(signed_dataset, prob_val = 0.001, prob_test = 0.001, task = 'existence', 
+                                            maintain_connect=False, ratio = 0.003)
+    assert len(list(datasets.keys())) == 10
+    assert signed_dataset.is_directed
+    edges = signed_dataset.edge_index.T.tolist()
+    for i in datasets:
+        for j, (e, l) in enumerate(zip(datasets[i]['val']['edges'], datasets[i]['val']['label'])):
+            if l == 0:
+                assert A[e[0],e[1]] != 0
+                assert A[e[0],e[1]] == datasets[i]['val']['weight'][j]
+            else:
+                assert A[e[0],e[1]] == 0
+                assert datasets[i]['val']['weight'][j] == 0
+
+    datasets = link_class_split(signed_dataset, prob_val = 0.001, prob_test = 0.001, task = 'all', 
+                                            maintain_connect=False, ratio = 0.003)
+    assert len(list(datasets.keys())) == 10
+    assert signed_dataset.is_directed
+    edges = signed_dataset.edge_index.T.tolist()
+    for i in datasets:
+        for j, (e, l) in enumerate(zip(datasets[i]['test']['edges'], datasets[i]['test']['label'])):
+            if l == 0:
+                assert A[e[0],e[1]] != 0
+                assert A[e[0],e[1]] == datasets[i]['test']['weight'][j]
+            elif l == 1:
+                assert A[e[1],e[0]] != 0
+                assert A[e[1],e[0]] == datasets[i]['test']['weight'][j]
+            else:
+                assert A[e[0],e[1]] == 0
+                assert datasets[i]['test']['weight'][j] == 0
 
 def test_SignedDirectedGraphDataset():
     dataset_node_edge_dict = {
