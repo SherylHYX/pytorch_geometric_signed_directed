@@ -3,7 +3,7 @@ import scipy.sparse as sp
 import torch
 from torch_sparse import SparseTensor
 from torch_geometric_signed_directed.nn.signed import (
-    SSSNET_node_clustering, SDGNN, SGCN_SNEA, SiGAT, SGCNConv
+    SSSNET_node_clustering, SDGNN, SGCN, SiGAT, SGCNConv, SNEAConv
 )
 from torch_geometric_signed_directed.data import (
     SSBM, SignedData
@@ -80,9 +80,9 @@ def test_SSSNET():
     assert loss_pbnc >= 0
     assert triplet_loss.item() >= 0
 
-def test_SGCN_SNEA():
+def test_SGCN():
     """
-    Testing SGCN and SNEA
+    Testing SGCN
     """
     x = torch.randn(4, 16)
     edge_index = torch.tensor([[0, 1, 2, 3], [0, 0, 1, 1]])
@@ -120,7 +120,7 @@ def test_SGCN_SNEA():
     edge_s_list = train_edge_weight.long().cpu().numpy().tolist()
     edge_index_s = torch.LongTensor([[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)]).to(device)
 
-    model = SGCN_SNEA('SGCN', nodes_num, edge_index_s, 20, 20, layer_num=2, lamb=5).to(device)
+    model = SGCN(nodes_num, edge_index_s, 20, 20, layer_num=2, lamb=5).to(device)
     loss = model.loss()
     with torch.no_grad():
         z = model()
@@ -138,7 +138,49 @@ def test_SGCN_SNEA():
     assert f1_macro >= 0
     assert f1_micro >= 0
 
-    model = SGCN_SNEA('SNEA', nodes_num, edge_index_s, 20, 20, layer_num=2, lamb=5).to(device)
+
+
+def test_SNEA():
+    """
+    Testing SNEA
+    """
+    x = torch.randn(4, 16)
+    edge_index = torch.tensor([[0, 1, 2, 3], [0, 0, 1, 1]])
+    row, col = edge_index
+    adj = SparseTensor(row=row, col=col, sparse_sizes=(4, 4))
+
+    conv1 = SNEAConv(16, 32, first_aggr=True)
+    assert conv1.__repr__() == 'SNEAConv(16, 32, first_aggr=True)'
+
+    conv2 = SNEAConv(32, 48, first_aggr=False)
+    assert conv2.__repr__() == 'SNEAConv(32, 48, first_aggr=False)'
+
+    out1 = conv1(x, edge_index, edge_index)
+    assert out1.size() == (4, 64)
+    assert conv1(x, adj.t(), adj.t()).tolist() == out1.tolist()
+
+    out2 = conv2(out1, edge_index, edge_index)
+    assert out2.size() == (4, 96)
+    assert conv2(out1, adj.t(), adj.t()).tolist() == out2.tolist()
+
+    num_nodes = 100
+    num_features = 3
+    num_classes = 3
+
+    _, A_p_scipy, A_n_scipy, _, _, _, _, _ = \
+        create_mock_data(num_nodes, num_features, num_classes)
+
+    data = SignedData(A=(A_p_scipy, A_n_scipy))
+    train_edge_index = data.edge_index
+    train_edge_weight = data.edge_weight
+    test_edge_index = data.edge_index
+    test_edge_weight = data.edge_weight
+    nodes_num = data.num_nodes
+    edge_i_list = train_edge_index.t().cpu().numpy().tolist()
+    edge_s_list = train_edge_weight.long().cpu().numpy().tolist()
+    edge_index_s = torch.LongTensor([[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)]).to(device)
+
+    model = SNEA(nodes_num, edge_index_s, 20, 20, layer_num=2, lamb=5).to(device)
     loss = model.loss()
     with torch.no_grad():
         z = model()
@@ -155,6 +197,8 @@ def test_SGCN_SNEA():
     assert f1 >= 0
     assert f1_macro >= 0
     assert f1_micro >= 0
+
+
 
 def test_SiGAT():
     """
@@ -182,6 +226,7 @@ def test_SiGAT():
     with torch.no_grad():
         nodes = np.arange(0, nodes_num)
         z = model.loss_batch(nodes)
+        z = model(torch.tensor(nodes))
         z = model()
 
     embeddings = z.cpu().numpy()

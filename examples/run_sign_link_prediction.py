@@ -2,7 +2,7 @@ import argparse
 import os.path as osp
 
 import torch
-from torch_geometric_signed_directed.nn.signed import SGCN_SNEA, SDGNN, SiGAT
+from torch_geometric_signed_directed.nn.signed import SGCN, SDGNN, SiGAT, SNEA
 from torch_geometric_signed_directed.data.signed import SignedDirectedGraphDataset
 from torch_geometric_signed_directed.utils.signed import link_sign_prediction_logistic_function
 
@@ -41,9 +41,9 @@ in_dim = args.in_dim
 out_dim = args.out_dim
 
 if args.model == 'SGCN':
-    model = SGCN_SNEA('SGCN', nodes_num, edge_index_s, in_dim, out_dim, layer_num=2, lamb=5).to(device)
+    model = SGCN(nodes_num, edge_index_s, in_dim, out_dim, layer_num=2, lamb=5).to(device)
 elif args.model == 'SNEA':
-    model = SGCN_SNEA('SNEA', nodes_num, edge_index_s, in_dim, out_dim, layer_num=2, lamb=5).to(device)
+    model = SNEA(nodes_num, edge_index_s, in_dim, out_dim, layer_num=2, lamb=5).to(device)
 elif args.model == 'SiGAT':
     model = SiGAT(nodes_num, edge_index_s, in_dim, out_dim).to(device)
 elif args.model == 'SDGNN':
@@ -58,15 +58,12 @@ def test():
     with torch.no_grad():
         z = model()
 
-    # print(z.shape)
-    # return model.test(z, test_pos_edge_index, test_neg_edge_index)
     embeddings = z.cpu().numpy()
     train_X = data.train_edge_index.t().cpu().numpy()
     test_X  = data.test_edge_index.t().cpu().numpy()
     train_y = data.train_edge_weight.cpu().numpy()
     test_y  = data.test_edge_weight.cpu().numpy()
     accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(embeddings, train_X, train_y, test_X, test_y)
-    
     return auc_score, f1, f1_macro, f1_micro, accuracy
 
 

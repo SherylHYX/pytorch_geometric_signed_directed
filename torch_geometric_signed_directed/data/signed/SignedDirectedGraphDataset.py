@@ -104,7 +104,7 @@ class SignedDirectedGraphDataset(InMemoryDataset):
         with open(map_file, 'w') as f:
             f.write(json.dumps(node_map))
 
-        data = SignedData(edge_index=edge_index, edge_weight=edge_sign)
+        data = Data(edge_index=edge_index, edge_weight=edge_sign)
         data, slices = self.collate([data])
         torch.save((data, slices), self.processed_paths[0])
 
