@@ -132,23 +132,17 @@ class DirectedData(Data):
 
         Return types:
             * **datasets** - A dict include training/validation/testing splits of edges and labels. For split index i:
-
-                        datasets[i]['graph'] (torch.LongTensor): the observed edge list after removing edges for validation and testing.
-
-                        datasets[i]['train'/'val'/'testing']['edges'] (List): the edge list for training/validation/testing.
-                        
-                         datasets[i]['train'/'val'/'testing']['weight'] (List): the edge weight of selected edges.
-                                    For **direction** and **all** tasks, given a directed query edge (u,v), the corresponding weight will be the weight of (v,u) if (u,v) is not in the graph but (v,u) is in the graph. 
-                                    The direction information can be obtained from returned datasets[i]['train'/'val'/'testing']['label'].
-
-                        datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:
-                        
-                        If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
-
-                        If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists). For undirected graphs, the labels are all zeros.
-
-                        If task == 'all': 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist). 
-                                        This task reduces to the existence task if the input graph is undirected.
+                * datasets[i]['graph'] (torch.LongTensor): the observed edge list after removing edges for validation and testing.
+                * datasets[i]['train'/'val'/'testing']['edges'] (List): the edge list for training/validation/testing.
+                * datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:
+                    * If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
+                    * If task == "direction": 0 (the directed edge exists in the graph), 
+                        1 (the edge of the reversed direction exists). For undirected graphs, the labels are all zeros.
+                    * If task == "all": 0 (the directed edge exists in the graph), 
+                        1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist). 
+                        This task reduces to the existence task if the input graph is undirected.
+                    * If task == "sign": 0 (positive edge), 1 (negative edge). 
+                        For the sign task, the `maintain_connect` function will be deactivate.
         """
         return link_class_split(data=self, size=size, splits=splits, prob_test=prob_test, 
                      prob_val=prob_val, task=task, seed=seed, ratio=ratio, device=device)
