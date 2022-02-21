@@ -10,12 +10,21 @@ def test_load_signed_real_data():
     signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='epinions')
     assert isinstance(signed_dataset, SignedData)
     assert signed_dataset.is_signed
+    assert not signed_dataset.is_weighted
+    signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='slashdot')
+    assert isinstance(signed_dataset, SignedData)
+    assert signed_dataset.is_signed
+    assert not signed_dataset.is_weighted
     signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='bitcoin_alpha')
     assert isinstance(signed_dataset, SignedData)
     assert signed_dataset.is_signed
+    assert signed_dataset.is_weighted
+    signed_dataset.to_unweighted()
+    assert not signed_dataset.is_weighted
     signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='bitcoin_otc')
     assert isinstance(signed_dataset, SignedData)
     assert signed_dataset.is_signed
+    assert signed_dataset.is_weighted
     signed_dataset = load_signed_real_data(root='./tmp_data/Sampson/', dataset='Sampson', train_size=15, val_size=5)
     assert isinstance(signed_dataset, SignedData)
     assert signed_dataset.is_signed
