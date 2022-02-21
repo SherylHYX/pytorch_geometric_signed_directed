@@ -30,10 +30,10 @@ def test_load_signed_real_data():
 
 def test_sign_link_split():
     signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='bitcoin_alpha')
-    datasets = signed_dataset.link_split(splits=15, prob_val = 0.1, prob_test = 0.2, ratio = 0.4)
+    datasets = signed_dataset.link_split(splits=15, prob_val = 0.01, prob_test = 0.02, ratio = 0.04)
     assert len(list(datasets.keys())) == 15
-    datasets = link_class_split(signed_dataset, prob_val = 0.1, prob_test = 0.2, task = 'sign', 
-                                            maintain_connect=False, ratio = 0.4)
+    datasets = link_class_split(signed_dataset, prob_val = 0.01, prob_test = 0.02, task = 'sign', 
+                                            maintain_connect=False, ratio = 0.04)
     A = signed_dataset.A.tocsr()
     assert len(list(datasets.keys())) == 10
     for i in datasets:
@@ -43,14 +43,14 @@ def test_sign_link_split():
             else:
                 assert A[e[0],e[1]] > 0
     signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='bitcoin_alpha')
-    datasets = signed_dataset.link_split(splits=15, prob_val = 0.1, prob_test = 0.2, ratio = 0.4, maintain_connect=False)
+    datasets = signed_dataset.link_split(splits=15, prob_val = 0.01, prob_test = 0.02, ratio = 0.04, maintain_connect=False)
     assert len(list(datasets.keys())) == 15
-    datasets = link_class_split(signed_dataset, prob_val = 0.1, prob_test = 0.2, task = 'sign', 
-                                            maintain_connect=False, ratio = 1.0)
+    datasets = link_class_split(signed_dataset, prob_val = 0.01, prob_test = 0.02, task = 'sign', 
+                                            maintain_connect=False, ratio = 0.04)
     A = signed_dataset.A.tocsr()
     assert len(list(datasets.keys())) == 10
     for i in datasets:
-        for j, (e, l) in enumerate(zip(datasets[i]['train']['edges'][:100], datasets[i]['train']['label'][:100])):
+        for j, (e, l) in enumerate(zip(datasets[i]['val']['edges'][:100], datasets[i]['val']['label'][:100])):
             if l == 0:
                 assert A[e[0],e[1]] < 0
             else:
