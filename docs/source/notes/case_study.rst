@@ -135,7 +135,7 @@ In the following code snippets, we overview a simple end-to-end machine learning
     import torch
 
     from torch_geometric_signed_directed.utils import \ 
-    directed_link_class_split, in_out_degree
+    link_class_split, in_out_degree
     from torch_geometric_signed_directed.nn.directed import \ 
     MagNet_link_prediction
     from torch_geometric_signed_directed.data import \ 
@@ -146,7 +146,7 @@ In the following code snippets, we overview a simple end-to-end machine learning
 
     data = load_directed_real_data(dataset='webkb', 
     root=path, name='cornell').to(device)
-    link_data = directed_link_class_split(data, prob_val=0.15, 
+    link_data = link_class_split(data, prob_val=0.15, 
     prob_test=0.05, task = 'direction', device=device)
 
 First of all, after importing and defining the device, we load the ``DirectedData`` object for the selected data set and map it to the device. We then create a train-validation-test split of the edge set by using the directed link splitting function. 
