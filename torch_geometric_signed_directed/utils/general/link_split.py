@@ -123,7 +123,7 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
                 * If task == "all": 0 (the directed edge exists in the graph), 
                     1 (the edge of the reversed direction exists), 2 (the edge doesn't exist in both directions). 
                     The undirected edges in the directed input graph are removed to avoid ambiguity.
-                * If task == "sign": 0 (negative edge), 1 (positive edge). 
+                * If task == "sign": 0 (negative edge), 1 (positive edge). This is the link sign prediction task for signed networks.
     """
     assert task in ["existence","direction","all","sign"], "Please select a valid task from 'existence', 'direction', 'all', and 'sign'!"
     edge_index = data.edge_index.cpu()
