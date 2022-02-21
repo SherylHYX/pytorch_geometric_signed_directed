@@ -6,7 +6,7 @@ import torch
 from sklearn import metrics
 
 from torch_geometric_signed_directed.utils import (
-    directed_link_class_split, in_out_degree, cal_fast_appr, drop_feature, pred_digcl_link)
+    link_class_split, in_out_degree, cal_fast_appr, drop_feature, pred_digcl_link)
 from torch_geometric_signed_directed.nn.directed import DiGCL
 from torch_geometric_signed_directed.data import load_directed_real_data
 
@@ -47,7 +47,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 dataset_name = args.dataset.split('/')
 data = load_directed_real_data(dataset=dataset_name[0], root=path, name=dataset_name[1]).to(device)
-link_data = directed_link_class_split(data, prob_val=0.15, prob_test=0.05, task = 'direction', device=device)
+link_data = link_class_split(data, prob_val=0.15, prob_test=0.05, task = 'direction', device=device)
 
 model = DiGCL(in_channels=2, activation='relu',
                  num_hidden=32, num_proj_hidden=16,

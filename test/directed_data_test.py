@@ -143,6 +143,13 @@ def test_link_split():
                 assert ([e[1],e[0]] in edges)
             else:
                 assert  not (([e[0],e[1]] in edges) and ([e[1],e[0]] in edges))
+        for e, l in zip(datasets[i]['val']['edges'], datasets[i]['val']['label']):
+            if l == 0:
+                assert ([e[0],e[1]] in edges)
+            elif l == 1:
+                assert ([e[1],e[0]] in edges)
+            else:
+                assert  not (([e[0],e[1]] in edges) and ([e[1],e[0]] in edges))
     for i in datasets:
         train_edges = to_undirected(datasets[i]['graph']).T.tolist()
         assert len( list(set(mst) - set(list(map(tuple, train_edges))) )) == 0

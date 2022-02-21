@@ -174,18 +174,17 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
 
         if task == 'sign':
             nmst = np.array(nmst)
-            exist = np.array(np.abs(A[nmst[:,0], nmst[:,1]] > 0)).flatten()
+            exist = np.array(np.abs(A[nmst[:,0], nmst[:,1]]) > 0).flatten()
             if np.sum(exist) < len(nmst):
                 nmst = nmst[exist]
 
-            ids_test = nmst[:len_test]
-            ids_val = nmst[len_test:len_test+len_val]
-            ids_train = nmst[len_test+len_val:max_samples]
-            ids_train = np.array(ids_train.tolist()+mst)
+            ids_test = nmst[:len_test].copy()
+            ids_val = nmst[len_test:len_test+len_val].copy()
+            ids_train = np.array(nmst[len_test+len_val:max_samples].tolist()+mst)
 
-            labels_test = 1.0*np.array(A[ids_test[:,0], ids_test[:,1]] > 0).flatten()
-            labels_val = 1.0*np.array(A[ids_val[:,0], ids_val[:,1]] > 0).flatten()
-            labels_train = 1.0*np.array(A[ids_train[:,0], ids_train[:,1]] > 0).flatten()
+            labels_test  = 1.0*np.array(A[ids_test[:,0],ids_test[:,1]] > 0).flatten()
+            labels_val   = 1.0*np.array(A[ids_val[:,0],ids_val[:,1]] > 0).flatten()
+            labels_train = 1.0*np.array(A[ids_train[:,0],ids_train[:,1]] > 0).flatten()
             undirected_train = np.array([])
         else:
             ids_test = nmst[:len_test]+neg_edges[:len_test]
@@ -215,7 +214,7 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
         
         # set up the observed graph and weights after splitting
         oberved_edges = -np.ones((len(ids_train),2), dtype=np.int32)
-        oberved_weight = -np.ones((len(ids_train),1), dtype=np.float32)
+        oberved_weight = np.zeros((len(ids_train),1), dtype=np.float32)
 
         direct = (np.abs(A[ids_train[:, 0], ids_train[:, 1]].data) > 0).flatten()
         oberved_edges[direct,0] = ids_train[direct,0]
@@ -227,8 +226,9 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
         oberved_edges[direct,1] = ids_train[direct,0]
         oberved_weight[direct,0] = np.array(A[ids_train[direct,1], ids_train[direct,0]]).flatten()
 
-        oberved_edges = oberved_edges[np.sum(oberved_edges, axis=-1) >= 0] 
-        oberved_weight = oberved_weight[oberved_weight >= 0][:,None]
+        valid = (np.sum(oberved_edges, axis=-1) >= 0)
+        oberved_edges = oberved_edges[valid] 
+        oberved_weight = oberved_weight[valid]
 
         # add undirected edges back
         if len(undirected_train) > 0:

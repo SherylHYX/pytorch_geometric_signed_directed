@@ -5,7 +5,7 @@ from sklearn import metrics
 import torch
 import torch.nn as nn
 
-from torch_geometric_signed_directed.utils import directed_link_class_split, in_out_degree
+from torch_geometric_signed_directed.utils import link_class_split, in_out_degree
 from torch_geometric_signed_directed.nn.directed import MagNet_link_prediction
 from torch_geometric_signed_directed.data import load_directed_real_data
 
@@ -44,7 +44,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 dataset_name = args.dataset.split('/')
 data = load_directed_real_data(dataset=dataset_name[0], root=path, name=dataset_name[1]).to(device)
-link_data = directed_link_class_split(data, prob_val=0.15, prob_test=0.05, task = 'direction', device=device)
+link_data = link_class_split(data, prob_val=0.15, prob_test=0.05, task = 'direction', device=device)
 
 model = MagNet_link_prediction(q=args.q, K=args.K, num_features=2, hidden=16, label_dim=2).to(device)
 criterion = nn.NLLLoss()
