@@ -10,22 +10,12 @@ def test_load_signed_real_data():
     signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='epinions')
     assert isinstance(signed_dataset, SignedData)
     assert signed_dataset.is_signed
-    assert not signed_dataset.is_weighted
-    signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='slashdot')
-    assert isinstance(signed_dataset, SignedData)
-    assert signed_dataset.is_signed
-    assert not signed_dataset.is_weighted
     signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='bitcoin_alpha')
     assert isinstance(signed_dataset, SignedData)
     assert signed_dataset.is_signed
-    assert signed_dataset.is_weighted
-    signed_dataset.separate_positive_negative()
-    signed_dataset.to_unweighted()
-    assert not signed_dataset.is_weighted
     signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='bitcoin_otc')
     assert isinstance(signed_dataset, SignedData)
     assert signed_dataset.is_signed
-    assert signed_dataset.is_weighted
     signed_dataset = load_signed_real_data(root='./tmp_data/Sampson/', dataset='Sampson', train_size=15, val_size=5)
     assert isinstance(signed_dataset, SignedData)
     assert signed_dataset.is_signed
@@ -33,40 +23,44 @@ def test_load_signed_real_data():
         signed_dataset = load_signed_real_data(root='./tmp_data/'+dataset_name+'/', dataset=dataset_name)
         assert isinstance(signed_dataset, SignedData)
         assert signed_dataset.is_signed
-        assert signed_dataset.is_weighted
     for year in range(2001, 2021):
         signed_dataset = load_signed_real_data(dataset='Fin_YNet'+str(year), root='./tmp_data/Fin_YNet/')
         assert isinstance(signed_dataset, SignedData)
         assert signed_dataset.is_signed
-        assert signed_dataset.is_weighted
 
 def test_sign_link_split():
     signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='bitcoin_alpha')
-    datasets = signed_dataset.link_split(splits=15, prob_val = 0.1, prob_test = 0.2, ratio = 0.4)
-    assert len(list(datasets.keys())) == 15
-    datasets = link_class_split(signed_dataset, prob_val = 0.1, prob_test = 0.2, task = 'sign', 
-                                            maintain_connect=False, ratio = 0.4)
+    datasets = signed_dataset.link_split(splits=15, prob_val = 0.01, prob_test = 0.02, ratio = 0.2)
+    assert len(list(datasets.keys())) == 15 
+    assert signed_dataset.is_weighted
+    assert signed_dataset.is_signed
+    datasets = link_class_split(signed_dataset, prob_val = 0.01, prob_test = 0.02, task = 'sign', 
+                                            maintain_connect=False, ratio = 0.2)
     A = signed_dataset.A.tocsr()
     assert len(list(datasets.keys())) == 10
     for i in datasets:
-        for j, (e, l) in enumerate(zip(datasets[i]['train']['edges'][:100], datasets[i]['train']['label'][:100])):
+        assert torch.sum(datasets[i]['train']['label'] == 0) > 0
+        assert torch.sum(datasets[i]['train']['label'] != 0) > 0
+        assert torch.sum(datasets[i]['test']['label'] == 0) > 0
+        assert torch.sum(datasets[i]['test']['label'] != 0) > 0
+        assert torch.sum(datasets[i]['val']['label'] == 0) > 0
+        assert torch.sum(datasets[i]['val']['label'] != 0) > 0
+        for e, l in zip(datasets[i]['train']['edges'], datasets[i]['train']['label']):
             if l == 0:
                 assert A[e[0],e[1]] < 0
             else:
                 assert A[e[0],e[1]] > 0
-    signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='bitcoin_alpha')
-    datasets = signed_dataset.link_split(splits=15, prob_val = 0.1, prob_test = 0.2, ratio = 0.4, maintain_connect=False)
-    assert len(list(datasets.keys())) == 15
-    datasets = link_class_split(signed_dataset, prob_val = 0.1, prob_test = 0.2, task = 'sign', 
-                                            maintain_connect=False, ratio = 1.0)
-    A = signed_dataset.A.tocsr()
-    assert len(list(datasets.keys())) == 10
-    for i in datasets:
-        for j, (e, l) in enumerate(zip(datasets[i]['train']['edges'][:100], datasets[i]['train']['label'][:100])):
+        for e, l in zip(datasets[i]['test']['edges'], datasets[i]['test']['label']):
+            if l == 0:
+                assert A[e[0],e[1]] < 0
+            else:
+                assert A[e[0],e[1]] > 0        
+        for e, l in zip(datasets[i]['val']['edges'], datasets[i]['val']['label']):
             if l == 0:
                 assert A[e[0],e[1]] < 0
             else:
                 assert A[e[0],e[1]] > 0
+
 
 def test_SignedDirectedGraphDataset():
     dataset_node_edge_dict = {

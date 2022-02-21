@@ -1,5 +1,8 @@
 import torch
 import numpy as np
+import networkx as nx
+from networkx.algorithms import tree
+from scipy.sparse import coo_matrix
 from torch_geometric.data import Data
 import torch_geometric.transforms as T
 from torch_geometric.utils import to_undirected
@@ -72,7 +75,8 @@ def test_link_split():
     degrees = in_out_degree(directed_dataset.edge_index, size=len(directed_dataset.x))
     assert degrees.shape == (len(directed_dataset.x), 2)
     edges = directed_dataset.edge_index.T.tolist()
-    datasets = link_class_split(directed_dataset, prob_val = 0.0, prob_test = 0.05, task = 'direction')
+    datasets = link_class_split(directed_dataset, prob_val = 0.0, prob_test = 0.05, 
+                    task = 'direction', maintain_connect=True)
     assert len(list(datasets.keys())) == 10
     for i in datasets:
         assert torch.sum(datasets[i]['train']['label'] > 0) > 0
@@ -83,6 +87,15 @@ def test_link_split():
             else:
                 assert ([e[1],e[0]] in edges)
     assert len(list(datasets[0]['val']['edges'])) == 0
+
+    row, col = directed_dataset.edge_index[0], directed_dataset.edge_index[1]
+    A = directed_dataset.A.tocsr()
+    G = nx.from_scipy_sparse_matrix(A, create_using=nx.Graph, edge_attribute='weight') 
+    mst = list(tree.minimum_spanning_edges(G, algorithm="kruskal", data=False))
+    for i in datasets:
+        train_edges = to_undirected(datasets[i]['graph']).T.tolist()
+        assert len( list(set(mst) - set(list(map(tuple, train_edges))) )) == 0
+
     datasets = link_class_split(directed_dataset, prob_val = 0.0, prob_test = 0.05, task = 'direction', maintain_connect=False)
     assert len(list(datasets.keys())) == 10
     for i in datasets:
@@ -114,6 +127,10 @@ def test_link_split():
                 assert ([e[0],e[1]] in edges)
             else:
                 assert not ([e[0],e[1]] in edges)
+    for i in datasets:
+        train_edges = to_undirected(datasets[i]['graph']).T.tolist()
+        assert len( list(set(mst) - set(list(map(tuple, train_edges))) )) == 0
+
     datasets = link_class_split(directed_dataset, prob_val = 0.15, prob_test = 0.05, task = 'all')
     for i in datasets:
         assert torch.sum(datasets[i]['test']['label'] == 0) > 0
@@ -126,6 +143,17 @@ def test_link_split():
                 assert ([e[1],e[0]] in edges)
             else:
                 assert  not (([e[0],e[1]] in edges) and ([e[1],e[0]] in edges))
+        for e, l in zip(datasets[i]['val']['edges'], datasets[i]['val']['label']):
+            if l == 0:
+                assert ([e[0],e[1]] in edges)
+            elif l == 1:
+                assert ([e[1],e[0]] in edges)
+            else:
+                assert  not (([e[0],e[1]] in edges) and ([e[1],e[0]] in edges))
+    for i in datasets:
+        train_edges = to_undirected(datasets[i]['graph']).T.tolist()
+        assert len( list(set(mst) - set(list(map(tuple, train_edges))) )) == 0
+
     assert len(list(datasets.keys())) == 10
 
     undirected_edges = to_undirected(directed_dataset.edge_index)

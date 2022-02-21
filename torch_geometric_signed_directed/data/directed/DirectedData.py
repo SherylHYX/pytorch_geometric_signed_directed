@@ -128,6 +128,9 @@ class DirectedData(Data):
             * **task** (str, optional) - The evaluation task: all (three-class link prediction); direction (direction prediction); existence (existence prediction). (Default: 'direction')
             * **seed** (int, optional) - The random seed for dataset generation (Default: 0).
             * **ratio** (float, optional) - The maximum ratio of edges used for dataset generation. (Default: 1.0)
+            * **maintain_connect** (bool, optional) - If maintaining connectivity when removing edges for validation and testing.
+                The connectivity is maintained by obtaining edges in the minimum spanning tree/forest first. 
+                These edges will not be removed for validation and testing (Default: True).
             * **device** (int, optional) - The device to hold the return value (Default: 'cpu').
 
         Return types:
@@ -135,12 +138,13 @@ class DirectedData(Data):
                 * datasets[i]['graph'] (torch.LongTensor): the observed edge list after removing edges for validation and testing.
                 * datasets[i]['train'/'val'/'testing']['edges'] (List): the edge list for training/validation/testing.
                 * datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:
-                    * If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
-                    * If task == "direction": 0 (the directed edge exists in the graph), 
-                        1 (the edge of the reversed direction exists). For undirected graphs, the labels are all zeros.
+                    * If task == "existence": 0 (the directed edge exists in the graph), 1 (the edge doesn't exist).
+                        The undirected edges in the directed input graph are removed to avoid ambiguity.
+                    * If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists).
+                        The undirected edges in the directed input graph are removed to avoid ambiguity.
                     * If task == "all": 0 (the directed edge exists in the graph), 
-                        1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist). 
-                        This task reduces to the existence task if the input graph is undirected.
+                        1 (the edge of the reversed direction exists), 2 (the edge doesn't exist in both directions). 
+                        The undirected edges in the directed input graph are removed to avoid ambiguity.
         """
         assert task != 'sign', 'If you would like to solve a link sign prediction task, use SignedData class instead!'
         return link_class_split(data=self, size=size, splits=splits, prob_test=prob_test, 

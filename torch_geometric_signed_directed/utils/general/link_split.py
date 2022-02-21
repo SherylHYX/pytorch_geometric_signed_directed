@@ -24,16 +24,20 @@ def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List
     Return types:
         * **new_edge_pairs** (List) - A list of edges.
         * **labels** (List) - The labels for new_edge_pairs. 
-            * If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
-            * If task == "direction": 0 (the directed edge exists in the graph), 
-                1 (the edge of the reversed direction exists). For undirected graphs, the labels are all zeros.
+            * If task == "existence": 0 (the directed edge exists in the graph), 1 (the edge doesn't exist).
+                The undirected edges in the directed input graph are removed to avoid ambiguity.
+            * If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists).
+                The undirected edges in the directed input graph are removed to avoid ambiguity.
             * If task == "all": 0 (the directed edge exists in the graph), 
-                1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist). 
-                This task reduces to the existence task if the input graph is undirected. 
-                The direction information can be obtained from returned **labels**.
+                1 (the edge of the reversed direction exists), 2 (the edge doesn't exist in both directions). 
+                The undirected edges in the directed input graph are removed to avoid ambiguity.
+            * If task == "sign": 0 (negative edge), 1 (positive edge). 
+        * **label_weight** (List) - The weight list of the query edges. The weight is zero if the directed edge 
+            doesn't exist in both directions.
+        * **undirected** (List) - The undirected edges list within the input graph.
     """
     if len(edge_pairs) == 0:
-        return np.array([]), np.array([]), np.array([])
+        return np.array([]), np.array([]), np.array([]), np.array([])
 
     labels = -np.ones(len(edge_pairs), dtype=np.int32)
     new_edge_pairs = np.array(list(map(list, edge_pairs)))
@@ -74,6 +78,7 @@ def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List
         label_weight = np.vstack([label_weight, label_weight])
         label_weight = np.vstack([label_weight, np.zeros((len(negative),1), dtype=np.int32)])
     else:
+        undirected = list(map(tuple, edge_pairs.tolist()))
         neg_edges = (np.abs(np.array(adj[edge_pairs[:,0], edge_pairs[:,1]]).flatten())==0)
         labels = np.zeros(len(edge_pairs), dtype=np.int32)
         labels[neg_edges] = 2
@@ -85,7 +90,7 @@ def undirected_label2directed_label(adj:scipy.sparse.csr_matrix, edge_pairs:List
         label_weight[labels == 1] = 0 # set reversed edges as 0
         labels[labels == 2] = 1
 
-    return new_edge_pairs, labels.flatten(), label_weight.flatten()
+    return new_edge_pairs, labels.flatten(), label_weight.flatten(), undirected
 
 def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=10, prob_test:float= 0.15, 
                      prob_val:float= 0.05, task:str= 'direction', seed:int= 0, maintain_connect:bool=True, 
@@ -100,7 +105,9 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
         * **size** (int, optional) - The size of the input graph. If none, the graph size is the maximum index of nodes plus 1 (Default: None).
         * **task** (str, optional) - The evaluation task: all (three-class link prediction); direction (direction prediction); existence (existence prediction); sign (sign prediction). (Default: 'direction')
         * **seed** (int, optional) - The random seed for positve edge selection (Default: 0). Negative edges are selected by pytorch geometric negative_sampling.
-        * **maintain_connect** (bool, optional) - If maintain connectivity when removing edges for validation and testing (Default: True).
+        * **maintain_connect** (bool, optional) - If maintaining connectivity when removing edges for validation and testing.
+            The connectivity is maintained by obtaining edges in the minimum spanning tree/forest first. 
+            These edges will not be removed for validation and testing (Default: True). 
         * **ratio** (float, optional) - The maximum ratio of edges used for dataset generation. (Default: 1.0)
         * **device** (int, optional) - The device to hold the return value (Default: 'cpu').
 
@@ -109,15 +116,16 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
             * datasets[i]['graph'] (torch.LongTensor): the observed edge list after removing edges for validation and testing.
             * datasets[i]['train'/'val'/'testing']['edges'] (List): the edge list for training/validation/testing.
             * datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:
-                * If task == "existence": 0 (the edge exists in the graph), 1 (the edge doesn't exist).
-                * If task == "direction": 0 (the directed edge exists in the graph), 
-                    1 (the edge of the reversed direction exists). For undirected graphs, the labels are all zeros.
+                * If task == "existence": 0 (the directed edge exists in the graph), 1 (the edge doesn't exist).
+                    The undirected edges in the directed input graph are removed to avoid ambiguity.
+                * If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists).
+                    The undirected edges in the directed input graph are removed to avoid ambiguity.
                 * If task == "all": 0 (the directed edge exists in the graph), 
-                    1 (the edge of the reversed direction exists), 2 (the undirected version of the edge doesn't exist). 
-                    This task reduces to the existence task if the input graph is undirected.
+                    1 (the edge of the reversed direction exists), 2 (the edge doesn't exist in both directions). 
+                    The undirected edges in the directed input graph are removed to avoid ambiguity.
                 * If task == "sign": 0 (negative edge), 1 (positive edge). 
-                    For the link sign prediction task, the `maintain_connect` functionality is currently deactivated.
     """
+    assert task in ["existence","direction","all","sign"], "Please select a valid task from 'existence', 'direction', 'all', and 'sign'!"
     edge_index = data.edge_index.cpu()
     row, col = edge_index[0], edge_index[1]
     if size is None:
@@ -166,18 +174,18 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
 
         if task == 'sign':
             nmst = np.array(nmst)
-            exist = np.array(np.abs(A[nmst[:,0], nmst[:,1]] > 0)).flatten()
+            exist = np.array(np.abs(A[nmst[:,0], nmst[:,1]]) > 0).flatten()
             if np.sum(exist) < len(nmst):
                 nmst = nmst[exist]
 
-            ids_test = nmst[:len_test]
-            ids_val = nmst[len_test:len_test+len_val]
-            ids_train = nmst[len_test+len_val:max_samples]
-            ids_train = np.array(ids_train.tolist()+mst)
+            ids_test = nmst[:len_test].copy()
+            ids_val = nmst[len_test:len_test+len_val].copy()
+            ids_train = np.array(nmst[len_test+len_val:max_samples].tolist()+mst)
 
-            labels_test = 1.0*np.array(A[ids_test[:,0], ids_test[:,1]] > 0).flatten()
-            labels_val = 1.0*np.array(A[ids_val[:,0], ids_val[:,1]] > 0).flatten()
-            labels_train = 1.0*np.array(A[ids_train[:,0], ids_train[:,1]] > 0).flatten()
+            labels_test  = 1.0*np.array(A[ids_test[:,0],ids_test[:,1]] > 0).flatten()
+            labels_val   = 1.0*np.array(A[ids_val[:,0],ids_val[:,1]] > 0).flatten()
+            labels_train = 1.0*np.array(A[ids_train[:,0],ids_train[:,1]] > 0).flatten()
+            undirected_train = np.array([])
         else:
             ids_test = nmst[:len_test]+neg_edges[:len_test]
             ids_val = nmst[len_test:len_test+len_val]+neg_edges[len_test:len_test+len_val]
@@ -186,9 +194,9 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
             else:
                 ids_train = mst+neg_edges[len_test+len_val:max_samples]
 
-            ids_test, labels_test, _ = undirected_label2directed_label(A, ids_test, task, is_directed)  
-            ids_val, labels_val, _ = undirected_label2directed_label(A, ids_val, task, is_directed)
-            ids_train, labels_train, _ = undirected_label2directed_label(A, ids_train, task, is_directed)
+            ids_test, labels_test, _, _ = undirected_label2directed_label(A, ids_test, task, is_directed)  
+            ids_val, labels_val, _, _ = undirected_label2directed_label(A, ids_val, task, is_directed)
+            ids_train, labels_train, _, undirected_train = undirected_label2directed_label(A, ids_train, task, is_directed)
 
         # convert back to directed graph
         if task == 'direction':
@@ -206,23 +214,34 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
         
         # set up the observed graph and weights after splitting
         oberved_edges = -np.ones((len(ids_train),2), dtype=np.int32)
-        oberved_weight = -np.ones((len(ids_train),), dtype=np.float32)
+        oberved_weight = np.zeros((len(ids_train),1), dtype=np.float32)
 
         direct = (np.abs(A[ids_train[:, 0], ids_train[:, 1]].data) > 0).flatten()
         oberved_edges[direct,0] = ids_train[direct,0]
         oberved_edges[direct,1] = ids_train[direct,1]
-        oberved_weight[direct] = np.array(A[ids_train[direct,0], ids_train[direct,1]]).flatten()
+        oberved_weight[direct,0] = np.array(A[ids_train[direct,0], ids_train[direct,1]]).flatten()
 
         direct = (np.abs(A[ids_train[:, 1], ids_train[:, 0]].data) > 0)[0]
         oberved_edges[direct,0] = ids_train[direct,1]
         oberved_edges[direct,1] = ids_train[direct,0]
-        oberved_weight[direct] = np.array(A[ids_train[direct,1], ids_train[direct,0]]).flatten()
+        oberved_weight[direct,0] = np.array(A[ids_train[direct,1], ids_train[direct,0]]).flatten()
 
-        oberved_edges = oberved_edges[np.sum(oberved_edges, axis=-1) >= 0] 
-        oberved_weight = oberved_weight[oberved_weight >= 0] 
+        valid = (np.sum(oberved_edges, axis=-1) >= 0)
+        oberved_edges = oberved_edges[valid] 
+        oberved_weight = oberved_weight[valid]
+
+        # add undirected edges back
+        if len(undirected_train) > 0:
+            undirected_train = np.array(undirected_train)
+            oberved_edges = np.vstack((oberved_edges, undirected_train, undirected_train[:,[1,0]]))
+            oberved_weight = np.vstack((oberved_weight, np.array(A[undirected_train[:,0], 
+                                                        undirected_train[:,1]]).flatten()[:,None],
+                                        np.array(A[undirected_train[:,1], 
+                                        undirected_train[:,0]]).flatten()[:,None]))
+
         datasets[ind] = {}
         datasets[ind]['graph'] = torch.from_numpy(oberved_edges.T).long().to(device)
-        datasets[ind]['weights'] = torch.from_numpy(oberved_weight).float().to(device)
+        datasets[ind]['weights'] = torch.from_numpy(oberved_weight.flatten()).float().to(device)
 
         datasets[ind]['train'] = {}
         datasets[ind]['train']['edges'] = torch.from_numpy(ids_train).long().to(device)
