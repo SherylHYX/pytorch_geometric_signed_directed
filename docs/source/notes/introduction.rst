@@ -119,7 +119,6 @@ Signed Edge Splitting
 .. code-block:: python
 
     from torch_geometric_signed_directed.data import load_signed_real_data
-    from torch_geometric_signed_directed.utils import link_split
 
     signed_dataset = load_directed_real_data(dataset='bitcoin_alpha', root='./tmp_data/')
     datasets = signed_dataset.link_split(prob_val = 0.15, prob_test = 0.05)
