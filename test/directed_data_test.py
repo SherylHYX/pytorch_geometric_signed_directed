@@ -133,8 +133,8 @@ def test_link_split():
     datasets = link_class_split(undirected_data, prob_val = 0.05, prob_test = 0.05, task = 'all')
     for i in datasets:
         assert torch.sum(datasets[i]['test']['label'] == 0) > 0
-        assert torch.sum(datasets[i]['test']['label'] == 1) > 0
-        assert torch.sum(datasets[i]['test']['label'] == 2) == 0
+        assert torch.sum(datasets[i]['test']['label'] == 1) == 0
+        assert torch.sum(datasets[i]['test']['label'] == 2) > 0
         for e, l in zip(datasets[i]['test']['edges'], datasets[i]['test']['label']):
             if l == 0:
                 assert ([e[0],e[1]] in undirected_edges.T.tolist())

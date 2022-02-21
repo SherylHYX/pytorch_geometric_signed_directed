@@ -261,7 +261,7 @@ class SignedData(Data):
         seed_size_per_class=seed_size_per_class, seed=seed, data_split=data_split)
 
     def link_split(self, size:int=None, splits:int=10, prob_test:float= 0.15, 
-                     prob_val:float= 0.05, seed:int= 0, ratio:float= 1.0, device:str= 'cpu') -> dict:
+                     prob_val:float= 0.05, seed:int= 0, ratio:float= 1.0, maintain_connect:bool= False, device:str= 'cpu') -> dict:
         r"""Get train/val/test dataset for the link sign prediction task. 
 
         Arg types:
@@ -271,6 +271,7 @@ class SignedData(Data):
             * **splits** (int, optional) - The split size (Default: 10).
             * **size** (int, optional) - The size of the input graph. If none, the graph size is the maximum index of nodes plus 1 (Default: None).
             * **seed** (int, optional) - The random seed for positve edge selection (Default: 0). Negative edges are selected by pytorch geometric negative_sampling.
+            * **maintain_connect** (bool, optional) - If maintain connectivity when removing edges for validation and testing (Default: False).
             * **ratio** (float, optional) - The maximum ratio of edges used for dataset generation. (Default: 1.0)
             * **device** (int, optional) - The device to hold the return value (Default: 'cpu').
 
@@ -280,4 +281,4 @@ class SignedData(Data):
                 * datasets[i]['train'/'val'/'testing']['edges'] (List): the edge list for training/validation/testing.
                 * datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:  0 (negative edge), 1 (positive edge). 
         """
-        return link_class_split(self, size, splits, prob_test, prob_val, 'sign', seed, False, ratio, device)
+        return link_class_split(self, size, splits, prob_test, prob_val, 'sign', seed, maintain_connect, ratio, device)
