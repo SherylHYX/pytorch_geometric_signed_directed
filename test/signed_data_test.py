@@ -10,12 +10,22 @@ def test_load_signed_real_data():
     signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='epinions')
     assert isinstance(signed_dataset, SignedData)
     assert signed_dataset.is_signed
+    assert not signed_dataset.is_weighted
+    signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='slashdot')
+    assert isinstance(signed_dataset, SignedData)
+    assert signed_dataset.is_signed
+    assert not signed_dataset.is_weighted
     signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='bitcoin_alpha')
     assert isinstance(signed_dataset, SignedData)
     assert signed_dataset.is_signed
+    assert signed_dataset.is_weighted
+    signed_dataset.separate_positive_negative()
+    signed_dataset.to_unweighted()
+    assert not signed_dataset.is_weighted
     signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='bitcoin_otc')
     assert isinstance(signed_dataset, SignedData)
     assert signed_dataset.is_signed
+    assert signed_dataset.is_weighted
     signed_dataset = load_signed_real_data(root='./tmp_data/Sampson/', dataset='Sampson', train_size=15, val_size=5)
     assert isinstance(signed_dataset, SignedData)
     assert signed_dataset.is_signed
@@ -23,10 +33,12 @@ def test_load_signed_real_data():
         signed_dataset = load_signed_real_data(root='./tmp_data/'+dataset_name+'/', dataset=dataset_name)
         assert isinstance(signed_dataset, SignedData)
         assert signed_dataset.is_signed
+        assert signed_dataset.is_weighted
     for year in range(2001, 2021):
         signed_dataset = load_signed_real_data(dataset='Fin_YNet'+str(year), root='./tmp_data/Fin_YNet/')
         assert isinstance(signed_dataset, SignedData)
         assert signed_dataset.is_signed
+        assert signed_dataset.is_weighted
 
 def test_sign_link_split():
     signed_dataset = load_signed_real_data(root='./tmp_data/', dataset='bitcoin_alpha')

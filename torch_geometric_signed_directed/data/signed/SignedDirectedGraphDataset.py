@@ -7,7 +7,6 @@ import json
 
 import torch
 from torch_geometric.data import (InMemoryDataset, download_url, Data)
-from torch_geometric_signed_directed.data.signed import SignedData
 
 dataset_name_url_dic = {
     'bitcoin_alpha': 'https://github.com/SherylHYX/pytorch_geometric_signed_directed/raw/main/datasets/bitcoin_alpha.csv',
@@ -56,11 +55,11 @@ class SignedDirectedGraphDataset(InMemoryDataset):
 
     @property
     def raw_dir(self) -> str:
-        return os.path.join(self.root, 'signed_directed_graph', 'raw')
+        return os.path.join(self.root, self.dataset_name, 'raw')
 
     @property
     def processed_dir(self) -> str:
-        return os.path.join(self.root, 'signed_directed_graph', 'processed')
+        return os.path.join(self.root, self.dataset_name, 'processed')
 
     @property
     def raw_file_names(self) -> str:
@@ -76,7 +75,7 @@ class SignedDirectedGraphDataset(InMemoryDataset):
 
     def process(self):
         data = []
-        edge_sign = []
+        edge_weight = []
         edge_index = []
         node_map = {}
         with open(self.raw_paths[0], 'r', encoding='utf-8-sig') as f: 
@@ -91,20 +90,17 @@ class SignedDirectedGraphDataset(InMemoryDataset):
                 a, b = node_map[a], node_map[b]
                 data.append([a, b])
 
-                edge_sign.append(float(x[2]))
+                edge_weight.append(float(x[2]))
 
             edge_index = [[i[0], int(i[1])] for i in data]
             edge_index = torch.tensor(edge_index, dtype=torch.long)
             edge_index = edge_index.t().contiguous()
-            if self.transform is None:
-                func = lambda x: 1 if x > 0 else -1
-                edge_sign = [func(i) for i in edge_sign]
-            edge_sign = torch.tensor(edge_sign, dtype=torch.long)
+            edge_weight = torch.FloatTensor(edge_weight)
         map_file = os.path.join(self.processed_dir, 'node_id_map.json')
         with open(map_file, 'w') as f:
             f.write(json.dumps(node_map))
 
-        data = Data(edge_index=edge_index, edge_weight=edge_sign)
+        data = Data(edge_index=edge_index, edge_weight=edge_weight)
         data, slices = self.collate([data])
         torch.save((data, slices), self.processed_paths[0])
 

@@ -94,6 +94,13 @@ class SignedData(Data):
         self.clear_separate_attributes()
         return bool(res)
 
+    def to_unweighted(self):
+        if hasattr(self, 'edge_weight'):
+            self.edge_weight = self.edge_weight.sign()
+            self.A = to_scipy_sparse_matrix(self.edge_index, self.edge_weight)
+        if hasattr(self, 'edge_weight_p'):
+            self.separate_positive_negative()
+
     def set_signed_Laplacian_features(self, k: int=2):
         """generate the graph features using eigenvectors of the signed Laplacian matrix.
 
