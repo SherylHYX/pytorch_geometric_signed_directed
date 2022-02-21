@@ -119,7 +119,7 @@ class SignedData(Data):
         L = sp.eye(A_p.shape[0], format="csc") - normA # normalized symmetric signed Laplacian
         (vals, vecs) = sp.linalg.eigs(L, int(k), maxiter=A_p.shape[0], which='LR')
         vecs = vecs / vals  # weight eigenvalues by eigenvectors, since smaller eigenvectors are more likely to be informative
-        self.x = vecs
+        self.x = FloatTensor(vecs)
         self.clear_separate_attributes()
 
 
@@ -225,7 +225,7 @@ class SignedData(Data):
         (w, v) = sp.linalg.eigs(matrix_o, int(eigens), maxiter=mi, which='LR')
 
         v = v * w  # weight eigenvalues by eigenvectors, since larger eigenvectors are more likely to be informative
-        self.x = v
+        self.x = FloatTensor(v)
         self.clear_separate_attributes()
     
     def inherit_attributes(self, data:Data): 

@@ -75,7 +75,7 @@ class DirectedData(Data):
         features_SVD = np.concatenate((np.real(u), np.imag(u)), axis=1)
         scaler = StandardScaler().fit(features_SVD)
         features_SVD = scaler.transform(features_SVD)
-        self.x = features_SVD
+        self.x = FloatTensor(features_SVD)
 
     def inherit_attributes(self, data:Data): 
         for k in data.to_dict().keys():

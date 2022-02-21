@@ -67,8 +67,6 @@ def test(features, edge_index_p, edge_weight_p,
     test_ari = adjusted_rand_score(y[mask].cpu(), (torch.argmax(prob, dim=1)).cpu()[mask])
     return test_ari
 
-data.x = torch.FloatTensor(data.x).to(device)
-
 for split in range(data.train_mask.shape[1]):
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     train_index = data.train_mask[:, split].cpu().numpy()
