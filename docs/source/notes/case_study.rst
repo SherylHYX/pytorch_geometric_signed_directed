@@ -89,8 +89,6 @@ For the evaluation function (named ``test``), we do not set the model to be trai
 
 .. code-block:: python
 
-    data.x = torch.FloatTensor(data.x).to(device)
-
     for split in range(data.train_mask.shape[1]):
         optimizer = torch.optim.Adam(model.parameters(),
         lr=0.01, weight_decay=0.0005)
@@ -121,7 +119,7 @@ For the evaluation function (named ``test``), we do not set the model to be trai
         print(f'Split: {split:02d}, Test_ARI: {test_ari:.4f}')
         model._reset_parameters_undirected()
     
-We run the actual experiments in this final snippet. First, we map node features to a PyTorch Tensor. For each of the data splits, we first initialize the Adam optimizer. We then obtain the data split indices, initialize the self-supervised loss function, and start the training process. For each epoch,  we apply the training function to obtain training loss and ARI score, then evaluate with the ``test()`` function on validation nodes.  We then print the training and validation results. 
+We run the actual experiments in this final snippet. For each of the data splits, we first initialize the Adam optimizer. We then obtain the data split indices, initialize the self-supervised loss function, and start the training process. For each epoch,  we apply the training function to obtain training loss and ARI score, then evaluate with the ``test()`` function on validation nodes.  We then print the training and validation results. 
 After training, we obtain the test performance and print some logs. Finally, we reset model parameters and iterate to the next data split loop.
 
 Case Study on Directed Networks
