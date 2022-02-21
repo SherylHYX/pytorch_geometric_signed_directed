@@ -221,7 +221,7 @@ def test_SiGAT():
     edge_s_list = train_edge_weight.long().cpu().numpy().tolist()
     edge_index_s = torch.LongTensor([[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)]).to(device)
 
-    model = SiGAT(nodes_num, edge_index_s, 20, 20).to(device)
+    model = SiGAT(nodes_num, edge_index_s, 20, 20, 100).to(device)
     loss = model.loss()
     with torch.no_grad():
         nodes = np.arange(0, nodes_num)
