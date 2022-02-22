@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
 url = "https://github.com/SherylHYX/pytorch_geometric_signed_directed"
-__version__ = '0.2.1'
+__version__ = '0.3.0'
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
