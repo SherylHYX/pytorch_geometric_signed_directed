@@ -284,8 +284,11 @@ class SignedData(Data):
 
         Return types:
             * **datasets** - A dict include training/validation/testing splits of edges and labels. For split index i:
-                * datasets[i]['graph'] (torch.LongTensor): the observed edge list after removing edges for validation and testing.
-                * datasets[i]['train'/'val'/'testing']['edges'] (List): the edge list for training/validation/testing.
-                * datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:  0 (negative edge), 1 (positive edge). 
+
+                1. datasets[i]['graph'] (torch.LongTensor): the observed edge list after removing edges for validation and testing.
+
+                2. datasets[i]['train'/'val'/'testing']['edges'] (List): the edge list for training/validation/testing.
+                
+                3. datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:  0 (negative edge), 1 (positive edge). 
         """
         return link_class_split(self, size, splits, prob_test, prob_val, 'sign', seed, maintain_connect, ratio, device)
