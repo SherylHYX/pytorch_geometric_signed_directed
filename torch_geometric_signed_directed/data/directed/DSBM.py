@@ -16,10 +16,9 @@ def DSBM(N: int, K: int, p: float, F: np.array, size_ratio: float=1) -> Tuple[sp
         * **K** (int) - Number of clusters.
         * **p** (float) - Sparsity value, edge probability.
         * **F** (np.array) - The meta-graph adjacency matrix to generate edges.
-        * **size_ratio** (float) - The communities have number of nodes multiples of each other, 
-                                   with the largest size_ratio times the number of nodes of the 
-                                   smallest. A geometric sequence is generated to denote the node 
-                                   size of each cluster based on the size_ratio. 
+        * **size_ratio** (float) - The communities have number of nodes multiples of each other, \
+            with the largest size_ratio times the number of nodes of the smallest. \
+            A geometric sequence is generated to denote the node size of each cluster based on the size_ratio. 
     
     Return types:
         * **a** (sp.csr_matrix) - a is a sparse N by N matrix of the edges.
