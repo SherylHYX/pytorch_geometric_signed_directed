@@ -12,12 +12,9 @@ def directed_features_in_out(edge_index: torch.LongTensor, size: int,
 
     Arg types:
         * **edge_index** (PyTorch LongTensor) - The edge indices.
-        * **size** (int or None) - The number of nodes, *i.e.*
-            :obj:`max_val + 1` of :attr:`edge_index`.
-        * **edge_weight** (PyTorch Tensor, optional) - One-dimensional edge weights.
-            (default: :obj:`None`)
-        * **device** (str, optional) - The device to store the returned values.
-            (default: :str:`cpu`)
+        * **size** (int or None) - The number of nodes, *i.e.* :obj:`max_val + 1` of :attr:`edge_index`.
+        * **edge_weight** (PyTorch Tensor, optional) - One-dimensional edge weights. (default: :obj:`None`)
+        * **device** (str, optional) - The device to store the returned values. (default: :str:`cpu`)
             
     Return types:
         * **index_undirected** (PyTorch LongTensor) - Undirected edge_index.
