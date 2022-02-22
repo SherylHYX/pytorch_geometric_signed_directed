@@ -105,24 +105,25 @@ def link_class_split(data:torch_geometric.data.Data, size:int=None, splits:int=1
         * **size** (int, optional) - The size of the input graph. If none, the graph size is the maximum index of nodes plus 1 (Default: None).
         * **task** (str, optional) - The evaluation task: all (three-class link prediction); direction (direction prediction); existence (existence prediction); sign (sign prediction). (Default: 'direction')
         * **seed** (int, optional) - The random seed for positve edge selection (Default: 0). Negative edges are selected by pytorch geometric negative_sampling.
-        * **maintain_connect** (bool, optional) - If maintaining connectivity when removing edges for validation and testing.
-            The connectivity is maintained by obtaining edges in the minimum spanning tree/forest first. 
-            These edges will not be removed for validation and testing (Default: True). 
+        * **maintain_connect** (bool, optional) - If maintaining connectivity when removing edges for validation and testing. The connectivity is maintained by obtaining edges in the minimum spanning tree/forest first. These edges will not be removed for validation and testing (Default: True). 
         * **ratio** (float, optional) - The maximum ratio of edges used for dataset generation. (Default: 1.0)
         * **device** (int, optional) - The device to hold the return value (Default: 'cpu').
 
     Return types:
         * **datasets** - A dict include training/validation/testing splits of edges and labels. For split index i:
+
             * datasets[i]['graph'] (torch.LongTensor): the observed edge list after removing edges for validation and testing.
+
             * datasets[i]['train'/'val'/'testing']['edges'] (List): the edge list for training/validation/testing.
+
             * datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:
-                * If task == "existence": 0 (the directed edge exists in the graph), 1 (the edge doesn't exist).
-                    The undirected edges in the directed input graph are removed to avoid ambiguity.
-                * If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists).
-                    The undirected edges in the directed input graph are removed to avoid ambiguity.
-                * If task == "all": 0 (the directed edge exists in the graph), 
-                    1 (the edge of the reversed direction exists), 2 (the edge doesn't exist in both directions). 
-                    The undirected edges in the directed input graph are removed to avoid ambiguity.
+
+                * If task == "existence": 0 (the directed edge exists in the graph), 1 (the edge doesn't exist). The undirected edges in the directed input graph are removed to avoid ambiguity.
+                
+                * If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists). The undirected edges in the directed input graph are removed to avoid ambiguity.
+                
+                * If task == "all": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the edge doesn't exist in both directions). The undirected edges in the directed input graph are removed to avoid ambiguity.
+                
                 * If task == "sign": 0 (negative edge), 1 (positive edge). This is the link sign prediction task for signed networks.
     """
     assert task in ["existence","direction","all","sign"], "Please select a valid task from 'existence', 'direction', 'all', and 'sign'!"
