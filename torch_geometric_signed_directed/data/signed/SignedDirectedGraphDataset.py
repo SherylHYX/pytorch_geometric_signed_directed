@@ -1,6 +1,6 @@
 
    
-from typing import List, Optional, Callable
+from typing import Optional, Callable
 
 import os
 import json

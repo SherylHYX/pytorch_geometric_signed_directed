@@ -128,9 +128,7 @@ class DirectedData(Data):
             * **task** (str, optional) - The evaluation task: all (three-class link prediction); direction (direction prediction); existence (existence prediction). (Default: 'direction')
             * **seed** (int, optional) - The random seed for dataset generation (Default: 0).
             * **ratio** (float, optional) - The maximum ratio of edges used for dataset generation. (Default: 1.0)
-            * **maintain_connect** (bool, optional) - If maintaining connectivity when removing edges for validation and testing.
-                The connectivity is maintained by obtaining edges in the minimum spanning tree/forest first. 
-                These edges will not be removed for validation and testing (Default: True).
+            * **maintain_connect** (bool, optional) - If maintaining connectivity when removing edges for validation and testing. The connectivity is maintained by obtaining edges in the minimum spanning tree/forest first. These edges will not be removed for validation and testing (Default: True).
             * **device** (int, optional) - The device to hold the return value (Default: 'cpu').
 
         Return types:

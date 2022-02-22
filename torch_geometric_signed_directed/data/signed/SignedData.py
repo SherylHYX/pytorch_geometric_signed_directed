@@ -278,9 +278,7 @@ class SignedData(Data):
             * **splits** (int, optional) - The split size (Default: 10).
             * **size** (int, optional) - The size of the input graph. If none, the graph size is the maximum index of nodes plus 1 (Default: None).
             * **seed** (int, optional) - The random seed for positve edge selection (Default: 0). Negative edges are selected by pytorch geometric negative_sampling.
-            * **maintain_connect** (bool, optional) - If maintaining connectivity when removing edges for validation and testing 
-                The connectivity is maintained by obtaining edges in the minimum spanning tree/forest first. These edges will not be removed for validation and testing. 
-                (Default: False).
+            * **maintain_connect** (bool, optional) - If maintaining connectivity when removing edges for validation and testing. The connectivity is maintained by obtaining edges in the minimum spanning tree/forest first. These edges will not be removed for validation and testing. (Default: False).
             * **ratio** (float, optional) - The maximum ratio of edges used for dataset generation. (Default: 1.0)
             * **device** (int, optional) - The device to hold the return value (Default: 'cpu').
 
