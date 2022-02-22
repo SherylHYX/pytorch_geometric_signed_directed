@@ -87,6 +87,7 @@ class DiGCL(torch.nn.Module):
             * x (PyTorch FloatTensor) - Node features.
             * edge_index (PyTorch LongTensor) - Edge indices.
             * edge_weight (PyTorch FloatTensor, optional) - Edge weights corresponding to edge indices.
+
         Return types:
             * x (PyTorch FloatTensor) - Embeddings for all nodes, with shape (num_nodes, out_channels).
         """
@@ -108,6 +109,7 @@ class DiGCL(torch.nn.Module):
     def sim(self, z1: torch.Tensor, z2: torch.Tensor):
         """
         Normalized similarity calculation.
+        
         Args types::
             * z1 (PyTorch FloatTensor) - Node features.
             * z2 (PyTorch FloatTensor) - Node features.
@@ -122,7 +124,8 @@ class DiGCL(torch.nn.Module):
     def semi_loss(self, z1: torch.Tensor, z2: torch.Tensor):
         """
         Semi-supervised loss function.
-        Args types::
+
+        Arg types:
             * z1 (PyTorch FloatTensor) - Node features.
             * z2 (PyTorch FloatTensor) - Node features.
 
@@ -138,6 +141,7 @@ class DiGCL(torch.nn.Module):
                           batch_size: int):
         """
         Semi-supervised loss function. Space complexity: O(BN) (semi_loss: O(N^2))
+
         Args types::
             * z1 (PyTorch FloatTensor) - Node features.
             * z2 (PyTorch FloatTensor) - Node features.
