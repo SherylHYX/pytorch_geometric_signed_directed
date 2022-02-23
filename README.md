@@ -11,7 +11,7 @@
   <img width="90%" src="https://raw.githubusercontent.com/SherylHYX/pytorch_geometric_signed_directed/master/docs/source/_static/img/text_logo.jpg?sanitize=true" />
 </p>
 
-**[Documentation](https://pytorch-geometric-signed-directed.readthedocs.io)** | **[Case Study](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/case_study.html)** | **[Installation](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/installation.html)** | **[Data Structures](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/introduction.html#data-structures)** | **[External Resources](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/resources.html)**
+**[Documentation](https://pytorch-geometric-signed-directed.readthedocs.io)** | **[Case Study](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/case_study.html)** | **[Installation](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/installation.html)** | **[Data Structures](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/introduction.html#data-structures)** | **[External Resources](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/resources.html)** | **[Paper](https://arxiv.org/pdf/2202.10793.pdf)**
 
 -----------------------------------------------------
 
@@ -21,6 +21,22 @@
 
 We also provide detailed examples in the [examples](https://github.com/SherylHYX/pytorch_geometric_signed_directed/tree/main/examples) folder.
 
+
+--------------------------------------------------------------------------------
+
+**Citing**
+
+
+If you find *PyTorch Geometric Signed Directed* useful in your research, please consider adding the following citation:
+
+```bibtex
+@article{he2022pytorch,
+        title={{PyTorch Geometric Signed Directed: A Survey and Software on Graph Neural Networks for Signed and Directed Graphs}},
+        author={He, Yixuan and Zhang, Xitong and Huang, Junjie and Cucuringu, Mihai and Reinert, Gesine},
+        journal={arXiv preprint arXiv:2202.10793},
+        year={2022}
+        }
+```
 
 --------------------------------------------------------------------------------
 

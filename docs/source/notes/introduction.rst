@@ -5,6 +5,20 @@ PyTorch Geometric Signed Directed is a signed/directed graph neural network exte
 It builds on open-source deep-learning and graph processing libraries. 
 *PyTorch Geometric Signed Directed* consists of various signed and directed geometric deep learning, embedding, and clustering methods from a variety of published research papers and selected preprints.
 
+Citing
+=======================
+If you find *PyTorch Geometric Signed Directed* useful in your research, please consider adding the following citation:
+
+.. code-block:: latex
+
+    >@article{he2022pytorch,
+            title={{PyTorch Geometric Signed Directed: A Survey and Software on Graph Neural Networks for Signed and Directed Graphs}},
+            author={He, Yixuan and Zhang, Xitong and Huang, Junjie and Cucuringu, Mihai and Reinert, Gesine},
+            journal={arXiv preprint arXiv:2202.10793},
+            year={2022}
+            }
+
+We briefly overview the fundamental concepts and features of PyTorch Geometric Signed Directed through simple examples.
 
 Data Structures
 =============================
