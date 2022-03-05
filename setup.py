@@ -13,8 +13,8 @@ install_requires = [
     "sklearn",
     "torch_geometric",
     "numpy",
-    "scipy<=1.7.1",
-    "networkx==2.6.3"
+    "networkx==2.6.3",
+    "scipy==1.7.1"
 ]
 
 setup_requires = ["pytest-runner"]
