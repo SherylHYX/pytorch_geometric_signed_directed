@@ -14,7 +14,7 @@ install_requires = [
     "torch_geometric",
     "numpy",
     "networkx==2.6.3",
-    "scipy==1.7.1"
+    "scipy"
 ]
 
 setup_requires = ["pytest-runner"]
