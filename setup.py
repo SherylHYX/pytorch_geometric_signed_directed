@@ -13,7 +13,7 @@ install_requires = [
     "sklearn",
     "torch_geometric",
     "numpy",
-    "scipy",
+    "scipy==1.7.1",
     "networkx"
 ]
 
