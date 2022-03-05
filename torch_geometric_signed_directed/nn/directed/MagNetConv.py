@@ -177,7 +177,7 @@ class MagNetConv(MessagePassing):
             out_real_real = out_real_real + torch.matmul(Tx_2_real_real, self.weight[k])
             Tx_0_real_real, Tx_1_real_real = Tx_1_real_real, Tx_2_real_real
 
-            Tx_2_imag_imag = self.propagate(edge_index, x=Tx_1_imag_imag, norm=norm_real, size=None)
+            Tx_2_imag_imag = self.propagate(edge_index, x=Tx_1_imag_imag, norm=norm_imag, size=None)
             Tx_2_imag_imag = 2. * Tx_2_imag_imag - Tx_0_imag_imag
             out_imag_imag = out_imag_imag + torch.matmul(Tx_2_imag_imag, self.weight[k])
             Tx_0_imag_imag, Tx_1_imag_imag = Tx_1_imag_imag, Tx_2_imag_imag
@@ -187,7 +187,7 @@ class MagNetConv(MessagePassing):
             out_imag_real = out_imag_real + torch.matmul(Tx_2_imag_real, self.weight[k])
             Tx_0_imag_real, Tx_1_imag_real = Tx_1_imag_real, Tx_2_imag_real
 
-            Tx_2_real_imag = self.propagate(edge_index, x=Tx_1_real_imag, norm=norm_real, size=None)
+            Tx_2_real_imag = self.propagate(edge_index, x=Tx_1_real_imag, norm=norm_imag, size=None)
             Tx_2_real_imag = 2. * Tx_2_real_imag - Tx_0_real_imag
             out_real_imag = out_real_imag + torch.matmul(Tx_2_real_imag, self.weight[k])
             Tx_0_real_imag, Tx_1_real_imag = Tx_1_real_imag, Tx_2_real_imag
