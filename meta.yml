@@ -1,0 +1,34 @@
+{% set version = "0.3.1" %}
+
+package:
+  name: torch-geometric-signed-directed
+  version: {{ version }}
+
+source:
+  url: https://github.com/SherylHYX/pytorch_geometric_signed_directed/archive/-{{ version }}.tar.gz
+
+build:
+  noarch: python
+  number: 0
+  script: python -m pip install --no-deps --ignore-installed .
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+
+test:
+  imports:
+    - torch-geometric-signed-directed
+
+about:
+  home: https://github.com/SherylHYX/pytorch_geometric_signed_directed
+  license: MIT
+  summary: 'PyTorch Geometric Signed Directed is a signed/directed graph neural network extension library for PyTorch Geometric.'
+  description: |
+    PyTorch Geometric Signed Directed is a signed/directed graph neural network extension library for PyTorch Geometric. 
+    The library consists of various signed and directed geometric deep learning, embedding, and clustering methods from a variety of published research papers and selected preprints.
+  dev_url: https://github.com/SherylHYX/pytorch_geometric_signed_directed
+  doc_url: https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/
