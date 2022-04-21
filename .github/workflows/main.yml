@@ -37,7 +37,6 @@ jobs:
         conda install -y scipy
         conda install pytorch torchvision torchaudio -c pytorch
         pip install torch-scatter -f https://data.pyg.org/whl/torch-1.10.0+cpu.html
-        pip install torch-sparse -f https://data.pyg.org/whl/torch-1.10.0+cpu.html
         pip install torch-geometric
         pip install -U scikit-learn
         pip install codecov
