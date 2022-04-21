@@ -1,9 +1,7 @@
-'''
 import torch
 import numpy as np
 import networkx as nx
 from networkx.algorithms import tree
-from scipy.sparse import coo_matrix
 from torch_geometric.data import Data
 import torch_geometric.transforms as T
 from torch_geometric.utils import to_undirected
@@ -222,4 +220,3 @@ def test_node_split():
     assert torch.sum(data.val_mask) == 3*int(0.1*(len(data.y)-torch.sum(data.train_mask)/3))
     assert torch.sum(data.test_mask) == 3*int(0.3*(len(data.y)-torch.sum(data.train_mask)/3-torch.sum(data.val_mask)/3))
     return
-'''

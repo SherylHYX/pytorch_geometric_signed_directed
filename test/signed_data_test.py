@@ -1,4 +1,3 @@
-'''
 import numpy as np
 import torch
 
@@ -178,4 +177,4 @@ def test_SignedData():
     assert data2.x.shape == (num_nodes, num_classes)
     data.separate_positive_negative()
     assert data.edge_index_p[0].shape == A_p.nonzero()[0].shape
-'''
+
