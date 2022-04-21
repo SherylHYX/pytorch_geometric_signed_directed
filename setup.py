@@ -8,7 +8,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 install_requires = [
     "torch",
-    "torch_sparse==0.6.12",
+    "torch_sparse",
     "torch_scatter",
     "sklearn",
     "torch_geometric==2.0.3",
