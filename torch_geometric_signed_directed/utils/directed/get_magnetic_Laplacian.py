@@ -76,7 +76,7 @@ def get_magnetic_Laplacian(edge_index: torch.LongTensor, edge_weight: Optional[t
         edge_index, _ = add_self_loops(edge_index_sym, num_nodes=num_nodes)
         edge_weight = torch.cat([-edge_weight_sym * edge_weight_q, deg], dim=0)
     elif normalization == 'sym':
-        # Compute A_norm = -D_sym^{-1/2} A_sym D_sym^{-1/2} Hadamard \exp(i \Theta^{(q)}).
+        # Compute A_norm = D_sym^{-1/2} A_sym D_sym^{-1/2} Hadamard \exp(i \Theta^{(q)}).
         deg_inv_sqrt = deg.pow_(-0.5)
         deg_inv_sqrt.masked_fill_(deg_inv_sqrt == float('inf'), 0)
         edge_weight = deg_inv_sqrt[row] * edge_weight_sym * deg_inv_sqrt[col] * edge_weight_q
