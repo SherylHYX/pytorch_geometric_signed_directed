@@ -1,4 +1,3 @@
-'''
 import torch
 import numpy as np
 import networkx as nx
@@ -221,4 +220,3 @@ def test_node_split():
     assert torch.sum(data.val_mask) == 3*int(0.1*(len(data.y)-torch.sum(data.train_mask)/3))
     assert torch.sum(data.test_mask) == 3*int(0.3*(len(data.y)-torch.sum(data.train_mask)/3-torch.sum(data.val_mask)/3))
     return
-'''

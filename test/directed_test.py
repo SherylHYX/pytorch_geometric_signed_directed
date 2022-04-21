@@ -1,4 +1,3 @@
-'''
 import numpy as np
 import scipy.sparse as sp
 import torch
@@ -498,4 +497,3 @@ def test_DirectedData():
     assert data2.A.shape[0] == num_nodes
     data2.set_hermitian_features(k=num_classes)
     assert data2.x.shape == (num_nodes, 2*num_classes)
-'''
