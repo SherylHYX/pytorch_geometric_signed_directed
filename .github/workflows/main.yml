@@ -15,7 +15,11 @@ jobs:
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9]
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        torch-version: [1.10.0]
+        include:
+          - torch-version: 1.10.0
+            torchvision-version: 0.11.1
 
     steps:
     - uses: actions/checkout@v2
@@ -34,6 +38,12 @@ jobs:
     - run: which python
     - name: Run installation.
       run: |
+        conda install -y scipy
+        pip install torch==${{ matrix.torch-version}}+cpu torchvision==${{ matrix.torchvision-version}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
+        pip install torch-scatter -f https://data.pyg.org/whl/torch-${{ matrix.torch-version }}+cpu.html
+        pip install torch-sparse -f https://data.pyg.org/whl/torch-${{ matrix.torch-version }}+cpu.html
+        pip install torch-geometric==2.0.3
+        pip install -U scikit-learn
         pip install codecov
         pip install sphinx sphinx_rtd_theme
         pip install .[test]
