@@ -383,7 +383,12 @@ def test_MagNet():
     )
 
     model = MagNet_node_classification(X.shape[1], K = 3, label_dim=num_classes, layer = 3, trainable_q = True, \
-                                activation = True, hidden = 2, dropout=0.5).to(device)  
+                                activation = True, hidden = 2, dropout=0.5, cached = True).to(device)  
+    preds = model(X, X, edge_index, edge_weight) 
+    
+    assert preds.shape == (
+        num_nodes, num_classes
+    )
     preds = model(X, X, edge_index, edge_weight) 
     
     assert preds.shape == (
@@ -431,7 +436,14 @@ def test_MagNet_Link():
     link_data[0]['weights'] = link_data[0]['weights']
 
     model = MagNet_link_prediction(data.x.shape[1], K = 1, q = 0.1, label_dim=num_classes, layer = 2, \
-                                activation = True, hidden = 2, dropout=0.5, normalization=None).to(device)  
+                                activation = True, hidden = 2, dropout=0.5, normalization=None, cached=True).to(device)  
+    preds = model(data.x, data.x, edge_index=link_data[0]['graph'], query_edges=link_data[0]['train']['edges'], 
+                    edge_weight=link_data[0]['weights']) 
+    
+    assert preds.shape == (
+        len(link_data[0]['train']['edges']), num_classes
+    )
+
     preds = model(data.x, data.x, edge_index=link_data[0]['graph'], query_edges=link_data[0]['train']['edges'], 
                     edge_weight=link_data[0]['weights']) 
     

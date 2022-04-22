@@ -15,7 +15,11 @@ jobs:
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9]
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        torch-version: [1.10.0]
+        include:
+          - torch-version: 1.10.0
+            torchvision-version: 0.11.1
 
     steps:
     - uses: actions/checkout@v2
@@ -35,10 +39,8 @@ jobs:
     - name: Run installation.
       run: |
         conda install -y scipy
-        conda install pytorch torchvision torchaudio -c pytorch
-        pip install torch-scatter -f https://data.pyg.org/whl/torch-1.10.0+cpu.html
-        pip install torch-sparse -f https://data.pyg.org/whl/torch-1.10.0+cpu.html
-        pip install torch-geometric
+        conda install pytorch torchvision torchaudio cpuonly -c pytorch
+        conda install pyg -c pyg
         pip install -U scikit-learn
         pip install codecov
         pip install sphinx sphinx_rtd_theme

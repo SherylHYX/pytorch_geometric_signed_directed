@@ -28,14 +28,19 @@ class MagNet_link_prediction(nn.Module):
             2. :obj:`"sym"`: Symmetric normalization
             :math:`\mathbf{L} = \mathbf{I} - \mathbf{D}^{-1/2} \mathbf{A}
             \mathbf{D}^{-1/2} Hadamard \exp(i \Theta^{(q)})`
+        cached (bool, optional): If set to :obj:`True`, the layer will cache
+            the __norm__ matrix on first execution, and will use the
+            cached version for further executions.
+            This parameter should only be set to :obj:`True` in transductive
+            learning scenarios. (default: :obj:`False`)
     """
     def __init__(self, num_features:int, hidden:int=2, q:float=0.25, K:int=2, label_dim:int=2, \
-        activation:bool=True, trainable_q:bool=False, layer:int=2, dropout:float=0.5, normalization:str='sym'):
+        activation:bool=True, trainable_q:bool=False, layer:int=2, dropout:float=0.5, normalization:str='sym', cached:bool=False):
         super(MagNet_link_prediction, self).__init__()
 
         chebs = nn.ModuleList()
         chebs.append(MagNetConv(in_channels=num_features, out_channels=hidden, K=K, \
-            q=q, trainable_q=trainable_q, normalization=normalization))
+            q=q, trainable_q=trainable_q, normalization=normalization, cached=cached))
         self.normalization = normalization
         self.activation = activation
         if self.activation:
@@ -43,7 +48,7 @@ class MagNet_link_prediction(nn.Module):
 
         for _ in range(1, layer):
             chebs.append(MagNetConv(in_channels=hidden, out_channels=hidden, K=K,\
-                q=q, trainable_q=trainable_q, normalization=normalization))
+                q=q, trainable_q=trainable_q, normalization=normalization, cached=cached))
 
         self.Chebs = chebs
         self.linear = nn.Linear(hidden*4, label_dim)      
