@@ -11,9 +11,9 @@ install_requires = [
     "torch_sparse",
     "torch_scatter",
     "sklearn",
-    "torch_geometric==2.0.3",
+    "torch_geometric",
     "numpy",
-    "networkx",
+    "networkx==2.6.3",
     "scipy"
 ]
 
