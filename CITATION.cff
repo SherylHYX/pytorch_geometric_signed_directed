@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "Please cite our paper if you find our work useful in your research."
+title: "PyTorch Geometric Signed Directed: A Survey and Software on Graph Neural Networks for Signed and Directed Graphs"
+authors:
+- family-names: "He"
+  given-names: "Yixuan"
+- family-names: "Zhang"
+  given-names: "Xitong"
+- family-names: "Huang"
+  given-names: "Junjie"
+- family-names: "Cucuringu"
+  given-names: "Mihai"
+- family-names: "Reinert"
+  given-names: "Gesine"
+date-released: 2022-04-22
+license: MIT
+url: "https://github.com/SherylHYX/pytorch_geometric_signed_directed"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "He"
+    given-names: "Yixuan"
+  - family-names: "Zhang"
+    given-names: "Xitong"
+  - family-names: "Huang"
+    given-names: "Junjie"
+  - family-names: "Cucuringu"
+    given-names: "Mihai"
+  - family-names: "Reinert"
+    given-names: "Gesine"
+  journal: "arXiv preprint arXiv:2202.10793"
+  title: "PyTorch Geometric Signed Directed: A Survey and Software on Graph Neural Networks for Signed and Directed Graphs"
+  year: 2022
