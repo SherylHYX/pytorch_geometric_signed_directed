@@ -34,12 +34,6 @@ jobs:
     - run: which python
     - name: Run installation.
       run: |
-        conda install -y scipy
-        conda install pytorch torchvision torchaudio -c pytorch
-        pip install torch-scatter -f https://data.pyg.org/whl/torch-1.10.0+cpu.html
-        pip install torch-sparse -f https://data.pyg.org/whl/torch-1.10.0+cpu.html
-        pip install torch-geometric==2.0.3
-        pip install -U scikit-learn
         pip install codecov
         pip install sphinx sphinx_rtd_theme
         pip install .[test]
