@@ -29,14 +29,19 @@ class MagNet_node_classification(nn.Module):
             :math:`\mathbf{L} = \mathbf{I} - \mathbf{D}^{-1/2} \mathbf{A}
             \mathbf{D}^{-1/2} \odot \exp(i \Theta^{(q)})`
             `\odot` denotes the element-wise multiplication.
+        cached (bool, optional): If set to :obj:`True`, the layer will cache
+            the __norm__ matrix on first execution, and will use the
+            cached version for further executions.
+            This parameter should only be set to :obj:`True` in transductive
+            learning scenarios. (default: :obj:`False`)
     """
     def __init__(self, num_features:int, hidden:int=2, q:float=0.25, K:int=2, label_dim:int=2, \
-        activation:bool=False, trainable_q:bool=False, layer:int=2, dropout:float=False, normalization:str='sym'):
+        activation:bool=False, trainable_q:bool=False, layer:int=2, dropout:float=False, normalization:str='sym', cached:bool=False):
         super(MagNet_node_classification, self).__init__()
 
         chebs = nn.ModuleList()
         chebs.append(MagNetConv(in_channels=num_features, out_channels=hidden, K=K, \
-            q=q, trainable_q=trainable_q, normalization=normalization))
+            q=q, trainable_q=trainable_q, normalization=normalization, cached=cached))
         self.normalization = normalization
         self.activation = activation
         if self.activation:
@@ -44,7 +49,7 @@ class MagNet_node_classification(nn.Module):
 
         for _ in range(1, layer):
             chebs.append(MagNetConv(in_channels=hidden, out_channels=hidden, K=K,\
-                q=q, trainable_q=trainable_q, normalization=normalization))
+                q=q, trainable_q=trainable_q, normalization=normalization, cached=cached))
 
         self.Chebs = chebs
 

@@ -29,6 +29,11 @@ class MagNetConv(MessagePassing):
             :math:`\mathbf{L} = \mathbf{I} - \mathbf{D}^{-1/2} \mathbf{A}
             \mathbf{D}^{-1/2} \odot \exp(i \Theta^{(q)})`
             `\odot` denotes the element-wise multiplication.
+        cached (bool, optional): If set to :obj:`True`, the layer will cache
+            the __norm__ matrix on first execution, and will use the
+            cached version for further executions.
+            This parameter should only be set to :obj:`True` in transductive
+            learning scenarios. (default: :obj:`False`)
         bias (bool, optional): If set to :obj:`False`, the layer will not learn
             an additive bias. (default: :obj:`True`)
         **kwargs (optional): Additional arguments of
@@ -36,7 +41,7 @@ class MagNetConv(MessagePassing):
     """
 
     def __init__(self, in_channels:int, out_channels:int, K:int, q:float, trainable_q:bool,
-                 normalization:str='sym', bias:bool=True, **kwargs):
+                 normalization:str='sym', cached: bool=False, bias:bool=True, **kwargs):
         kwargs.setdefault('aggr', 'add')
         super(MagNetConv, self).__init__(**kwargs)
 
@@ -47,6 +52,7 @@ class MagNetConv(MessagePassing):
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.normalization = normalization
+        self.cached = cached
         self.trainable_q = trainable_q
         if trainable_q:
             self.q = Parameter(torch.Tensor(1).fill_(q))
@@ -64,6 +70,9 @@ class MagNetConv(MessagePassing):
     def reset_parameters(self):
         glorot(self.weight)
         zeros(self.bias)
+        self.cached_result = None
+        self.cached_num_edges = None
+        self.cached_q = None
 
     def __norm__(
         self,
@@ -132,24 +141,44 @@ class MagNetConv(MessagePassing):
         if self.trainable_q:
             self.q = Parameter(torch.clamp(self.q, 0, 0.25))
 
-        if self.normalization != 'sym' and lambda_max is None:
+        if self.cached and self.cached_result is not None:
+            if edge_index.size(1) != self.cached_num_edges:
+                raise RuntimeError(
+                    'Cached {} number of edges, but found {}. Please '
+                    'disable the caching behavior of this layer by removing '
+                    'the `cached=True` argument in its constructor.'.format(
+                        self.cached_num_edges, edge_index.size(1)))
+            if self.q != self.cached_q:
+                raise RuntimeError(
+                    'Cached q is {}, but found {} in input. Please '
+                    'disable the caching behavior of this layer by removing '
+                    'the `cached=True` argument in its constructor.'.format(
+                        self.cached_q, self.q))
+        if not self.cached or self.cached_result is None:
+            self.cached_num_edges = edge_index.size(1)
             if self.trainable_q:
-                raise RuntimeError('Cannot train q while not calculating maximum eigenvalue of Laplacian!')
-            _, _, _, lambda_max =  get_magnetic_Laplacian(
-            edge_index, edge_weight, None, q=self.q, return_lambda_max=True
-        )
+                self.cached_q = self.q.detach().item()
+            else:
+                self.cached_q = self.q
+            if self.normalization != 'sym' and lambda_max is None:
+                if self.trainable_q:
+                    raise RuntimeError('Cannot train q while not calculating maximum eigenvalue of Laplacian!')
+                _, _, _, lambda_max =  get_magnetic_Laplacian(
+                edge_index, edge_weight, None, q=self.q, return_lambda_max=True
+            )
 
-        if lambda_max is None:
-            lambda_max = torch.tensor(2.0, dtype=x_real.dtype, device=x_real.device)
-        if not isinstance(lambda_max, torch.Tensor):
-            lambda_max = torch.tensor(lambda_max, dtype=x_real.dtype,
-                                      device=x_real.device)
-        assert lambda_max is not None
-
-        
-        edge_index, norm_real, norm_imag = self.__norm__(edge_index, x_real.size(self.node_dim),
+            if lambda_max is None:
+                lambda_max = torch.tensor(2.0, dtype=x_real.dtype, device=x_real.device)
+            if not isinstance(lambda_max, torch.Tensor):
+                lambda_max = torch.tensor(lambda_max, dtype=x_real.dtype,
+                                        device=x_real.device)
+            assert lambda_max is not None
+            edge_index, norm_real, norm_imag = self.__norm__(edge_index, x_real.size(self.node_dim),
                                          edge_weight, self.q, self.normalization,
                                          lambda_max, dtype=x_real.dtype)
+            self.cached_result = edge_index, norm_real, norm_imag
+
+        edge_index, norm_real, norm_imag = self.cached_result
 
         Tx_0_real_real = x_real
         Tx_0_imag_imag = x_imag
