@@ -1,5 +1,5 @@
 package:
-  name: pygsd
+  name: pytorch_geometric_signed_directed
   version: 0.3.2
 
 source:

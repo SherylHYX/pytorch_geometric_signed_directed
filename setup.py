@@ -7,7 +7,6 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 install_requires = [
-    "torch",
     "torch_sparse",
     "torch_scatter",
     "sklearn",
