@@ -3,13 +3,14 @@ from torch.nn.parameter import Parameter
 from torch_geometric.nn.conv import MessagePassing
 from torch_geometric.nn.inits import glorot, zeros
 
+
 class DiGCNConv(MessagePassing):
     r"""The graph convolutional operator from the
     `Digraph Inception Convolutional Networks
     <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
     The spectral operation is the same with Kipf's GCN.
     DiGCN preprocesses the adjacency matrix and does not require a norm operation during the convolution operation.
-    
+
     Args:
         in_channels (int): Size of each input sample.
         out_channels (int): Size of each output sample.
@@ -25,8 +26,9 @@ class DiGCNConv(MessagePassing):
         **kwargs (optional): Additional arguments of
             :class:`torch_geometric.nn.conv.MessagePassing`.
     """
-    def __init__(self, in_channels: int, out_channels: int, improved: bool=False, cached: bool=True,
-                 bias: bool=True, **kwargs):
+
+    def __init__(self, in_channels: int, out_channels: int, improved: bool = False, cached: bool = True,
+                 bias: bool = True, **kwargs):
         super(DiGCNConv, self).__init__(aggr='add', **kwargs)
 
         self.in_channels = in_channels
@@ -48,12 +50,12 @@ class DiGCNConv(MessagePassing):
         zeros(self.bias)
         self.cached_result = None
         self.cached_num_edges = None
-    
-    def forward(self, x: torch.FloatTensor, edge_index: torch.LongTensor, \
-        edge_weight: torch.FloatTensor=None) -> torch.FloatTensor:
+
+    def forward(self, x: torch.FloatTensor, edge_index: torch.LongTensor,
+                edge_weight: torch.FloatTensor = None) -> torch.FloatTensor:
         """
         Making a forward pass of the DiGCN Convolution layer.
-        
+
         Arg types:
             * x (PyTorch FloatTensor) - Node features.
             * edge_index (PyTorch LongTensor) - Edge indices.

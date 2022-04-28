@@ -4,8 +4,9 @@ import random
 import torch
 import numpy as np
 
+
 def triplet_loss_node_classification(y: Union[np.array, torch.Tensor], Z: torch.FloatTensor,
-n_sample: int, thre: float):
+                                     n_sample: int, thre: float):
     r""" Triplet loss function for node classification.
 
     Arg types:
@@ -21,15 +22,16 @@ n_sample: int, thre: float):
     if isinstance(y, torch.Tensor):
         y = y.cpu().numpy()
     all_nodes_array = np.arange(Z.shape[0])
-    n_sample_class = max((int)(n_sample / nclass),32)
+    n_sample_class = max((int)(n_sample / nclass), 32)
     loss = 0
     for i in range(nclass):
-        randInds1 = random.choices(all_nodes_array[y==i], k=n_sample_class)
-        randInds2 = random.choices(all_nodes_array[y==i], k=n_sample_class)
+        randInds1 = random.choices(all_nodes_array[y == i], k=n_sample_class)
+        randInds2 = random.choices(all_nodes_array[y == i], k=n_sample_class)
 
         feats1 = Z[randInds1]
         feats2 = Z[randInds2]
-        randInds_dif = random.choices(all_nodes_array[y!=i], k=n_sample_class)
+        randInds_dif = random.choices(
+            all_nodes_array[y != i], k=n_sample_class)
 
         feats_dif = Z[randInds_dif]
 

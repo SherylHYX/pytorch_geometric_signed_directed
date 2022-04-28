@@ -49,12 +49,12 @@ class SNEA(nn.Module):
         self.x = self.create_spectral_features()
 
         self.conv1 = SNEAConv(in_dim, out_dim // 2,
-                            first_aggr=True)
+                              first_aggr=True)
         self.convs = torch.nn.ModuleList()
         for _ in range(layer_num - 1):
             self.convs.append(
                 SNEAConv(out_dim // 2, out_dim // 2,
-                        first_aggr=False))
+                         first_aggr=False))
 
         self.structural_distance = nn.PairwiseDistance(p=2)
         self.param_src = nn.Parameter(torch.FloatTensor(2 * out_dim, 3))
@@ -165,13 +165,13 @@ class SNEA(nn.Module):
         loss_structure = torch.mean(
             torch.max(
                 tensor_zeros,
-                self.structural_distance(nodes_embs[i_loss2], nodes_embs[pos_no_loss2]) ** 2
+                self.structural_distance(
+                    nodes_embs[i_loss2], nodes_embs[pos_no_loss2]) ** 2
                 - self.structural_distance(nodes_embs[i_loss2], nodes_embs[no_neg_loss2]) ** 2
             )
         )
 
         return loss_entropy + self.lambda_structure * loss_structure
-
 
     def forward(self) -> Tensor:
         z = torch.tanh(self.conv1(

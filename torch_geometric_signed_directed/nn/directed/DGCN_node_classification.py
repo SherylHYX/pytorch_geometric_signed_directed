@@ -6,10 +6,11 @@ import torch.nn.functional as F
 
 from .DGCNConv import DGCNConv
 
+
 class DGCN_node_classification(torch.nn.Module):
     r"""An implementation of the DGCN node classification model from `Directed Graph Convolutional Network
     <https://arxiv.org/pdf/2004.13970.pdf>`_ paper.
-    
+
     Args:
         num_features (int): Dimention of input features.
         hidden (int): Hidden dimention.
@@ -25,8 +26,9 @@ class DGCN_node_classification(torch.nn.Module):
             This parameter should only be set to :obj:`True` in transductive
             learning scenarios. (default: :obj:`False`)
     """
-    def __init__(self, num_features: int, hidden: int, label_dim: int, dropout: Optional[float]=0.5, \
-        improved: bool = False, cached: bool = False):
+
+    def __init__(self, num_features: int, hidden: int, label_dim: int, dropout: Optional[float] = 0.5,
+                 improved: bool = False, cached: bool = False):
         super(DGCN_node_classification, self).__init__()
         self.dropout = dropout
         self.dgconv = DGCNConv(improved=improved, cached=cached)
@@ -47,9 +49,9 @@ class DGCN_node_classification(torch.nn.Module):
         nn.init.zeros_(self.bias2)
         self.Conv.reset_parameters()
 
-    def forward(self, x: torch.FloatTensor, edge_index: torch.LongTensor, \
-        edge_in: torch.LongTensor, edge_out: torch.LongTensor, \
-        in_w: Optional[torch.FloatTensor]=None, out_w: Optional[torch.FloatTensor]=None) -> torch.FloatTensor:
+    def forward(self, x: torch.FloatTensor, edge_index: torch.LongTensor,
+                edge_in: torch.LongTensor, edge_out: torch.LongTensor,
+                in_w: Optional[torch.FloatTensor] = None, out_w: Optional[torch.FloatTensor] = None) -> torch.FloatTensor:
         """
         Making a forward pass of the DGCN node classification model.
 
@@ -65,12 +67,12 @@ class DGCN_node_classification(torch.nn.Module):
         x1 = self.dgconv(x, edge_index)
         x2 = self.dgconv(x, edge_in, in_w)
         x3 = self.dgconv(x, edge_out, out_w)
-        
+
         x1 += self.bias1
         x2 += self.bias1
         x3 += self.bias1
 
-        x = torch.cat((x1, x2, x3), axis = -1)
+        x = torch.cat((x1, x2, x3), axis=-1)
         x = F.relu(x)
 
         x = self.lin2(x)
@@ -82,14 +84,14 @@ class DGCN_node_classification(torch.nn.Module):
         x2 += self.bias2
         x3 += self.bias2
 
-        x = torch.cat((x1, x2, x3), axis = -1)
+        x = torch.cat((x1, x2, x3), axis=-1)
         x = F.relu(x)
 
         if self.dropout > 0:
             x = F.dropout(x, self.dropout, training=self.training)
         x = x.unsqueeze(0)
-        x = x.permute((0,2,1))
+        x = x.permute((0, 2, 1))
         x = self.Conv(x)
-        x = x.permute((0,2,1)).squeeze()
+        x = x.permute((0, 2, 1)).squeeze()
 
         return F.log_softmax(x, dim=1)

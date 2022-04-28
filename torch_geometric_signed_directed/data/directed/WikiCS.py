@@ -1,5 +1,4 @@
 from typing import Optional, Callable
-
 import json
 from itertools import chain
 
@@ -9,7 +8,7 @@ from torch_geometric.data import Data, InMemoryDataset, download_url
 
 class WikiCS(InMemoryDataset):
     r"""This is the copy of the torch_geometric.datasets.WikiCS (v1.6.3)
-    
+
     Args:
         root (string): Root directory where the dataset should be saved.
         transform (callable, optional): A function/transform that takes in an
@@ -21,9 +20,8 @@ class WikiCS(InMemoryDataset):
             transformed version. The data object will be transformed before
             being saved to disk. (default: :obj:`None`)
     """
-    
 
-    def __init__(self, root: str, transform: Optional[Callable]=None, pre_transform: Optional[Callable]=None):
+    def __init__(self, root: str, transform: Optional[Callable] = None, pre_transform: Optional[Callable] = None):
         self.url = 'https://github.com/pmernyei/wiki-cs-dataset/raw/master/dataset'
         super(WikiCS, self).__init__(root, transform, pre_transform)
         self.data, self.slices = torch.load(self.processed_paths[0])
@@ -70,4 +68,3 @@ class WikiCS(InMemoryDataset):
             data = self.pre_transform(data)
 
         torch.save(self.collate([data]), self.processed_paths[0])
-

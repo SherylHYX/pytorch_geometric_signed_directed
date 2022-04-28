@@ -1,4 +1,5 @@
 from typing import List, Tuple
+from collections import defaultdict
 
 import torch
 import torch.nn as nn
@@ -6,8 +7,6 @@ import torch.nn.functional as F
 
 import numpy as np
 from torch_geometric.nn import GATConv
-
-from collections import defaultdict
 
 
 class SDRLayer(nn.Module):
@@ -18,6 +17,7 @@ class SDRLayer(nn.Module):
             out_dim (int): Dimenson of output features. Defaults to 20.
             edge_lists (list): Edgelist for current motifs.
     """
+
     def __init__(
         self,
         in_dim: int = 20,
@@ -76,11 +76,11 @@ class SDGNN(nn.Module):
     """
 
     def __init__(
-        self, 
-        node_num: int, 
+        self,
+        node_num: int,
         edge_index_s,
-        in_dim: int = 20, 
-        out_dim: int = 20, 
+        in_dim: int = 20,
+        out_dim: int = 20,
         layer_num: int = 2
     ):
 
@@ -130,8 +130,8 @@ class SDGNN(nn.Module):
         edges = torch.LongTensor(edges).to(self.device)
         return edges.t()
 
-    def get_features(self, u: int, v: int, r_edgelists: List) -> Tuple[int, int, int, int, int, 
-    int, int, int, int, int, int, int, int, int, int, int]:
+    def get_features(self, u: int, v: int, r_edgelists: List) -> Tuple[int, int, int, int, int,
+                                                                       int, int, int, int, int, int, int, int, int, int, int]:
         pos_in_edgelists, pos_out_edgelists, neg_in_edgelists, neg_out_edgelists = r_edgelists
 
         d1_1 = len(set(pos_out_edgelists[u]).intersection(
@@ -176,10 +176,10 @@ class SDGNN(nn.Module):
         edge_index = edge_index.cpu().numpy().tolist()
         self.weight_dict = defaultdict(dict)
 
-        adj_list1   = defaultdict(set)
+        adj_list1 = defaultdict(set)
         adj_list1_1 = defaultdict(set)
         adj_list1_2 = defaultdict(set)
-        adj_list2   = defaultdict(set)
+        adj_list2 = defaultdict(set)
         adj_list2_1 = defaultdict(set)
         adj_list2_2 = defaultdict(set)
 

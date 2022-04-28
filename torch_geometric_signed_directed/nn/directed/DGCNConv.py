@@ -12,7 +12,7 @@ class DGCNConv(MessagePassing):
     `Directed Graph Convolutional Network
     <https://arxiv.org/pdf/2004.13970.pdf>`_ paper.
     The same as Kipf's GCN but remove trainable weights.
-    
+
     Args:
         improved (bool, optional): If set to :obj:`True`, the layer computes
             :math:`\mathbf{\hat{A}}` as :math:`\mathbf{A} + 2\mathbf{I}`.
@@ -35,7 +35,7 @@ class DGCNConv(MessagePassing):
     _cached_edge_index: Optional[Tuple[Tensor, Tensor]]
     _cached_adj_t: Optional[SparseTensor]
 
-    def __init__(self, 
+    def __init__(self,
                  improved: bool = False, cached: bool = False,
                  add_self_loops: bool = True, normalize: bool = True, **kwargs):
 
@@ -56,11 +56,10 @@ class DGCNConv(MessagePassing):
         self._cached_edge_index = None
         self._cached_adj_t = None
 
-
     def forward(self, x: Tensor, edge_index: Adj, edge_weight: OptTensor = None) -> Tensor:
         """
         Making a forward pass of the graph convolutional operator.
-        
+
         Arg types:
             * x (PyTorch FloatTensor) - Node features.
             * edge_index (Adj) - Edge indices.
@@ -95,7 +94,6 @@ class DGCNConv(MessagePassing):
         out = self.propagate(edge_index, x=x, edge_weight=edge_weight,
                              size=None)
         return out
-
 
     def message(self, x_j: Tensor, edge_weight: OptTensor) -> Tensor:
         return x_j if edge_weight is None else edge_weight.view(-1, 1) * x_j

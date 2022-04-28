@@ -1,10 +1,10 @@
 from typing import Optional, Callable
-
 import os
 import json
 
 import torch
 from torch_geometric.data import (InMemoryDataset, download_url, Data)
+
 
 dataset_name_url_dic = {
     'bitcoin_alpha': 'https://github.com/SherylHYX/pytorch_geometric_signed_directed/raw/main/datasets/bitcoin_alpha.csv',
@@ -23,7 +23,7 @@ class SignedDirectedGraphDataset(InMemoryDataset):
     def __init__(
         self,
         root: str,
-        dataset_name: str ='bitcoin_alpha',
+        dataset_name: str = 'bitcoin_alpha',
         train_ratio: float = 0.8,
         test_ratio: float = 0.2,
         seed=2021,
@@ -43,10 +43,10 @@ class SignedDirectedGraphDataset(InMemoryDataset):
 
         train_num = int(train_ratio * len(idx))
 
-        self.data.train_edge_index  = self.data.edge_index[:, idx[:train_num]]
-        self.data.test_edge_index   = self.data.edge_index[:, idx[train_num:]]
+        self.data.train_edge_index = self.data.edge_index[:, idx[:train_num]]
+        self.data.test_edge_index = self.data.edge_index[:, idx[train_num:]]
         self.data.train_edge_weight = self.data.edge_weight[idx[:train_num]]
-        self.data.test_edge_weight  = self.data.edge_weight[idx[train_num:]]
+        self.data.test_edge_weight = self.data.edge_weight[idx[train_num:]]
         self.data.num_nodes = self.num_nodes
 
         self.data, self.slices = self.collate([self.data])
@@ -76,7 +76,7 @@ class SignedDirectedGraphDataset(InMemoryDataset):
         edge_weight = []
         edge_index = []
         node_map = {}
-        with open(self.raw_paths[0], 'r', encoding='utf-8-sig') as f: 
+        with open(self.raw_paths[0], 'r', encoding='utf-8-sig') as f:
             for line in f:
                 x = line.strip().split(',')
                 assert len(x) == 3

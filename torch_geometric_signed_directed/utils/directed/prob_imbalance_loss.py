@@ -3,6 +3,7 @@ from typing import Optional, Union
 import torch
 import numpy as np
 
+
 class Prob_Imbalance_Loss(torch.nn.Module):
     r"""An implementation of the probablistic imbalance loss function from the
     `DIGRAC: Digraph Clustering Based on Flow Imbalance <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
@@ -23,8 +24,8 @@ class Prob_Imbalance_Loss(torch.nn.Module):
                     if (F[i, j] + F[j, i]) > 0:
                         self.sel += 1
 
-    def forward(self, P: torch.FloatTensor, A: Union[torch.FloatTensor, torch.sparse_coo_tensor], 
-    K: int, normalization: str = 'vol_sum', threshold: str = 'sort') -> torch.FloatTensor:
+    def forward(self, P: torch.FloatTensor, A: Union[torch.FloatTensor, torch.sparse_coo_tensor],
+                K: int, normalization: str = 'vol_sum', threshold: str = 'sort') -> torch.FloatTensor:
         """Making a forward pass of the probablistic imbalance loss function from the
     `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
         Arg types:
@@ -45,9 +46,9 @@ class Prob_Imbalance_Loss(torch.nn.Module):
                 'sort': Picking the top beta imbalnace values, the default choice.
 
                 'std': Picking only the terms 3 standard deviation away from null hypothesis.  
-                           
+
                 'naive': No thresholding, suming up all K*(K-1)/2 terms of imbalance values.  
-                
+
         Return types:
             * **loss** (torch.Tensor) - loss value, roughly in [0,1].
         """

@@ -7,10 +7,9 @@ import numpy as np
 from torch_geometric.data import Data, InMemoryDataset, download_url
 
 
-
 class WikipediaNetwork(InMemoryDataset):
     r"""The code is modified from torch_geometric.datasets.WikipediaNetwork (v1.6.3)
-    
+
     Args:
         root (string): Root directory where the dataset should be saved.
         name (string): The name of the dataset (:obj:`"Cornell"`,
@@ -25,13 +24,11 @@ class WikipediaNetwork(InMemoryDataset):
             being saved to disk. (default: :obj:`None`)
     """
 
-    
-
-    def __init__(self, root: str, name: str, transform: Optional[Callable]=None, pre_transform: Optional[Callable]=None):
+    def __init__(self, root: str, name: str, transform: Optional[Callable] = None, pre_transform: Optional[Callable] = None):
         self.name = name.lower()
         assert self.name in ['chameleon', 'squirrel']
         self.url = ('https://raw.githubusercontent.com/graphdml-uiuc-jlu/'
-                     'geom-gcn/f1fc0d14b3b019c562737240d06ec83b07d16a8f')
+                    'geom-gcn/f1fc0d14b3b019c562737240d06ec83b07d16a8f')
         super(WikipediaNetwork, self).__init__(root, transform, pre_transform)
         self.data, self.slices = torch.load(self.processed_paths[0])
 

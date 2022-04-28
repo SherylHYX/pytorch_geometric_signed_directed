@@ -1,4 +1,5 @@
 from typing import Optional, Callable, Union, List
+
 from torch_geometric.datasets import WebKB
 
 from .DirectedData import DirectedData
@@ -8,13 +9,14 @@ from .citation import Cora_ml, Citeseer
 from .Telegram import Telegram
 from .DIGRAC_real_data import DIGRAC_real_data
 
-def load_directed_real_data(dataset: str='WebKB', root:str = './', name:str = 'Texas',
+
+def load_directed_real_data(dataset: str = 'WebKB', root: str = './', name: str = 'Texas',
                             transform: Optional[Callable] = None, pre_transform: Optional[Callable] = None,
-                            train_size: Union[int,float]=None, val_size: Union[int,float]=None, 
-                            test_size: Union[int,float]=None, seed_size: Union[int,float]=None,
-                            train_size_per_class: Union[int,float]=None, val_size_per_class: Union[int,float]=None,
-                            test_size_per_class: Union[int,float]=None, seed_size_per_class: Union[int,float]=None, 
-                            seed: List[int]=[], data_split: int=10) -> DirectedData:
+                            train_size: Union[int, float] = None, val_size: Union[int, float] = None,
+                            test_size: Union[int, float] = None, seed_size: Union[int, float] = None,
+                            train_size_per_class: Union[int, float] = None, val_size_per_class: Union[int, float] = None,
+                            test_size_per_class: Union[int, float] = None, seed_size_per_class: Union[int, float] = None,
+                            seed: List[int] = [], data_split: int = 10) -> DirectedData:
     """The function for real-world directed data downloading and convert to DirectedData object.
 
     Arg types:
@@ -43,29 +45,38 @@ def load_directed_real_data(dataset: str='WebKB', root:str = './', name:str = 'T
         * **data** (Data) - The required data object.
     """
     if dataset.lower() == 'webkb':
-        data = WebKB(root=root, name=name, transform=transform, pre_transform=pre_transform)[0]
+        data = WebKB(root=root, name=name, transform=transform,
+                     pre_transform=pre_transform)[0]
     elif dataset.lower() == 'citeseer':
-        data = Citeseer(root=root, transform=transform, pre_transform=pre_transform)[0]
+        data = Citeseer(root=root, transform=transform,
+                        pre_transform=pre_transform)[0]
     elif dataset.lower() == 'cora_ml':
-        data = Cora_ml(root=root, transform=transform, pre_transform=pre_transform)[0]
+        data = Cora_ml(root=root, transform=transform,
+                       pre_transform=pre_transform)[0]
     elif dataset.lower() == 'wikics':
-        data = WikiCS(root=root,transform=transform, pre_transform=pre_transform)[0]
+        data = WikiCS(root=root, transform=transform,
+                      pre_transform=pre_transform)[0]
     elif dataset.lower() == 'wikipedianetwork':
-        data = WikipediaNetwork(root=root, name=name, transform=transform, pre_transform=pre_transform)[0]
+        data = WikipediaNetwork(
+            root=root, name=name, transform=transform, pre_transform=pre_transform)[0]
     elif dataset.lower() == 'telegram':
-        data = Telegram(root=root, transform=transform, pre_transform=pre_transform)[0]
+        data = Telegram(root=root, transform=transform,
+                        pre_transform=pre_transform)[0]
     elif dataset.lower() in ['blog', 'wikitalk', 'migration'] or dataset.lower()[:8] == 'lead_lag':
-        data = DIGRAC_real_data(name=dataset, root=root, transform=transform, pre_transform=pre_transform)[0]
+        data = DIGRAC_real_data(
+            name=dataset, root=root, transform=transform, pre_transform=pre_transform)[0]
     else:
-        raise NameError('Please input the correct data set name instead of {}!'.format(dataset))
+        raise NameError(
+            'Please input the correct data set name instead of {}!'.format(dataset))
     if hasattr(data, 'edge_weight'):
         edge_weight = data.edge_weight
     else:
         edge_weight = None
-    directed_dataset = DirectedData(edge_index=data.edge_index, edge_weight=edge_weight, init_data=data)
+    directed_dataset = DirectedData(
+        edge_index=data.edge_index, edge_weight=edge_weight, init_data=data)
     if train_size is not None or train_size_per_class is not None:
-        directed_dataset.node_split(train_size=train_size, val_size=val_size, 
-            test_size=test_size, seed_size=seed_size, train_size_per_class=train_size_per_class,
-            val_size_per_class=val_size_per_class, test_size_per_class=test_size_per_class,
-            seed_size_per_class=seed_size_per_class, seed=seed, data_split=data_split)
+        directed_dataset.node_split(train_size=train_size, val_size=val_size,
+                                    test_size=test_size, seed_size=seed_size, train_size_per_class=train_size_per_class,
+                                    val_size_per_class=val_size_per_class, test_size_per_class=test_size_per_class,
+                                    seed_size_per_class=seed_size_per_class, seed=seed, data_split=data_split)
     return directed_dataset

@@ -7,6 +7,7 @@ import scipy
 import numpy as np
 import scipy.sparse as sp
 
+
 def fast_appr_power(A, alpha=0.1, max_iter=100,
                     tol=1e-06, personalize=None):
     r""" Computes the fast pagerank adjacency matrix of the graph from the
@@ -56,9 +57,9 @@ def fast_appr_power(A, alpha=0.1, max_iter=100,
     return L, x
 
 
-def cal_fast_appr(alpha: float, edge_index: torch.LongTensor, \
-    num_nodes: Union[int, None], dtype: torch.dtype, \
-    edge_weight: Optional[torch.FloatTensor]=None) -> Tuple[torch.LongTensor, torch.FloatTensor]:
+def cal_fast_appr(alpha: float, edge_index: torch.LongTensor,
+                  num_nodes: Union[int, None], dtype: torch.dtype,
+                  edge_weight: Optional[torch.FloatTensor] = None) -> Tuple[torch.LongTensor, torch.FloatTensor]:
     r""" Computes the fast approximate pagerank adjacency matrix of the graph given by :obj:`edge_index`
     and optional :obj:`edge_weight` from the
     `Directed Graph Contrastive Learning
@@ -110,9 +111,9 @@ def cal_fast_appr(alpha: float, edge_index: torch.LongTensor, \
     return edge_index, deg_inv_sqrt[row] * edge_weight * deg_inv_sqrt[col]
 
 
-def get_appr_directed_adj(alpha: float, edge_index: torch.LongTensor, \
-    num_nodes: Union[int, None], dtype: torch.dtype, \
-    edge_weight: Optional[torch.FloatTensor]=None) -> Tuple[torch.LongTensor, torch.FloatTensor]:
+def get_appr_directed_adj(alpha: float, edge_index: torch.LongTensor,
+                          num_nodes: Union[int, None], dtype: torch.dtype,
+                          edge_weight: Optional[torch.FloatTensor] = None) -> Tuple[torch.LongTensor, torch.FloatTensor]:
     r""" Computes the approximate pagerank adjacency matrix of the graph given by :obj:`edge_index`
     and optional :obj:`edge_weight` from the
     `Digraph Inception Convolutional Networks
@@ -181,11 +182,11 @@ def get_appr_directed_adj(alpha: float, edge_index: torch.LongTensor, \
 
     # transfer dense L to sparse
     L_indices = torch.nonzero(L, as_tuple=False).t()
-    
+
     L_values = L[L_indices[0], L_indices[1]]
     edge_index = L_indices
     edge_weight = L_values
-    
+
     # row normalization
     row, col = edge_index
     deg = scatter_add(edge_weight, row, dim=0, dim_size=num_nodes)
@@ -194,14 +195,15 @@ def get_appr_directed_adj(alpha: float, edge_index: torch.LongTensor, \
 
     return edge_index, deg_inv_sqrt[row] * edge_weight * deg_inv_sqrt[col]
 
-def get_second_directed_adj(edge_index: torch.LongTensor, \
-    num_nodes: Union[int, None], dtype: torch.dtype, \
-    edge_weight: Optional[torch.FloatTensor]=None) -> Tuple[torch.LongTensor, torch.FloatTensor]:
+
+def get_second_directed_adj(edge_index: torch.LongTensor,
+                            num_nodes: Union[int, None], dtype: torch.dtype,
+                            edge_weight: Optional[torch.FloatTensor] = None) -> Tuple[torch.LongTensor, torch.FloatTensor]:
     r""" Computes the second-order proximity matrix of the graph given by :obj:`edge_index`
     and optional :obj:`edge_weight` from the
     `Digraph Inception Convolutional Networks 
     <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
-    
+
     Arg types:
         * **edge_index** (PyTorch LongTensor) -The edge indices.
         * **num_nodes** (int or None) -The number of nodes, *i.e.* :obj:`max_val + 1` of :attr:`edge_index`.
@@ -214,7 +216,7 @@ def get_second_directed_adj(edge_index: torch.LongTensor, \
     """
     if edge_weight is None:
         edge_weight = torch.ones((edge_index.size(1), ), dtype=dtype,
-                                     device=edge_index.device)
+                                 device=edge_index.device)
     fill_value = 1
     edge_index, edge_weight = add_self_loops(
         edge_index, edge_weight, fill_value, num_nodes)
@@ -222,12 +224,13 @@ def get_second_directed_adj(edge_index: torch.LongTensor, \
     deg = scatter_add(edge_weight, row, dim=0, dim_size=num_nodes)
     deg_inv = deg.pow(-1)
     deg_inv[deg_inv == float('inf')] = 0
-    p = deg_inv[row] * edge_weight 
-    p_dense = torch.sparse.FloatTensor(edge_index, p, torch.Size([num_nodes,num_nodes])).to_dense()
-    
+    p = deg_inv[row] * edge_weight
+    p_dense = torch.sparse.FloatTensor(
+        edge_index, p, torch.Size([num_nodes, num_nodes])).to_dense()
+
     L_in = torch.mm(p_dense.t(), p_dense)
     L_out = torch.mm(p_dense, p_dense.t())
-    
+
     L_in_hat = L_in
     L_out_hat = L_out
 
@@ -238,11 +241,11 @@ def get_second_directed_adj(edge_index: torch.LongTensor, \
     L = (L_in_hat + L_out_hat) / 2.0
 
     L[torch.isnan(L)] = 0
-    L_indices = torch.nonzero(L,as_tuple=False).t()
+    L_indices = torch.nonzero(L, as_tuple=False).t()
     L_values = L[L_indices[0], L_indices[1]]
     edge_index = L_indices
     edge_weight = L_values
-    
+
     # row normalization
     row, col = edge_index
     deg = scatter_add(edge_weight, row, dim=0, dim_size=num_nodes)

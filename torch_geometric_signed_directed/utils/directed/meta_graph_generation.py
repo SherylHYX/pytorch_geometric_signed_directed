@@ -2,8 +2,9 @@ import math
 
 import numpy as np
 
-def meta_graph_generation(F_style: str='cyclic', K: int=4, eta: float=0.05, \
-    ambient: bool=False, fill_val: float=0.5) -> np.array:
+
+def meta_graph_generation(F_style: str = 'cyclic', K: int = 4, eta: float = 0.05,
+                          ambient: bool = False, fill_val: float = 0.5) -> np.array:
     """The meta-graph generation function from the
     `DIGRAC: Digraph Clustering Based on Flow Imbalance <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
 
@@ -13,7 +14,7 @@ def meta_graph_generation(F_style: str='cyclic', K: int=4, eta: float=0.05, \
         * **eta** (float) - Noise parameter, 0 <= eta <= 0.5.
         * **ambient** (bool) - Whether there are ambient nodes.
         * **fill_val** (float) - Value to fill in the ambient locations.
-        
+
     Return types:
         * **F** (NumPy array) - The resulting meta-graph adjacency matrix.
     """

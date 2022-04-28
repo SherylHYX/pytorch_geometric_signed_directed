@@ -4,7 +4,6 @@ import torch.nn.functional as F
 import torch.nn as nn
 from torch import Tensor
 from torch_sparse import coalesce
-
 from torch_geometric.utils import (negative_sampling,
                                    structured_negative_sampling)
 

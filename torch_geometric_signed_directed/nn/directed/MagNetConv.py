@@ -9,12 +9,13 @@ from torch_geometric.utils import remove_self_loops, add_self_loops
 
 from ...utils.directed.get_magnetic_Laplacian import get_magnetic_Laplacian
 
+
 class MagNetConv(MessagePassing):
     r"""The magnetic graph convolutional operator from the
     `MagNet: A Neural Network for Directed Graphs. <https://arxiv.org/pdf/2102.11391.pdf>`_ paper
     :math:`\mathbf{\hat{L}}` denotes the scaled and normalized magnetic Laplacian
     :math:`\frac{2\mathbf{L}}{\lambda_{\max}} - \mathbf{I}`.
-    
+
     Args:
         in_channels (int): Size of each input sample.
         out_channels (int): Size of each output sample.
@@ -40,8 +41,8 @@ class MagNetConv(MessagePassing):
             :class:`torch_geometric.nn.conv.MessagePassing`.
     """
 
-    def __init__(self, in_channels:int, out_channels:int, K:int, q:float, trainable_q:bool,
-                 normalization:str='sym', cached: bool=False, bias:bool=True, **kwargs):
+    def __init__(self, in_channels: int, out_channels: int, K: int, q: float, trainable_q: bool,
+                 normalization: str = 'sym', cached: bool = False, bias: bool = True, **kwargs):
         kwargs.setdefault('aggr', 'add')
         super(MagNetConv, self).__init__(**kwargs)
 
@@ -79,14 +80,14 @@ class MagNetConv(MessagePassing):
         edge_index,
         num_nodes: Optional[int],
         edge_weight: OptTensor,
-        q: float, 
+        q: float,
         normalization: Optional[str],
         lambda_max,
         dtype: Optional[int] = None
     ):
         """
         Get magnetic laplacian.
-        
+
         Arg types:
             * edge_index (PyTorch Long Tensor) - Edge indices.
             * num_nodes (int, Optional) - Node features.
@@ -121,15 +122,15 @@ class MagNetConv(MessagePassing):
 
     def forward(
         self,
-        x_real: torch.FloatTensor, 
-        x_imag: torch.FloatTensor, 
+        x_real: torch.FloatTensor,
+        x_imag: torch.FloatTensor,
         edge_index: torch.LongTensor,
         edge_weight: OptTensor = None,
         lambda_max: OptTensor = None,
     ) -> torch.FloatTensor:
         """
         Making a forward pass of the MagNet Convolution layer.
-        
+
         Arg types:
             * x_real, x_imag (PyTorch Float Tensor) - Node features.
             * edge_index (PyTorch Long Tensor) - Edge indices.
@@ -162,20 +163,22 @@ class MagNetConv(MessagePassing):
                 self.cached_q = self.q
             if self.normalization != 'sym' and lambda_max is None:
                 if self.trainable_q:
-                    raise RuntimeError('Cannot train q while not calculating maximum eigenvalue of Laplacian!')
-                _, _, _, lambda_max =  get_magnetic_Laplacian(
-                edge_index, edge_weight, None, q=self.q, return_lambda_max=True
-            )
+                    raise RuntimeError(
+                        'Cannot train q while not calculating maximum eigenvalue of Laplacian!')
+                _, _, _, lambda_max = get_magnetic_Laplacian(
+                    edge_index, edge_weight, None, q=self.q, return_lambda_max=True
+                )
 
             if lambda_max is None:
-                lambda_max = torch.tensor(2.0, dtype=x_real.dtype, device=x_real.device)
+                lambda_max = torch.tensor(
+                    2.0, dtype=x_real.dtype, device=x_real.device)
             if not isinstance(lambda_max, torch.Tensor):
                 lambda_max = torch.tensor(lambda_max, dtype=x_real.dtype,
-                                        device=x_real.device)
+                                          device=x_real.device)
             assert lambda_max is not None
             edge_index, norm_real, norm_imag = self.__norm__(edge_index, x_real.size(self.node_dim),
-                                         edge_weight, self.q, self.normalization,
-                                         lambda_max, dtype=x_real.dtype)
+                                                             edge_weight, self.q, self.normalization,
+                                                             lambda_max, dtype=x_real.dtype)
             self.cached_result = edge_index, norm_real, norm_imag
 
         edge_index, norm_real, norm_imag = self.cached_result
@@ -191,34 +194,50 @@ class MagNetConv(MessagePassing):
 
         # propagate_type: (x: Tensor, norm: Tensor)
         if self.weight.size(0) > 1:
-            Tx_1_real_real = self.propagate(edge_index, x=x_real, norm=norm_real, size=None)
-            out_real_real = out_real_real + torch.matmul(Tx_1_real_real, self.weight[1])
-            Tx_1_imag_imag = self.propagate(edge_index, x=x_imag, norm=norm_imag, size=None)
-            out_imag_imag = out_imag_imag + torch.matmul(Tx_1_imag_imag, self.weight[1])
-            Tx_1_imag_real = self.propagate(edge_index, x=x_real, norm=norm_real, size=None)
-            out_imag_real = out_imag_real + torch.matmul(Tx_1_imag_real, self.weight[1])
-            Tx_1_real_imag = self.propagate(edge_index, x=x_imag, norm=norm_imag, size=None)
-            out_real_imag = out_real_imag + torch.matmul(Tx_1_real_imag, self.weight[1])
+            Tx_1_real_real = self.propagate(
+                edge_index, x=x_real, norm=norm_real, size=None)
+            out_real_real = out_real_real + \
+                torch.matmul(Tx_1_real_real, self.weight[1])
+            Tx_1_imag_imag = self.propagate(
+                edge_index, x=x_imag, norm=norm_imag, size=None)
+            out_imag_imag = out_imag_imag + \
+                torch.matmul(Tx_1_imag_imag, self.weight[1])
+            Tx_1_imag_real = self.propagate(
+                edge_index, x=x_real, norm=norm_real, size=None)
+            out_imag_real = out_imag_real + \
+                torch.matmul(Tx_1_imag_real, self.weight[1])
+            Tx_1_real_imag = self.propagate(
+                edge_index, x=x_imag, norm=norm_imag, size=None)
+            out_real_imag = out_real_imag + \
+                torch.matmul(Tx_1_real_imag, self.weight[1])
 
         for k in range(2, self.weight.size(0)):
-            Tx_2_real_real = self.propagate(edge_index, x=Tx_1_real_real, norm=norm_real, size=None)
+            Tx_2_real_real = self.propagate(
+                edge_index, x=Tx_1_real_real, norm=norm_real, size=None)
             Tx_2_real_real = 2. * Tx_2_real_real - Tx_0_real_real
-            out_real_real = out_real_real + torch.matmul(Tx_2_real_real, self.weight[k])
+            out_real_real = out_real_real + \
+                torch.matmul(Tx_2_real_real, self.weight[k])
             Tx_0_real_real, Tx_1_real_real = Tx_1_real_real, Tx_2_real_real
 
-            Tx_2_imag_imag = self.propagate(edge_index, x=Tx_1_imag_imag, norm=norm_imag, size=None)
+            Tx_2_imag_imag = self.propagate(
+                edge_index, x=Tx_1_imag_imag, norm=norm_imag, size=None)
             Tx_2_imag_imag = 2. * Tx_2_imag_imag - Tx_0_imag_imag
-            out_imag_imag = out_imag_imag + torch.matmul(Tx_2_imag_imag, self.weight[k])
+            out_imag_imag = out_imag_imag + \
+                torch.matmul(Tx_2_imag_imag, self.weight[k])
             Tx_0_imag_imag, Tx_1_imag_imag = Tx_1_imag_imag, Tx_2_imag_imag
 
-            Tx_2_imag_real = self.propagate(edge_index, x=Tx_1_imag_real, norm=norm_real, size=None)
+            Tx_2_imag_real = self.propagate(
+                edge_index, x=Tx_1_imag_real, norm=norm_real, size=None)
             Tx_2_imag_real = 2. * Tx_2_imag_real - Tx_0_imag_real
-            out_imag_real = out_imag_real + torch.matmul(Tx_2_imag_real, self.weight[k])
+            out_imag_real = out_imag_real + \
+                torch.matmul(Tx_2_imag_real, self.weight[k])
             Tx_0_imag_real, Tx_1_imag_real = Tx_1_imag_real, Tx_2_imag_real
 
-            Tx_2_real_imag = self.propagate(edge_index, x=Tx_1_real_imag, norm=norm_imag, size=None)
+            Tx_2_real_imag = self.propagate(
+                edge_index, x=Tx_1_real_imag, norm=norm_imag, size=None)
             Tx_2_real_imag = 2. * Tx_2_real_imag - Tx_0_real_imag
-            out_real_imag = out_real_imag + torch.matmul(Tx_2_real_imag, self.weight[k])
+            out_real_imag = out_real_imag + \
+                torch.matmul(Tx_2_real_imag, self.weight[k])
             Tx_0_real_imag, Tx_1_real_imag = Tx_1_real_imag, Tx_2_real_imag
 
         out_real = out_real_real - out_imag_imag
@@ -229,7 +248,6 @@ class MagNetConv(MessagePassing):
             out_imag += self.bias
 
         return out_real, out_imag
-
 
     def message(self, x_j, norm):
         return norm.view(-1, 1) * x_j

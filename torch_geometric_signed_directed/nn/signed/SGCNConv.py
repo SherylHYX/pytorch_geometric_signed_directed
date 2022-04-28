@@ -53,7 +53,7 @@ class SGCNConv(MessagePassing):
             an additive bias. (default: :obj:`True`)
         **kwargs (optional): Additional arguments of
             :class:`torch_geometric.nn.conv.MessagePassing`.
-            
+
     """
 
     def __init__(

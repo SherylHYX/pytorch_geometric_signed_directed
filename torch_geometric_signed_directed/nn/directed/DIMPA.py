@@ -3,10 +3,11 @@ from torch.nn.parameter import Parameter
 
 from ..general.conv_base import Conv_Base
 
+
 class DIMPA(torch.nn.Module):
     r"""The directed mixed-path aggregation model from the
     `DIGRAC: Digraph Clustering Based on Flow Imbalance <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
-    
+
     Args:
         hop (int): Number of hops to consider.
         fill_value (float, optional): The layer computes
@@ -15,13 +16,12 @@ class DIMPA(torch.nn.Module):
     """
 
     def __init__(self, hop: int,
-                fill_value: float = 0.5):
+                 fill_value: float = 0.5):
         super(DIMPA, self).__init__()
         self._hop = hop
         self._w_s = Parameter(torch.FloatTensor(hop + 1, 1))
         self._w_t = Parameter(torch.FloatTensor(hop + 1, 1))
         self.conv_layer = Conv_Base(fill_value)
-
 
         self._reset_parameters()
 
@@ -30,11 +30,11 @@ class DIMPA(torch.nn.Module):
         self._w_t.data.fill_(1.0)
 
     def forward(self, x_s: torch.FloatTensor, x_t: torch.FloatTensor,
-                edge_index: torch.FloatTensor, 
+                edge_index: torch.FloatTensor,
                 edge_weight: torch.FloatTensor) -> torch.FloatTensor:
         """
         Making a forward pass of DIMPA.
-        
+
         Arg types:
             * **x_s** (PyTorch FloatTensor) - Souce hidden representations.
             * **x_t** (PyTorch FloatTensor) - Target hidden representations.
@@ -47,7 +47,7 @@ class DIMPA(torch.nn.Module):
         feat_t = self._w_t[0]*x_t
         curr_s = x_s.clone()
         curr_t = x_t.clone()
-        edge_index_t = edge_index[[1,0]]
+        edge_index_t = edge_index[[1, 0]]
         for h in range(1, 1+self._hop):
             curr_s = self.conv_layer(curr_s, edge_index, edge_weight)
             curr_t = self.conv_layer(curr_t, edge_index_t, edge_weight)

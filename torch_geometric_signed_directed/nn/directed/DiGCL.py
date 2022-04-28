@@ -15,6 +15,7 @@ class DiGCL_Encoder(torch.nn.Module):
         activation (str): Activation funciton to use.
         num_layers (int, Optional): Number of layers for encoder. (Default: 2)
     """
+
     def __init__(self, in_channels: int, out_channels: int, activation: str,
                  num_layers: int = 2):
         super(DiGCL_Encoder, self).__init__()
@@ -27,16 +28,17 @@ class DiGCL_Encoder(torch.nn.Module):
         self.conv.append(GCNConv(2 * out_channels, out_channels))
         self.conv = nn.ModuleList(self.conv)
 
-        self.activation = ({'relu': F.relu, 'prelu': nn.PReLU(), 'rrelu': nn.RReLU()})[activation]
+        self.activation = ({'relu': F.relu, 'prelu': nn.PReLU(), 'rrelu': nn.RReLU()})[
+            activation]
 
     def reset_parameters(self):
         for layer in self.conv:
             layer.reset_parameters()
-            
+
     def forward(self, x: torch.Tensor, edge_index: torch.Tensor, edge_weight: torch.Tensor = None):
         """
         Making a forward pass of the DiGCL encoder model.
-        
+
         Arg types:
             * x (PyTorch FloatTensor) - Node features.
             * edge_index (PyTorch LongTensor) - Edge indices.
@@ -53,7 +55,7 @@ class DiGCL(torch.nn.Module):
     r"""An implementation of the DiGCL model from the
     `Directed Graph Contrastive Learning 
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
-    
+
     Args:
         in_channels (int): Dimension of input features.
         activation (str): Activation funciton to use.
@@ -62,11 +64,13 @@ class DiGCL(torch.nn.Module):
         tau (float): Tau value in the loss.
         num_layers (int): Number of layers for encoder.
     """
+
     def __init__(self, in_channels: int, activation: str,
                  num_hidden: int, num_proj_hidden: int,
                  tau: float, num_layers: int):
         super(DiGCL, self).__init__()
-        self.encoder = DiGCL_Encoder(in_channels, num_hidden, activation, num_layers)
+        self.encoder = DiGCL_Encoder(
+            in_channels, num_hidden, activation, num_layers)
         self.tau: float = tau
 
         self.fc1 = torch.nn.Linear(num_hidden, num_proj_hidden)
@@ -109,7 +113,7 @@ class DiGCL(torch.nn.Module):
     def sim(self, z1: torch.Tensor, z2: torch.Tensor):
         """
         Normalized similarity calculation.
-        
+
         Args types::
             * z1 (PyTorch FloatTensor) - Node features.
             * z2 (PyTorch FloatTensor) - Node features.
@@ -193,5 +197,3 @@ class DiGCL(torch.nn.Module):
         ret = (l1 + l2) * 0.5
         ret = ret.mean() if mean else ret.sum()
         return ret
-
-

@@ -6,7 +6,7 @@ import networkx as nx
 from torch import LongTensor
 
 
-def extract_network(A: sp.spmatrix, labels: Union[np.array, LongTensor, None]=None, lowest_degree: int=2, max_iter=10) -> Tuple[sp.spmatrix, np.array]:
+def extract_network(A: sp.spmatrix, labels: Union[np.array, LongTensor, None] = None, lowest_degree: int = 2, max_iter=10) -> Tuple[sp.spmatrix, np.array]:
     """Find the largest connected component and iteratively only include nodes with degree at least lowest_degree, 
     for at most max_iter iterations, from the
     `DIGRAC: Digraph Clustering Based on Flow Imbalance <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
@@ -45,10 +45,12 @@ def extract_network(A: sp.spmatrix, labels: Union[np.array, LongTensor, None]=No
                     flag = False
             else:
                 lowest_degree -= 1
-                print('Nothing to keep, reducing lowest_degree by one to be {}!'.format(lowest_degree))
-                G0 = nx.from_scipy_sparse_matrix(A_new, create_using=nx.DiGraph)
+                print('Nothing to keep, reducing lowest_degree by one to be {}!'.format(
+                    lowest_degree))
+                G0 = nx.from_scipy_sparse_matrix(
+                    A_new, create_using=nx.DiGraph)
                 break
-            
+
     A_new = A[keep][:, keep]
     if labels is not None:
         labels_new = labels[keep]

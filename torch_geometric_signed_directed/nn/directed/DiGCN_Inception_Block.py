@@ -10,11 +10,12 @@ class DiGCN_InceptionBlock(torch.nn.Module):
     r"""An implementation of the inception block model from the
     `Digraph Inception Convolutional Networks
     <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_ paper.
-    
+
     Args:
         in_dim (int): Dimention of input.
         out_dim (int): Dimention of output.
     """
+
     def __init__(self, in_dim: int, out_dim: int):
         super(DiGCN_InceptionBlock, self).__init__()
         self.ln = Linear(in_dim, out_dim)
@@ -27,12 +28,12 @@ class DiGCN_InceptionBlock(torch.nn.Module):
         self.conv1.reset_parameters()
         self.conv2.reset_parameters()
 
-    def forward(self, x: torch.FloatTensor, edge_index: torch.LongTensor, \
-        edge_weight: torch.FloatTensor, edge_index2: torch.LongTensor, \
-        edge_weight2: torch.FloatTensor) -> Tuple[torch.FloatTensor, torch.FloatTensor, torch.FloatTensor]:
+    def forward(self, x: torch.FloatTensor, edge_index: torch.LongTensor,
+                edge_weight: torch.FloatTensor, edge_index2: torch.LongTensor,
+                edge_weight2: torch.FloatTensor) -> Tuple[torch.FloatTensor, torch.FloatTensor, torch.FloatTensor]:
         """
         Making a forward pass of the DiGCN inception block model.
-        
+
         Arg types:
             * x (PyTorch FloatTensor) - Node features.
             * edge_index, edge_index2 (PyTorch LongTensor) - Edge indices.

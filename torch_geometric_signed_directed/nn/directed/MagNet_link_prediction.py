@@ -7,10 +7,11 @@ import torch.nn.functional as F
 from .complex_relu import complex_relu_layer
 from .MagNetConv import MagNetConv
 
+
 class MagNet_link_prediction(nn.Module):
     r"""The MagNet model for link prediction from the
     `MagNet: A Neural Network for Directed Graphs. <https://arxiv.org/pdf/2102.11391.pdf>`_ paper.
-    
+
     Args:
         num_features (int): Size of each input sample.
         hidden (int, optional): Number of hidden channels.  Default: 2.
@@ -34,24 +35,25 @@ class MagNet_link_prediction(nn.Module):
             This parameter should only be set to :obj:`True` in transductive
             learning scenarios. (default: :obj:`False`)
     """
-    def __init__(self, num_features:int, hidden:int=2, q:float=0.25, K:int=2, label_dim:int=2, \
-        activation:bool=True, trainable_q:bool=False, layer:int=2, dropout:float=0.5, normalization:str='sym', cached:bool=False):
+
+    def __init__(self, num_features: int, hidden: int = 2, q: float = 0.25, K: int = 2, label_dim: int = 2,
+                 activation: bool = True, trainable_q: bool = False, layer: int = 2, dropout: float = 0.5, normalization: str = 'sym', cached: bool = False):
         super(MagNet_link_prediction, self).__init__()
 
         chebs = nn.ModuleList()
-        chebs.append(MagNetConv(in_channels=num_features, out_channels=hidden, K=K, \
-            q=q, trainable_q=trainable_q, normalization=normalization, cached=cached))
+        chebs.append(MagNetConv(in_channels=num_features, out_channels=hidden, K=K,
+                                q=q, trainable_q=trainable_q, normalization=normalization, cached=cached))
         self.normalization = normalization
         self.activation = activation
         if self.activation:
             self.complex_relu = complex_relu_layer()
 
         for _ in range(1, layer):
-            chebs.append(MagNetConv(in_channels=hidden, out_channels=hidden, K=K,\
-                q=q, trainable_q=trainable_q, normalization=normalization, cached=cached))
+            chebs.append(MagNetConv(in_channels=hidden, out_channels=hidden, K=K,
+                                    q=q, trainable_q=trainable_q, normalization=normalization, cached=cached))
 
         self.Chebs = chebs
-        self.linear = nn.Linear(hidden*4, label_dim)      
+        self.linear = nn.Linear(hidden*4, label_dim)
         self.dropout = dropout
 
     def reset_parameters(self):
@@ -59,11 +61,11 @@ class MagNet_link_prediction(nn.Module):
             cheb.reset_parameters()
         self.linear.reset_parameters()
 
-    def forward(self, real: torch.FloatTensor, imag: torch.FloatTensor, edge_index: torch.LongTensor, \
-        query_edges: torch.LongTensor, edge_weight: Optional[torch.LongTensor]=None) -> torch.FloatTensor:
+    def forward(self, real: torch.FloatTensor, imag: torch.FloatTensor, edge_index: torch.LongTensor,
+                query_edges: torch.LongTensor, edge_weight: Optional[torch.LongTensor] = None) -> torch.FloatTensor:
         """
         Making a forward pass of the MagNet node classification model.
-        
+
         Arg types:
             * real, imag (PyTorch Float Tensor) - Node features.
             * edge_index (PyTorch Long Tensor) - Edge indices.
@@ -77,7 +79,8 @@ class MagNet_link_prediction(nn.Module):
             if self.activation:
                 real, imag = self.complex_relu(real, imag)
 
-        x = torch.cat((real[query_edges[:,0]], real[query_edges[:,1]], imag[query_edges[:,0]], imag[query_edges[:,1]]), dim = -1)
+        x = torch.cat((real[query_edges[:, 0]], real[query_edges[:, 1]],
+                      imag[query_edges[:, 0]], imag[query_edges[:, 1]]), dim=-1)
         if self.dropout > 0:
             x = F.dropout(x, self.dropout, training=self.training)
 

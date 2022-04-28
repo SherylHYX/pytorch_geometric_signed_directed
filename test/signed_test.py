@@ -9,7 +9,7 @@ from torch_geometric_signed_directed.data import (
     SSBM, SignedData
 )
 from torch_geometric_signed_directed.utils import (
-    Prob_Balanced_Ratio_Loss, Prob_Balanced_Normalized_Loss, Unhappy_Ratio, 
+    Prob_Balanced_Ratio_Loss, Prob_Balanced_Normalized_Loss, Unhappy_Ratio,
     link_sign_prediction_logistic_function, triplet_loss_node_classification
 )
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -20,7 +20,8 @@ def create_mock_data(num_nodes, num_features, num_classes=3, eta=0.1, p=0.2):
     Creating a mock feature matrix, edge index and edge weight.
     """
     (A_p_scipy, A_n_scipy), labels = SSBM(num_nodes, num_classes, p, eta)
-    X = torch.FloatTensor(np.random.uniform(-1, 1, (num_nodes, num_features))).to(device)
+    X = torch.FloatTensor(
+        np.random.uniform(-1, 1, (num_nodes, num_features))).to(device)
     edge_index_p = torch.LongTensor(np.array(A_p_scipy.nonzero())).to(device)
     edge_weight_p = torch.FloatTensor(sp.csr_matrix(A_p_scipy).data).to(device)
     edge_index_n = torch.LongTensor(np.array(A_n_scipy.nonzero())).to(device)
@@ -40,20 +41,22 @@ def test_SSSNET():
         create_mock_data(num_nodes, num_features, num_classes)
 
     loss_func_pbrc = Prob_Balanced_Ratio_Loss(A_p=A_p_scipy, A_n=A_n_scipy)
-    loss_func_pbnc = Prob_Balanced_Normalized_Loss(A_p=A_p_scipy, A_n=A_n_scipy)
+    loss_func_pbnc = Prob_Balanced_Normalized_Loss(
+        A_p=A_p_scipy, A_n=A_n_scipy)
 
     model = SSSNET_node_clustering(nfeat=num_features,
-                    hidden=8,
-                    nclass=num_classes,
-                    dropout=0.5,
-                    hop=2,
-                    fill_value=0.5,
-                    directed=False).to(device)
+                                   hidden=8,
+                                   nclass=num_classes,
+                                   dropout=0.5,
+                                   hop=2,
+                                   fill_value=0.5,
+                                   directed=False).to(device)
     Z, _, _, prob = model(edge_index_p, edge_weight_p,
-                edge_index_n, edge_weight_n, X) 
+                          edge_index_n, edge_weight_n, X)
     loss_pbrc = loss_func_pbrc(prob=prob).item()
     loss_pbnc = loss_func_pbnc(prob=prob).item()
-    triplet_loss = triplet_loss_node_classification(y=labels, Z=Z, n_sample=500, thre=0.1)
+    triplet_loss = triplet_loss_node_classification(
+        y=labels, Z=Z, n_sample=500, thre=0.1)
     unhappy_ratio = Unhappy_Ratio(A_p_scipy, A_n_scipy)(prob).item()
     assert prob.shape == (
         num_nodes, num_classes
@@ -64,15 +67,16 @@ def test_SSSNET():
     assert triplet_loss.item() >= 0
 
     model = SSSNET_node_clustering(nfeat=num_features,
-                    hidden=16,
-                    nclass=num_classes,
-                    dropout=0.5,
-                    hop=2,
-                    fill_value=0.5,
-                    directed=True).to(device)
+                                   hidden=16,
+                                   nclass=num_classes,
+                                   dropout=0.5,
+                                   hop=2,
+                                   fill_value=0.5,
+                                   directed=True).to(device)
     Z, _, _, prob = model(edge_index_p, None,
-                edge_index_n, None, X) 
-    triplet_loss = triplet_loss_node_classification(y=torch.LongTensor(labels), Z=Z, n_sample=500, thre=0.1)
+                          edge_index_n, None, X)
+    triplet_loss = triplet_loss_node_classification(
+        y=torch.LongTensor(labels), Z=Z, n_sample=500, thre=0.1)
     unhappy_ratio = Unhappy_Ratio(A_p_scipy, A_n_scipy)(prob).item()
     assert prob.shape == (
         num_nodes, num_classes
@@ -121,19 +125,22 @@ def test_SGCN():
     nodes_num = data.num_nodes
     edge_i_list = train_edge_index.t().cpu().numpy().tolist()
     edge_s_list = train_edge_weight.long().cpu().numpy().tolist()
-    edge_index_s = torch.LongTensor([[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)]).to(device)
+    edge_index_s = torch.LongTensor(
+        [[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)]).to(device)
 
-    model = SGCN(nodes_num, edge_index_s, 20, 20, layer_num=2, lamb=5).to(device)
+    model = SGCN(nodes_num, edge_index_s, 20, 20,
+                 layer_num=2, lamb=5).to(device)
     loss = model.loss()
     with torch.no_grad():
         z = model()
 
     embeddings = z.cpu().numpy()
     train_X = train_edge_index.t().cpu().numpy()
-    test_X  = test_edge_index.t().cpu().numpy()
+    test_X = test_edge_index.t().cpu().numpy()
     train_y = train_edge_weight.cpu().numpy()
-    test_y  = test_edge_weight.cpu().numpy()
-    accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(embeddings, train_X, train_y, test_X, test_y)
+    test_y = test_edge_weight.cpu().numpy()
+    accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(
+        embeddings, train_X, train_y, test_X, test_y)
     assert auc_score >= 0
     assert loss >= 0
     assert accuracy >= 0
@@ -178,26 +185,28 @@ def test_SNEA():
     nodes_num = data.num_nodes
     edge_i_list = train_edge_index.t().cpu().numpy().tolist()
     edge_s_list = train_edge_weight.long().cpu().numpy().tolist()
-    edge_index_s = torch.LongTensor([[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)]).to(device)
+    edge_index_s = torch.LongTensor(
+        [[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)]).to(device)
 
-    model = SNEA(nodes_num, edge_index_s, 20, 20, layer_num=2, lamb=5).to(device)
+    model = SNEA(nodes_num, edge_index_s, 20, 20,
+                 layer_num=2, lamb=5).to(device)
     loss = model.loss()
     with torch.no_grad():
         z = model()
 
     embeddings = z.cpu().numpy()
     train_X = train_edge_index.t().cpu().numpy()
-    test_X  = test_edge_index.t().cpu().numpy()
+    test_X = test_edge_index.t().cpu().numpy()
     train_y = train_edge_weight.cpu().numpy()
-    test_y  = test_edge_weight.cpu().numpy()
-    accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(embeddings, train_X, train_y, test_X, test_y)
+    test_y = test_edge_weight.cpu().numpy()
+    accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(
+        embeddings, train_X, train_y, test_X, test_y)
     assert auc_score >= 0
     assert loss >= 0
     assert accuracy >= 0
     assert f1 >= 0
     assert f1_macro >= 0
     assert f1_micro >= 0
-
 
 
 def test_SiGAT():
@@ -219,7 +228,8 @@ def test_SiGAT():
     nodes_num = data.num_nodes
     edge_i_list = train_edge_index.t().cpu().numpy().tolist()
     edge_s_list = train_edge_weight.long().cpu().numpy().tolist()
-    edge_index_s = torch.LongTensor([[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)]).to(device)
+    edge_index_s = torch.LongTensor(
+        [[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)]).to(device)
 
     model = SiGAT(nodes_num, edge_index_s, 20, 20, 100).to(device)
     loss = model.loss()
@@ -231,16 +241,18 @@ def test_SiGAT():
 
     embeddings = z.cpu().numpy()
     train_X = train_edge_index.t().cpu().numpy()
-    test_X  = test_edge_index.t().cpu().numpy()
+    test_X = test_edge_index.t().cpu().numpy()
     train_y = train_edge_weight.cpu().numpy()
-    test_y  = test_edge_weight.cpu().numpy()
-    accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(embeddings, train_X, train_y, test_X, test_y)
+    test_y = test_edge_weight.cpu().numpy()
+    accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(
+        embeddings, train_X, train_y, test_X, test_y)
     assert auc_score >= 0
     assert loss >= 0
     assert accuracy >= 0
     assert f1 >= 0
     assert f1_macro >= 0
     assert f1_micro >= 0
+
 
 def test_SDGNN():
     """
@@ -261,7 +273,8 @@ def test_SDGNN():
     nodes_num = data.num_nodes
     edge_i_list = train_edge_index.t().cpu().numpy().tolist()
     edge_s_list = train_edge_weight.long().cpu().numpy().tolist()
-    edge_index_s = torch.LongTensor([[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)]).to(device)
+    edge_index_s = torch.LongTensor(
+        [[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)]).to(device)
 
     model = SDGNN(nodes_num, edge_index_s, 20, 20).to(device)
     loss = model.loss()
@@ -270,10 +283,11 @@ def test_SDGNN():
 
     embeddings = z.cpu().numpy()
     train_X = train_edge_index.t().cpu().numpy()
-    test_X  = test_edge_index.t().cpu().numpy()
+    test_X = test_edge_index.t().cpu().numpy()
     train_y = train_edge_weight.cpu().numpy()
-    test_y  = test_edge_weight.cpu().numpy()
-    accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(embeddings, train_X, train_y, test_X, test_y)
+    test_y = test_edge_weight.cpu().numpy()
+    accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(
+        embeddings, train_X, train_y, test_X, test_y)
     assert auc_score >= 0
     assert loss >= 0
     assert accuracy >= 0

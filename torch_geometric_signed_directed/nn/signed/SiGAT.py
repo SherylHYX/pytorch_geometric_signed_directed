@@ -1,4 +1,3 @@
-
 from collections import defaultdict
 from typing import Tuple, List, Union
 
@@ -6,7 +5,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_geometric.nn import  GATConv
+from torch_geometric.nn import GATConv
 from torch_geometric.utils import k_hop_subgraph, add_self_loops
 
 
@@ -23,11 +22,11 @@ class SiGAT(nn.Module):
     """
 
     def __init__(
-        self, 
-        node_num: int, 
+        self,
+        node_num: int,
         edge_index_s,
-        in_emb_dim: int = 20, 
-        hidden_emb_dim: int = 20, 
+        in_emb_dim: int = 20,
+        hidden_emb_dim: int = 20,
         batch_size=500
     ):
         super().__init__()
@@ -66,8 +65,8 @@ class SiGAT(nn.Module):
         edges = torch.LongTensor(edges).to(self.device)
         return edges.t()
 
-    def get_tri_features(self, u: int, v: int, r_edgelists: List) -> Tuple[int, int, int, int, int, 
-    int, int, int, int, int, int, int, int, int, int, int]:
+    def get_tri_features(self, u: int, v: int, r_edgelists: List) -> Tuple[int, int, int, int, int,
+                                                                           int, int, int, int, int, int, int, int, int, int, int]:
         pos_in_edgelists, pos_out_edgelists, neg_in_edgelists, neg_out_edgelists = r_edgelists
 
         d1_1 = len(set(pos_out_edgelists[u]).intersection(
@@ -161,14 +160,14 @@ class SiGAT(nn.Module):
 
         return [adj_list_pos, adj_list_pos_out, adj_list_pos_in, adj_list_neg, adj_list_neg_out, adj_list_neg_in] + adj_additions1 + adj_additions2
 
-    def forward(self, nodes: Union[np.array, torch.Tensor]=None) -> torch.FloatTensor:
+    def forward(self, nodes: Union[np.array, torch.Tensor] = None) -> torch.FloatTensor:
         if nodes is None:
             nodes_t = torch.arange(self.node_num).to(self.device).long()
         elif isinstance(nodes, torch.Tensor):
             nodes_t = nodes.long().to(self.device)
         else:
             nodes_t = torch.from_numpy(nodes).to(self.device).long()
-        
+
         neigh_feats = []
 
         for edges, agg in zip(self.edge_lists, self.aggs):
@@ -186,7 +185,7 @@ class SiGAT(nn.Module):
         combined = torch.cat([x0] + neigh_feats, 1)
         combined = self.mlp_layer(combined)
         return combined
-    
+
     def loss(self):
         total_loss = 0
         nodes = np.arange(0, self.node_num)
@@ -197,7 +196,6 @@ class SiGAT(nn.Module):
             loss = self.loss_batch(np.array(nodes_batch))
             total_loss += loss
         return total_loss
-
 
     def loss_batch(self, nodes: np.array) -> torch.Tensor:
         pos_neighbors, neg_neighbors = self.adj_pos, self.adj_neg

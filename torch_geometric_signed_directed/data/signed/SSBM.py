@@ -5,8 +5,9 @@ import numpy as np
 import scipy.sparse as sp
 import numpy.random as rnd
 
-def SSBM(n: int, k: int, pin: float, etain: float, pout: Optional[float]=None, size_ratio: float = 2, \
-    etaout: Optional[float]=None, values: str='ones') -> Tuple[Tuple[sp.spmatrix, sp.spmatrix], np.array]:
+
+def SSBM(n: int, k: int, pin: float, etain: float, pout: Optional[float] = None, size_ratio: float = 2,
+         etaout: Optional[float] = None, values: str = 'ones') -> Tuple[Tuple[sp.spmatrix, sp.spmatrix], np.array]:
     """A signed stochastic block model graph generator from the
     `SSSNET: Semi-Supervised Signed Network Clustering <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
 
@@ -30,7 +31,7 @@ def SSBM(n: int, k: int, pin: float, etain: float, pout: Optional[float]=None, s
         * **A_p** (sp.spmatrix) - A sparse adjacency matrix for the positive part.
         * **A_n** (sp.spmatrix) - A sparse adjacency matrix for the negative part.
         * **labels** (np.array) - Labels.
-        
+
     """
 
     if pout == None:
@@ -54,18 +55,19 @@ def SSBM(n: int, k: int, pin: float, etain: float, pout: Optional[float]=None, s
 
     size = [0] * k
 
-
     perm = rnd.permutation(n)
     if size_ratio > 1:
-        ratio_each = np.power(size_ratio,1/(k-1))
-        smallest_size = math.floor(n*(1-ratio_each)/(1-np.power(ratio_each,k)))
+        ratio_each = np.power(size_ratio, 1/(k-1))
+        smallest_size = math.floor(
+            n*(1-ratio_each)/(1-np.power(ratio_each, k)))
         size[0] = smallest_size
-        if k>2:
-            for i in range(1,k-1):
+        if k > 2:
+            for i in range(1, k-1):
                 size[i] = math.floor(size[i-1] * ratio_each)
         size[k-1] = n - np.sum(size)
-    else: # degenerate case, equaivalent to 'uniform' sizes
-        size = [math.floor((i + 1) * n / k) - math.floor((i) * n / k) for i in range(k)]
+    else:  # degenerate case, equaivalent to 'uniform' sizes
+        size = [math.floor((i + 1) * n / k) - math.floor((i) * n / k)
+                for i in range(k)]
     tot = size[0]
     cluster = 0
     i = 0
@@ -77,7 +79,6 @@ def SSBM(n: int, k: int, pin: float, etain: float, pout: Optional[float]=None, s
             tot -= 1
             assign[perm[i]] = cluster
             i += 1
-
 
     index = -1
     last = [0] * k
@@ -139,8 +140,7 @@ def SSBM(n: int, k: int, pin: float, etain: float, pout: Optional[float]=None, s
             sp.coo_matrix((ndat, (nrow, ncol)), shape=(n, n)).tocsc()), assign
 
 
-
-def fill(values: str='ones') -> float:
+def fill(values: str = 'ones') -> float:
     """A filling method for the signed stochastic block model graph generator from the
     `SSSNET: Semi-Supervised Signed Network Clustering" <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
     Arg types:

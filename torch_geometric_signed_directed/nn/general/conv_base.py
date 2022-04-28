@@ -50,7 +50,7 @@ class Conv_Base(MessagePassing):
     with :math:`\hat{d}_i = 1 + \sum_{j \in \mathcal{N}(i)} e_{j,i}`, where
     :math:`e_{j,i}` denotes the edge weight from source node :obj:`j` to target
     node :obj:`i` (default: :obj:`1.0`)
-    
+
     Args:
         fill_value (float, optional): The layer computes
             :math:`\mathbf{\hat{A}}` as :math:`\mathbf{A} + fill_value*\mathbf{I}`.

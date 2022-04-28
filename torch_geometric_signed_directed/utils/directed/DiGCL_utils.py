@@ -7,7 +7,8 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.preprocessing import normalize, OneHotEncoder
 
-def drop_feature(x:torch.FloatTensor, drop_prob:float):
+
+def drop_feature(x: torch.FloatTensor, drop_prob: float):
     r""" Drop feature funciton from the
     `Directed Graph Contrastive Learning 
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
@@ -28,7 +29,8 @@ def drop_feature(x:torch.FloatTensor, drop_prob:float):
 
     return x
 
-def pred_digcl_node(embeddings:torch.FloatTensor, y:torch.LongTensor, train_index:List[int], test_index:List[int]=None):
+
+def pred_digcl_node(embeddings: torch.FloatTensor, y: torch.LongTensor, train_index: List[int], test_index: List[int] = None):
     r""" Generate predictions from embeddings from the
     `Directed Graph Contrastive Learning
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
@@ -52,7 +54,6 @@ def pred_digcl_node(embeddings:torch.FloatTensor, y:torch.LongTensor, train_inde
     X_train = X[train_index]
     y_train = Y[train_index]
 
-
     logreg = LogisticRegression(solver='liblinear')
     c = 2.0 ** np.arange(-10, 10)
 
@@ -60,7 +61,6 @@ def pred_digcl_node(embeddings:torch.FloatTensor, y:torch.LongTensor, train_inde
                        param_grid=dict(estimator__C=c), n_jobs=8, cv=5,
                        verbose=0)
     clf.fit(X_train, y_train)
-    
 
     y_pred = np.argmax(clf.predict(X), axis=1)
 
@@ -70,7 +70,7 @@ def pred_digcl_node(embeddings:torch.FloatTensor, y:torch.LongTensor, train_inde
         return y_pred[test_index]
 
 
-def pred_digcl_link(embeddings:torch.FloatTensor, y:torch.LongTensor, train_index:List[int], test_index:List[int]):
+def pred_digcl_link(embeddings: torch.FloatTensor, y: torch.LongTensor, train_index: List[int], test_index: List[int]):
     r""" Generate predictions from embeddings from the
     `Directed Graph Contrastive Learning
     <https://proceedings.neurips.cc/paper/2021/file/a3048e47310d6efaa4b1eaf55227bc92-Paper.pdf>`_ paper.
@@ -91,8 +91,8 @@ def pred_digcl_link(embeddings:torch.FloatTensor, y:torch.LongTensor, train_inde
     Y = onehot_encoder.transform(Y).toarray().astype(bool)
 
     X = normalize(X, norm='l2')
-    X_train1 = X[train_index[:,0]]
-    X_train2 = X[train_index[:,1]]
+    X_train1 = X[train_index[:, 0]]
+    X_train2 = X[train_index[:, 1]]
     X_train = np.c_[X_train1, X_train2]
     y_train = Y
 
@@ -103,9 +103,9 @@ def pred_digcl_link(embeddings:torch.FloatTensor, y:torch.LongTensor, train_inde
                        param_grid=dict(estimator__C=c), n_jobs=8, cv=5,
                        verbose=0)
     clf.fit(X_train, y_train)
-    
-    X_test1 = X[test_index[:,0]]
-    X_test2 = X[test_index[:,1]]
+
+    X_test1 = X[test_index[:, 0]]
+    X_test2 = X[test_index[:, 1]]
     X_test = np.c_[X_test1, X_test2]
     y_pred = np.argmax(clf.predict(X_test), axis=1)
     return y_pred

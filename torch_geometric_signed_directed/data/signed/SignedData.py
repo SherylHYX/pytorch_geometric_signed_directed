@@ -9,6 +9,7 @@ import numpy as np
 
 from ...utils.general import node_class_split, link_class_split
 
+
 def sqrtinvdiag(M: sp.spmatrix) -> sp.csc_matrix:
     """Inverts and square-roots a positive diagonal matrix.
 
@@ -22,6 +23,7 @@ def sqrtinvdiag(M: sp.spmatrix) -> sp.csc_matrix:
     dd = [1 / max(np.sqrt(x), 1 / 999999999) for x in d]
 
     return sp.dia_matrix((dd, [0]), shape=(len(d), len(d))).tocsc()
+
 
 class SignedData(Data):
     r"""A data object describing a homogeneous signed graph.
@@ -44,14 +46,15 @@ class SignedData(Data):
         init_data (Data, optional): Initial data object, whose attributes will be inherited. (default: :obj:`None`)
         **kwargs (optional): Additional attributes.
     """
+
     def __init__(self, x: OptTensor = None, edge_index: OptTensor = None,
-                edge_attr: OptTensor = None, edge_weight: OptTensor = None, y: OptTensor = None,
-                pos: OptTensor = None, 
-                A: Union[Tuple[sp.spmatrix, sp.spmatrix], sp.spmatrix, None] = None, 
-                init_data: Optional[Data] = None, **kwargs):
+                 edge_attr: OptTensor = None, edge_weight: OptTensor = None, y: OptTensor = None,
+                 pos: OptTensor = None,
+                 A: Union[Tuple[sp.spmatrix, sp.spmatrix], sp.spmatrix, None] = None,
+                 init_data: Optional[Data] = None, **kwargs):
         super().__init__(x=x, edge_index=edge_index,
-                 edge_attr=edge_attr, y=y,
-                 pos=pos, **kwargs)
+                         edge_attr=edge_attr, y=y,
+                         pos=pos, **kwargs)
         if A is None:
             A = to_scipy_sparse_matrix(edge_index, edge_weight)
         elif isinstance(A, tuple):
@@ -67,16 +70,18 @@ class SignedData(Data):
 
     def separate_positive_negative(self):
         ind = self.edge_weight > 0
-        self.edge_index_p = self.edge_index[:,ind]
+        self.edge_index_p = self.edge_index[:, ind]
         self.edge_weight_p = self.edge_weight[ind]
         ind = self.edge_weight < 0
-        self.edge_index_n = self.edge_index[:,ind]
+        self.edge_index_n = self.edge_index[:, ind]
         self.edge_weight_n = - self.edge_weight[ind]
-        self.A_p = to_scipy_sparse_matrix(self.edge_index_p, self.edge_weight_p)
-        self.A_n = to_scipy_sparse_matrix(self.edge_index_n, self.edge_weight_n)
+        self.A_p = to_scipy_sparse_matrix(
+            self.edge_index_p, self.edge_weight_p)
+        self.A_n = to_scipy_sparse_matrix(
+            self.edge_index_n, self.edge_weight_n)
 
     def clear_separate_attributes(self):
-        for name in ['edge_index_p', 'edge_index_n', 'edge_weight_p', 'edge_weight_n','A_p', 'A_n']:
+        for name in ['edge_index_p', 'edge_index_n', 'edge_weight_p', 'edge_weight_n', 'A_p', 'A_n']:
             delattr(self, name)
 
     @property
@@ -90,7 +95,8 @@ class SignedData(Data):
     @property
     def is_weighted(self) -> bool:
         self.separate_positive_negative()
-        res = self.edge_weight_p.max() != self.edge_weight_p.min() or self.edge_weight_n.max() != self.edge_weight_n.min()
+        res = self.edge_weight_p.max() != self.edge_weight_p.min(
+        ) or self.edge_weight_n.max() != self.edge_weight_n.min()
         self.clear_separate_attributes()
         return bool(res)
 
@@ -101,7 +107,7 @@ class SignedData(Data):
         if hasattr(self, 'edge_weight_p'):
             self.separate_positive_negative()
 
-    def set_signed_Laplacian_features(self, k: int=2):
+    def set_signed_Laplacian_features(self, k: int = 2):
         """generate the graph features using eigenvectors of the signed Laplacian matrix.
 
         Args:
@@ -116,15 +122,16 @@ class SignedData(Data):
         Dbar = (D_p + D_n)
         d = sqrtinvdiag(Dbar)
         normA = d * A * d
-        L = sp.eye(A_p.shape[0], format="csc") - normA # normalized symmetric signed Laplacian
-        (vals, vecs) = sp.linalg.eigs(L, int(k), maxiter=A_p.shape[0], which='LR')
+        # normalized symmetric signed Laplacian
+        L = sp.eye(A_p.shape[0], format="csc") - normA
+        (vals, vecs) = sp.linalg.eigs(
+            L, int(k), maxiter=A_p.shape[0], which='LR')
         vecs = vecs / vals  # weight eigenvalues by eigenvectors, since smaller eigenvectors are more likely to be informative
         self.x = FloatTensor(vecs)
         self.clear_separate_attributes()
 
-
-    def set_spectral_adjacency_reg_features(self, k: int=2, normalization: Optional[int]=None, tau_p=None, tau_n=None, \
-        eigens=None, mi=None):
+    def set_spectral_adjacency_reg_features(self, k: int = 2, normalization: Optional[int] = None, tau_p=None, tau_n=None,
+                                            eigens=None, mi=None):
         """generate the graph features using eigenvectors of the regularised adjacency matrix.
 
         Args:
@@ -168,7 +175,6 @@ class SignedData(Data):
             tau_p = 0.25 * np.mean(Dbar.data) / size
             tau_n = 0.25 * np.mean(Dbar.data) / size
 
-
         p_tau = A_p.copy().astype(np.float32)
         n_tau = A_n.copy().astype(np.float32)
         p_tau.data += tau_p
@@ -176,7 +182,8 @@ class SignedData(Data):
 
         Dbar_c = size - Dbar.diagonal()
 
-        Dbar_tau_s = (p_tau + n_tau).sum(axis=0) + (Dbar_c * abs(tau_p - tau_n))[None, :]
+        Dbar_tau_s = (p_tau + n_tau).sum(axis=0) + \
+            (Dbar_c * abs(tau_p - tau_n))[None, :]
 
         Dbar_tau = sp.diags(Dbar_tau_s.tolist(), [0])
 
@@ -186,7 +193,6 @@ class SignedData(Data):
 
             def mv(v):
                 return matrix.dot(v) + delta_tau * v.sum()
-
 
         elif normalization == 'sym':
             d = sqrtinvdiag(Dbar_tau)
@@ -227,17 +233,17 @@ class SignedData(Data):
         v = v * w  # weight eigenvalues by eigenvectors, since larger eigenvectors are more likely to be informative
         self.x = FloatTensor(v)
         self.clear_separate_attributes()
-    
-    def inherit_attributes(self, data:Data): 
+
+    def inherit_attributes(self, data: Data):
         for k in data.to_dict().keys():
             if k not in self.to_dict().keys():
                 setattr(self, k, getattr(data, k))
 
-    def node_split(self, train_size: Union[int,float]=None, val_size: Union[int,float]=None, 
-                test_size: Union[int,float]=None, seed_size: Union[int,float]=None,
-                train_size_per_class: Union[int,float]=None, val_size_per_class: Union[int,float]=None,
-                test_size_per_class: Union[int,float]=None, seed_size_per_class: Union[int,float]=None, 
-                seed: List[int]=[], data_split: int=10):
+    def node_split(self, train_size: Union[int, float] = None, val_size: Union[int, float] = None,
+                   test_size: Union[int, float] = None, seed_size: Union[int, float] = None,
+                   train_size_per_class: Union[int, float] = None, val_size_per_class: Union[int, float] = None,
+                   test_size_per_class: Union[int, float] = None, seed_size_per_class: Union[int, float] = None,
+                   seed: List[int] = [], data_split: int = 10):
         r""" Train/Val/Test/Seed split for node classification tasks. 
         The size parameters can either be int or float.
         If a size parameter is int, then this means the actual number, if it is float, then this means a ratio.
@@ -245,7 +251,7 @@ class SignedData(Data):
         Validation and seed masks are optional. Seed masks here masks nodes within the training set, e.g., in a semi-supervised setting as described in the
         `SSSNET: Semi-Supervised Signed Network Clustering <https://arxiv.org/pdf/2110.06623.pdf>`_ paper. 
         If test_size and test_size_per_class are both None, all the remaining nodes after selecting training (and validation) nodes will be included.
-        
+
         Args:
             data (torch_geometric.data.Data or DirectedData, required): The data object for data split.
             train_size (int or float, optional): The size of random splits for the training dataset. If the input is a float number, the ratio of nodes in each class will be sampled.
@@ -262,13 +268,13 @@ class SignedData(Data):
             data_split (int, optional): number of splits (Default : 10)
 
         """
-        self = node_class_split(self, train_size=train_size, val_size=val_size, 
-        test_size=test_size, seed_size=seed_size, train_size_per_class=train_size_per_class,
-        val_size_per_class=val_size_per_class, test_size_per_class=test_size_per_class,
-        seed_size_per_class=seed_size_per_class, seed=seed, data_split=data_split)
+        self = node_class_split(self, train_size=train_size, val_size=val_size,
+                                test_size=test_size, seed_size=seed_size, train_size_per_class=train_size_per_class,
+                                val_size_per_class=val_size_per_class, test_size_per_class=test_size_per_class,
+                                seed_size_per_class=seed_size_per_class, seed=seed, data_split=data_split)
 
-    def link_split(self, size:int=None, splits:int=10, prob_test:float= 0.15, 
-                     prob_val:float= 0.05, seed:int= 0, ratio:float= 1.0, maintain_connect:bool= False, device:str= 'cpu') -> dict:
+    def link_split(self, size: int = None, splits: int = 10, prob_test: float = 0.15,
+                   prob_val: float = 0.05, seed: int = 0, ratio: float = 1.0, maintain_connect: bool = False, device: str = 'cpu') -> dict:
         r"""Get train/val/test dataset for the link sign prediction task. 
 
         Arg types:
@@ -288,7 +294,7 @@ class SignedData(Data):
                 1. datasets[i]['graph'] (torch.LongTensor): the observed edge list after removing edges for validation and testing.
 
                 2. datasets[i]['train'/'val'/'testing']['edges'] (List): the edge list for training/validation/testing.
-                
+
                 3. datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:  0 (negative edge), 1 (positive edge). 
         """
         return link_class_split(self, size, splits, prob_test, prob_val, 'sign', seed, maintain_connect, ratio, device)
