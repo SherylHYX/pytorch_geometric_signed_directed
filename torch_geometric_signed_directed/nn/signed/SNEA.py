@@ -1,19 +1,13 @@
 from collections import defaultdict
-from typing import Union
-from torch_geometric.typing import PairTensor, Adj
+from random import randint
+
 import scipy.sparse as sp
 import torch
 import torch.nn.functional as F
 import torch.nn as nn
-from torch import Tensor, device
+from torch import Tensor
 import numpy as np
-from torch_geometric.nn.dense.linear import Linear
-from torch_sparse import SparseTensor, matmul
-from torch_geometric.nn.conv import MessagePassing
 from torch_sparse import coalesce
-from random import randint
-from torch_geometric.utils import (negative_sampling,
-                                   structured_negative_sampling)
 
 from .SNEAConv import SNEAConv
 

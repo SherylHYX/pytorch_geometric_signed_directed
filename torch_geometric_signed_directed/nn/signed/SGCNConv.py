@@ -1,17 +1,11 @@
 from typing import Union
+
 from torch_geometric.typing import PairTensor, Adj
-import scipy.sparse as sp
 import torch
-import torch.nn.functional as F
-import torch.nn as nn
 from torch import Tensor
 from torch_geometric.nn.dense.linear import Linear
 from torch_sparse import SparseTensor, matmul
 from torch_geometric.nn.conv import MessagePassing
-from torch_sparse import coalesce
-
-from torch_geometric.utils import (negative_sampling,
-                                   structured_negative_sampling)
 
 
 class SGCNConv(MessagePassing):

@@ -33,7 +33,7 @@ Here, we overview a simple end-to-end machine learning pipeline designed with *P
     A = A_p_scipy - A_n_scipy
     A, labels = extract_network(A=A, labels=labels)
     data = SignedData(A=A, y=torch.LongTensor(labels))
-    data.set_signed_Laplacian_features(num_classes)
+    data.set_spectral_adjacency_reg_features(num_classes)
     data.node_split(train_size_per_class=0.8, \ 
     val_size_per_class=0.1, \ 
     test_size_per_class=0.1, seed_size_per_class=0.1)

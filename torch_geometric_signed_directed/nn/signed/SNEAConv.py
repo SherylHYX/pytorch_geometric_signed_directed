@@ -1,19 +1,13 @@
-from typing import Optional, Tuple, Union
+from typing import Optional, Union
+
 from torch_geometric.typing import (PairTensor, OptTensor)
-import scipy.sparse as sp
 import torch
-import torch.nn.functional as F
-import torch.nn as nn
 from torch import LongTensor, Tensor
 from torch_geometric.nn.dense.linear import Linear
-from torch_sparse import matmul
 from torch_geometric.nn.conv import MessagePassing
-from torch_sparse import coalesce
 from torch_geometric.utils import (add_self_loops,
                                    softmax,
-                                   remove_self_loops,
-                                   negative_sampling,
-                                   structured_negative_sampling)
+                                   remove_self_loops)
 
 
 class SNEAConv(MessagePassing):
