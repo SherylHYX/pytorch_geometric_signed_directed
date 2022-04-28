@@ -1,12 +1,12 @@
 import os.path as osp
 import argparse
-from sklearn import metrics
 
+from sklearn import metrics
 import torch
 import torch.nn as nn
 
 from torch_geometric_signed_directed.utils import directed_features_in_out
-from torch_geometric_signed_directed.nn.directed import DGCN_node_classification 
+from torch_geometric_signed_directed.nn.directed import DGCN_node_classification
 from torch_geometric_signed_directed.data import load_directed_real_data
 
 parser = argparse.ArgumentParser()
@@ -16,53 +16,63 @@ parser.add_argument('--lr', type=float, default=1e-2)
 parser.add_argument('--weight_decay', type=float, default=0.0005)
 args = parser.parse_args()
 
+
 def train(X, y, edge_index, edge_in, in_weight, edge_out, out_weight, mask):
     model.train()
-    out = model(X, edge_index, edge_in=edge_in, in_w=in_weight, 
-            edge_out=edge_out, out_w=out_weight)
+    out = model(X, edge_index, edge_in=edge_in, in_w=in_weight,
+                edge_out=edge_out, out_w=out_weight)
     loss = criterion(out[mask], y[mask])
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
-    train_acc = metrics.accuracy_score(y[mask].cpu(), out.max(dim=1)[1].cpu()[mask])
+    train_acc = metrics.accuracy_score(
+        y[mask].cpu(), out.max(dim=1)[1].cpu()[mask])
     return loss.detach().item(), train_acc
+
 
 def test(X, y, edge_index, edge_in, in_weight, edge_out, out_weight, mask):
     model.eval()
     with torch.no_grad():
-        out = model(X, edge_index, edge_in=edge_in, in_w=in_weight, 
-                edge_out=edge_out, out_w=out_weight)
-    test_acc = metrics.accuracy_score(y[mask].cpu(), out.max(dim=1)[1].cpu()[mask])
+        out = model(X, edge_index, edge_in=edge_in, in_w=in_weight,
+                    edge_out=edge_out, out_w=out_weight)
+    test_acc = metrics.accuracy_score(
+        y[mask].cpu(), out.max(dim=1)[1].cpu()[mask])
     return test_acc
 
-path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', args.dataset)
+
+path = osp.join(osp.dirname(osp.realpath(__file__)),
+                '..', 'data', args.dataset)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 dataset_name = args.dataset.split('/')
-data = load_directed_real_data(dataset=dataset_name[0], root=path, name=dataset_name[1]).to(device)
+data = load_directed_real_data(
+    dataset=dataset_name[0], root=path, name=dataset_name[1]).to(device)
 
 num_classes = (data.y.max() - data.y.min() + 1).cpu().numpy()
-model = DGCN_node_classification(num_features=data.x.shape[1], hidden=16, label_dim=num_classes).to(device)
+model = DGCN_node_classification(
+    num_features=data.x.shape[1], hidden=16, label_dim=num_classes).to(device)
 criterion = nn.NLLLoss()
 
 for split in range(data.train_mask.shape[1]):
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+    optimizer = torch.optim.Adam(
+        model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     X = data.x
-    train_mask = data.train_mask 
+    train_mask = data.train_mask
     val_mask = data.val_mask
     test_mask = data.test_mask
-    edge_index, edge_in, in_weight, edge_out, out_weight = directed_features_in_out(data.edge_index, len(X), data.edge_weight)
+    edge_index, edge_in, in_weight, edge_out, out_weight = directed_features_in_out(
+        data.edge_index, len(X), data.edge_weight)
     for epoch in range(args.epochs):
-        train_loss, train_acc = train(X, data.y, edge_index, 
-                                        edge_in, in_weight, edge_out, out_weight, 
-                                        train_mask[:,split])
-        val_acc = test(X, data.y, edge_index, 
-                        edge_in, in_weight, edge_out, out_weight, 
-                        val_mask[:,split])
+        train_loss, train_acc = train(X, data.y, edge_index,
+                                      edge_in, in_weight, edge_out, out_weight,
+                                      train_mask[:, split])
+        val_acc = test(X, data.y, edge_index,
+                       edge_in, in_weight, edge_out, out_weight,
+                       val_mask[:, split])
         print(f'Split: {split:02d}, Epoch: {epoch:03d}, Train_Loss: {train_loss:.4f}, Train_Acc: {train_acc:.4f}, Val_Acc: {val_acc:.4f}')
-    
-    test_acc = test(X, data.y, edge_index, 
+
+    test_acc = test(X, data.y, edge_index,
                     edge_in, in_weight, edge_out, out_weight,
-                    test_mask[:,split])
+                    test_mask[:, split])
     print(f'Split: {split:02d}, Test_Acc: {test_acc:.4f}')
     model.reset_parameters()

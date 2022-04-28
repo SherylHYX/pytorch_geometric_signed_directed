@@ -1,9 +1,9 @@
 import os.path as osp
-import numpy as np
 import argparse
 
 import torch
 from sklearn import metrics
+import numpy as np
 
 from torch_geometric_signed_directed.utils import (
     link_class_split, in_out_degree, cal_fast_appr, drop_feature, pred_digcl_link)
@@ -21,9 +21,10 @@ parser.add_argument('--weight_decay', type=float, default=0.0005)
 parser.add_argument('--curr-type', type=str, default='log')
 args = parser.parse_args()
 
-def train(X, edge_index, 
-            alpha_1, alpha_2, 
-            drop_feature1, drop_feature2):
+
+def train(X, edge_index,
+          alpha_1, alpha_2,
+          drop_feature1, drop_feature2):
     model.train()
     optimizer.zero_grad()
 
@@ -42,21 +43,26 @@ def train(X, edge_index,
 
     return loss.item()
 
-path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', args.dataset)
+
+path = osp.join(osp.dirname(osp.realpath(__file__)),
+                '..', 'data', args.dataset)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 dataset_name = args.dataset.split('/')
-data = load_directed_real_data(dataset=dataset_name[0], root=path, name=dataset_name[1]).to(device)
-link_data = link_class_split(data, prob_val=0.15, prob_test=0.05, task = 'direction', device=device)
+data = load_directed_real_data(
+    dataset=dataset_name[0], root=path, name=dataset_name[1]).to(device)
+link_data = link_class_split(
+    data, prob_val=0.15, prob_test=0.05, task='direction', device=device)
 
 model = DiGCL(in_channels=2, activation='relu',
-                 num_hidden=32, num_proj_hidden=16,
-                 tau=0.5, num_layers=2).to(device)
+              num_hidden=32, num_proj_hidden=16,
+              tau=0.5, num_layers=2).to(device)
 
 
 alpha_1 = 0.1
 for split in list(link_data.keys()):
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+    optimizer = torch.optim.Adam(
+        model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     edge_index = link_data[split]['graph']
     edge_weight = link_data[split]['weights']
     X = in_out_degree(edge_index, size=len(data.x)).to(device)
@@ -82,10 +88,11 @@ for split in list(link_data.keys()):
             print('wrong curr type')
             exit()
 
-        loss = train(X, edge_index, 
-                        alpha_1, alpha_2, 
-                        args.drop_feature_rate_1, args.drop_feature_rate_2)
-        print(f'Split: {split:02d}, Epoch: {epoch:03d}, Train_Loss: {loss:.4f}')
+        loss = train(X, edge_index,
+                     alpha_1, alpha_2,
+                     args.drop_feature_rate_1, args.drop_feature_rate_2)
+        print(
+            f'Split: {split:02d}, Epoch: {epoch:03d}, Train_Loss: {loss:.4f}')
 
     model.eval()
     z = model(X, edge_index_init, edge_weight_init)
@@ -93,6 +100,8 @@ for split in list(link_data.keys()):
     query_test = link_data[split]['test']['edges'].cpu()
     y = link_data[split]['train']['label'].cpu()
     test_y = link_data[split]['test']['label'].cpu()
-    pred = pred_digcl_link(z, y=y, train_index=query_train, test_index=query_test)
-    print(f'Split: {split:02d}, Test_Acc: {metrics.accuracy_score(test_y, pred):.4f}')
+    pred = pred_digcl_link(
+        z, y=y, train_index=query_train, test_index=query_test)
+    print(
+        f'Split: {split:02d}, Test_Acc: {metrics.accuracy_score(test_y, pred):.4f}')
     model.reset_parameters()

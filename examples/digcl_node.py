@@ -1,9 +1,9 @@
 import os.path as osp
-import numpy as np
 import argparse
 
 import torch
 from sklearn import metrics
+import numpy as np
 
 from torch_geometric_signed_directed.utils import (
     cal_fast_appr, drop_feature, pred_digcl_node)
@@ -20,9 +20,10 @@ parser.add_argument('--weight_decay', type=float, default=0.0005)
 parser.add_argument('--curr-type', type=str, default='log')
 args = parser.parse_args()
 
-def train(X, edge_index, 
-            alpha_1, alpha_2, 
-            drop_feature1, drop_feature2):
+
+def train(X, edge_index,
+          alpha_1, alpha_2,
+          drop_feature1, drop_feature2):
     model.train()
     optimizer.zero_grad()
 
@@ -41,20 +42,23 @@ def train(X, edge_index,
 
     return loss.item()
 
-path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', args.dataset)
+
+path = osp.join(osp.dirname(osp.realpath(__file__)),
+                '..', 'data', args.dataset)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 dataset_name = args.dataset
 data = load_directed_real_data(dataset=dataset_name, root=path).to(device)
 
 model = DiGCL(in_channels=data.x.shape[1], activation='relu',
-                 num_hidden=64, num_proj_hidden=32,
-                 tau=0.4, num_layers=2).to(device)
+              num_hidden=64, num_proj_hidden=32,
+              tau=0.4, num_layers=2).to(device)
 
 
 alpha_1 = 0.1
 for split in range(data.train_mask.shape[-1]):
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+    optimizer = torch.optim.Adam(
+        model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     edge_index = data.edge_index
     edge_weight = data.edge_weight
     X = data.x
@@ -80,15 +84,17 @@ for split in range(data.train_mask.shape[-1]):
             print('wrong curr type')
             exit()
 
-        loss = train(X, edge_index, 
-                        alpha_1, alpha_2, 
-                        args.drop_feature_rate_1, args.drop_feature_rate_2)
-        print(f'Split: {split:02d}, Epoch: {epoch:03d}, Train_Loss: {loss:.4f}')
+        loss = train(X, edge_index,
+                     alpha_1, alpha_2,
+                     args.drop_feature_rate_1, args.drop_feature_rate_2)
+        print(
+            f'Split: {split:02d}, Epoch: {epoch:03d}, Train_Loss: {loss:.4f}')
 
     model.eval()
     z = model(X, edge_index_init, edge_weight_init)
-    pred = pred_digcl_node(z, y=data.y, 
-                            train_index=data.train_mask[:,split].cpu(), 
-                            test_index=data.test_mask[:,split].cpu())
-    print(f'Split: {split:02d}, Test_Acc: {metrics.accuracy_score(data.y[data.test_mask[:,split]].cpu(), pred):.4f}')
+    pred = pred_digcl_node(z, y=data.y,
+                           train_index=data.train_mask[:, split].cpu(),
+                           test_index=data.test_mask[:, split].cpu())
+    print(
+        f'Split: {split:02d}, Test_Acc: {metrics.accuracy_score(data.y[data.test_mask[:,split]].cpu(), pred):.4f}')
     model.reset_parameters()
