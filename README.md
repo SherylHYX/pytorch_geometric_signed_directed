@@ -80,11 +80,11 @@ In detail, the following signed or directed graph neural networks, as well as re
 
 * **[DIGRAC_node_clustering](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.directed.DIGRAC_node_clustering.DIGRAC_node_clustering)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
 
-* **[DGCN_node_classification](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.directed.DGCN_node_classification.DGCN_node_classification)** from Tong *et al.*: [Directed Graph Convolutional Network.](https://arxiv.org/pdf/2004.13970.pdf) (ArXiv 2020)
-
 
 <details>
 <summary><b>Expand to see all methods implemented for directed networks...</b></summary>
+
+* **[DGCN_node_classification](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.directed.DGCN_node_classification.DGCN_node_classification)** from Tong *et al.*: [Directed Graph Convolutional Network.](https://arxiv.org/pdf/2004.13970.pdf) (ArXiv 2020)
 
 
 * **[DiGCN_node_classification](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.directed.DiGCN_node_classification.DiGCN_node_classification)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
@@ -110,10 +110,6 @@ In detail, the following signed or directed graph neural networks, as well as re
   
 
 </details>
-  
-**Auxiliary Methods and Layers**
-
-* **[complex_relu_layer](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.directed.complex_relu.complex_relu_layer)** from Zhang *et al.*: [MagNet: A Neural Network for Directed Graphs.](https://arxiv.org/pdf/2102.11391.pdf) (NeurIPS 2021)
 
 
 **Network Generation Methods**
@@ -159,15 +155,16 @@ In detail, the following signed or directed graph neural networks, as well as re
 
 * **[Probablistic Balanced Normalized Loss](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.signed.prob_balanced_normalized_loss.Prob_Balanced_Normalized_Loss)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
 
-* **[Probablistic Balanced Ratio Loss](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.signed.prob_balanced_ratio_loss.Prob_Balanced_Ratio_Loss)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
-
-* **[Unhappy Ratio](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.signed.unhappy_ratio.Unhappy_Ratio)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
 
 * **[Probablistic Imbalance Objective](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.directed.prob_imbalance_loss.Prob_Imbalance_Loss)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
 
 
 <details>
 <summary><b>Expand to see all task-specific objectives and evaluation methods...</b></summary>
+
+* **[Probablistic Balanced Ratio Loss](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.signed.prob_balanced_ratio_loss.Prob_Balanced_Ratio_Loss)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
+
+* **[Unhappy Ratio](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.signed.unhappy_ratio.Unhappy_Ratio)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
   
 * **[link_sign_prediction_logistic_function](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.signed.link_sign_prediction_logistic_function.link_sign_prediction_logistic_function)** for signed networks' link sign prediction task.
 
@@ -183,13 +180,11 @@ In detail, the following signed or directed graph neural networks, as well as re
 
 * **[get_magnetic_Laplacian](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.directed.get_magnetic_Laplacian.get_magnetic_Laplacian)** from from Zhang *et al.*: [MagNet: A Neural Network for Directed Graphs.](https://arxiv.org/pdf/2102.11391.pdf) (NeurIPS 2021)
 
-* **[get_appr_directed_adj](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.directed.get_adjs_DiGCN.get_appr_directed_adj)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
-
-
-* **[scipy_sparse_to_torch_sparse](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.general.scipy_sparse_to_torch_sparse.scipy_sparse_to_torch_sparse)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
 
 <details>
 <summary><b>Expand to see all utilities and preprocessing methods...</b></summary>
+
+* **[get_appr_directed_adj](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.directed.get_adjs_DiGCN.get_appr_directed_adj)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
   
 * **[meta_graph_generation](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.directed.meta_graph_generation.meta_graph_generation)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
 
@@ -200,6 +195,9 @@ In detail, the following signed or directed graph neural networks, as well as re
 * **[get_second_directed_adj](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.directed.get_adjs_DiGCN.get_second_directed_adj)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
 
 * **[cal_fast_appr](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.directed.get_adjs_DiGCN.cal_fast_appr)** from Tong *et al.*: [Digraph Inception Convolutional Networks.](https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf) (NeurIPS 2020)
+
+
+* **[scipy_sparse_to_torch_sparse](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.general.scipy_sparse_to_torch_sparse.scipy_sparse_to_torch_sparse)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
 
   
 </details>

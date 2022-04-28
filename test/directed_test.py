@@ -3,7 +3,7 @@ import scipy.sparse as sp
 import torch
 from torch_sparse import SparseTensor
 
-from torch_geometric_signed_directed.nn.directed import (
+from torch_geometric_signed_directed.nn import (
     DiGCN_node_classification, DiGCN_Inception_Block_node_classification, 
     DIGRAC_node_clustering, MagNet_node_classification, 
     DGCN_node_classification, DGCNConv, DiGCL,

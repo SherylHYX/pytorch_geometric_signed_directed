@@ -2,7 +2,7 @@ import numpy as np
 import scipy.sparse as sp
 import torch
 from torch_sparse import SparseTensor
-from torch_geometric_signed_directed.nn.signed import (
+from torch_geometric_signed_directed.nn import (
     SSSNET_node_clustering, SDGNN, SGCN, SiGAT, SNEA, SGCNConv, SNEAConv
 )
 from torch_geometric_signed_directed.data import (
