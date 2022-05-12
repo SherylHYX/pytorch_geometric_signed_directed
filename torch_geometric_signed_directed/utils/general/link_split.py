@@ -147,14 +147,23 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
     if data.edge_weight is None:
         data.edge_weight = torch.ones(len(row))
 
-    len_val = int(prob_val*len(row))
-    len_test = int(prob_test*len(row))
 
     if hasattr(data, "A"):
         A = data.A.tocsr()
     else:
         A = coo_matrix((data.edge_weight.cpu(), (row, col)),
                        shape=(size, size), dtype=np.float32).tocsr()
+
+    if task != 'sign':
+        len_val = int(prob_val*len(row))
+        len_test = int(prob_test*len(row))
+    else:
+        pos_ratio = (A.toarray()>0).sum()/(A.toarray()!=0).sum()
+        neg_ratio = 1 - pos_ratio
+        len_val_pos = int(prob_val*len(row)*pos_ratio)
+        len_val_neg = int(prob_val*len(row)*neg_ratio)
+        len_test_pos = int(prob_test*len(row)*pos_ratio)
+        len_test_neg = int(prob_test*len(row)*neg_ratio)
 
     undirect_edge_index = to_undirected(edge_index)
     neg_edges = negative_sampling(undirect_edge_index, num_neg_samples=len(
@@ -195,10 +204,14 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
             if np.sum(exist) < len(nmst):
                 nmst = nmst[exist]
 
-            ids_test = nmst[:len_test].copy()
-            ids_val = nmst[len_test:len_test+len_val].copy()
-            ids_train = np.array(
-                nmst[len_test+len_val:max_samples].tolist()+mst)
+            pos_val_edges = nmst[np.array(A[nmst[:, 0], nmst[:, 1]] > 0).squeeze()].tolist()
+            neg_val_edges = nmst[np.array(A[nmst[:, 0], nmst[:, 1]] < 0).squeeze()].tolist()
+
+            ids_test = np.array(pos_val_edges[:len_test_pos].copy() + neg_val_edges[:len_test_neg].copy())
+            ids_val = np.array(pos_val_edges[len_test_pos:len_test_pos+len_val_pos].copy() + \
+                neg_val_edges[len_test_neg:len_test_neg+len_val_neg].copy())
+            ids_train = np.array(pos_val_edges[len_test_pos+len_val_pos:max_samples] + \
+                neg_val_edges[len_test_neg+len_val_neg:max_samples] + mst)
 
             labels_test = 1.0 * \
                 np.array(A[ids_test[:, 0], ids_test[:, 1]] > 0).flatten()
