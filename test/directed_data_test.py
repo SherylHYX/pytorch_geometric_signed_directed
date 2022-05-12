@@ -151,7 +151,7 @@ def test_link_split():
         assert len(list(set(mst) - set(list(map(tuple, train_edges))))) == 0
 
     datasets = link_class_split(
-        directed_dataset, prob_val=0.15, prob_test=0.05, task='all')
+        directed_dataset, prob_val=0.15, prob_test=0.05, task='three_class_digraph')
     for i in datasets:
         assert torch.sum(datasets[i]['test']['label'] == 0) > 0
         assert torch.sum(datasets[i]['test']['label'] == 1) > 0
@@ -181,7 +181,7 @@ def test_link_split():
     undirected_edges = to_undirected(directed_dataset.edge_index)
     undirected_data = Data(x=directed_dataset.x, edge_index=undirected_edges)
     datasets = link_class_split(
-        undirected_data, prob_val=0.05, prob_test=0.05, task='all')
+        undirected_data, prob_val=0.05, prob_test=0.05, task='three_class_digraph')
     for i in datasets:
         assert torch.sum(datasets[i]['test']['label'] == 0) > 0
         assert torch.sum(datasets[i]['test']['label'] == 1) == 0

@@ -29,7 +29,7 @@ def undirected_label2directed_label(adj: scipy.sparse.csr_matrix, edge_pairs: Li
                 The undirected edges in the directed input graph are removed to avoid ambiguity.
             * If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists).
                 The undirected edges in the directed input graph are removed to avoid ambiguity.
-            * If task == "all": 0 (the directed edge exists in the graph), 
+            * If task == "three_class_digraph": 0 (the directed edge exists in the graph), 
                 1 (the edge of the reversed direction exists), 2 (the edge doesn't exist in both directions). 
                 The undirected edges in the directed input graph are removed to avoid ambiguity.
             * If task == "sign": 0 (negative edge), 1 (positive edge). 
@@ -132,12 +132,12 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
 
                 * If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists). The undirected edges in the directed input graph are removed to avoid ambiguity.
 
-                * If task == "all": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the edge doesn't exist in both directions). The undirected edges in the directed input graph are removed to avoid ambiguity.
+                * If task == "three_class_digraph": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the edge doesn't exist in both directions). The undirected edges in the directed input graph are removed to avoid ambiguity.
 
                 * If task == "sign": 0 (negative edge), 1 (positive edge). This is the link sign prediction task for signed networks.
     """
-    assert task in ["existence", "direction", "all",
-                    "sign"], "Please select a valid task from 'existence', 'direction', 'all', and 'sign'!"
+    assert task in ["existence", "direction", "three_class_digraph",
+                    "sign"], "Please select a valid task from 'existence', 'direction', 'three_class_digraph', and 'sign'!"
     edge_index = data.edge_index.cpu()
     row, col = edge_index[0], edge_index[1]
     if size is None:

@@ -458,7 +458,7 @@ def test_MagNet_Link():
 
     num_classes = 3
     link_data = link_class_split(
-        data, prob_val=0.15, prob_test=0.05, task='all', device=device)
+        data, prob_val=0.15, prob_test=0.05, task='three_class_digraph', device=device)
     link_data[0]['graph'] = link_data[0]['graph']
     link_data[0]['train']['edges'] = link_data[0]['train']['edges']
     link_data[0]['weights'] = link_data[0]['weights']
