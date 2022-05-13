@@ -11,7 +11,7 @@ from scipy.sparse import coo_matrix
 
 
 def undirected_label2directed_label(adj: scipy.sparse.csr_matrix, edge_pairs: List[Tuple],
-                                    task: str, directed_graph: bool = True) -> Union[List, List]:
+                                    task: str, directed_graph: bool = True, signed_directed: bool = False) -> Union[List, List]:
     r"""Generate edge labels based on the task.
 
     Arg types:
@@ -32,6 +32,14 @@ def undirected_label2directed_label(adj: scipy.sparse.csr_matrix, edge_pairs: Li
             * If task == "three_class_digraph": 0 (the directed edge exists in the graph), 
                 1 (the edge of the reversed direction exists), 2 (the edge doesn't exist in both directions). 
                 The undirected edges in the directed input graph are removed to avoid ambiguity.
+            * If task == "four_class_signed_digraph": 0 (the positive directed edge exists in the graph), 
+                1 (the negative directed edge exists in the graph), 2 (the positive edge of the reversed direction exists),
+                3 (the edge of the reversed direction exists). 
+                The undirected edges in the directed input graph are removed to avoid ambiguity.
+            * If task == "five_class_signed_digraph": 0 (the positive directed edge exists in the graph), 
+                1 (the negative directed edge exists in the graph), 2 (the positive edge of the reversed direction exists),
+                3 (the edge of the reversed direction exists), 4 (the edge doesn't exist in both directions). 
+                The undirected edges in the directed input graph are removed to avoid ambiguity.
             * If task == "sign": 0 (negative edge), 1 (positive edge). 
         * **label_weight** (List) - The weight list of the query edges. The weight is zero if the directed edge 
             doesn't exist in both directions.
@@ -47,7 +55,93 @@ def undirected_label2directed_label(adj: scipy.sparse.csr_matrix, edge_pairs: Li
     # get directed edges
     edge_pairs = np.array(list(map(list, edge_pairs)))
 
-    if directed_graph:
+    
+    if signed_directed:
+        directed_pos = (
+            np.array(adj[edge_pairs[:, 0], edge_pairs[:, 1]]).flatten() > 0).tolist()
+        directed_neg = (
+            np.array(adj[edge_pairs[:, 0], edge_pairs[:, 1]]).flatten() < 0).tolist()
+        inversed_pos = (
+            np.array(adj[edge_pairs[:, 1], edge_pairs[:, 0]]).flatten() > 0).tolist()
+        inversed_neg = (
+            np.array(adj[edge_pairs[:, 1], edge_pairs[:, 0]]).flatten() < 0).tolist()
+        undirected_pos = np.logical_and(directed_pos, inversed_pos)
+        undirected_neg = np.logical_and(directed_neg, inversed_neg)
+
+        directed_pos = list(map(tuple, edge_pairs[directed_pos].tolist()))
+        directed_neg = list(map(tuple, edge_pairs[directed_neg].tolist()))
+        inversed_pos = list(map(tuple, edge_pairs[inversed_pos].tolist()))
+        inversed_neg = list(map(tuple, edge_pairs[inversed_neg].tolist()))
+        undirected_pos = list(map(tuple, edge_pairs[undirected_pos].tolist()))
+        undirected_neg = list(map(tuple, edge_pairs[undirected_neg].tolist()))
+
+        edge_pairs = list(map(tuple, edge_pairs.tolist()))
+        negative = np.array(
+            list(set(edge_pairs) - set(directed_pos) - set(inversed_pos) - set(directed_neg) - set(inversed_neg)))
+        directed_pos = np.array(list(set(directed_pos) - set(undirected_pos)))
+        inversed_pos = np.array(list(set(inversed_pos) - set(undirected_pos)))
+        directed_neg = np.array(list(set(directed_neg) - set(undirected_neg)))
+        inversed_neg = np.array(list(set(inversed_neg) - set(undirected_neg)))
+
+        directed = np.vstack([directed_pos, directed_neg])
+        if not inversed_pos.size:
+            inversed = inversed_neg
+            inversed_pos = []
+        elif not inversed_neg.size:
+            inversed = inversed_pos
+            inversed_neg = []
+        else:
+            inversed = np.vstack([inversed_pos, inversed_neg])
+        undirected_pos, undirected_neg = np.array(undirected_pos), np.array(undirected_neg)
+        if not undirected_pos.size:
+            undirected = undirected_neg
+        elif not undirected_neg.size:
+            undirected = undirected_pos
+        else:
+            undirected = np.vstack([undirected_pos, undirected_neg])
+        new_edge_pairs = np.vstack(
+            [directed, inversed]) if inversed.size else directed
+        new_edge_pairs = np.vstack([new_edge_pairs, new_edge_pairs[:, [1, 0]]])
+        new_edge_pairs = np.vstack([new_edge_pairs, negative])
+
+        labels = np.vstack([np.zeros((len(directed_pos), 1), dtype=np.int32),
+                            np.ones((len(directed_neg), 1), dtype=np.int32),
+                            2 * np.ones((len(inversed_pos), 1), dtype=np.int32),
+                            3 * np.ones((len(inversed_neg), 1), dtype=np.int32)])
+
+        labels = np.vstack([labels, 2 * np.ones((len(directed_pos), 1), dtype=np.int32),
+                            3 * np.ones((len(directed_neg), 1), dtype=np.int32),
+                            np.zeros((len(inversed_pos), 1), dtype=np.int32),
+                            np.ones((len(inversed_neg), 1), dtype=np.int32)])
+
+        labels = np.vstack(
+            [labels, 4*np.ones((len(negative), 1), dtype=np.int32)])
+
+        if len(inversed_pos) and len(inversed_neg):
+            label_weight = np.vstack([np.array(adj[directed_pos[:, 0], directed_pos[:, 1]]).flatten()[:, None],
+                                    np.array(adj[directed_neg[:, 0], directed_neg[:, 1]]).flatten()[:, None], 
+                                    np.array(adj[inversed_pos[:, 1], inversed_pos[:, 0]]).flatten()[:, None],
+                                    np.array(adj[inversed_neg[:, 1], inversed_neg[:, 0]]).flatten()[:, None]])
+        elif len(inversed_pos):
+            label_weight = np.vstack([np.array(adj[directed_pos[:, 0], directed_pos[:, 1]]).flatten()[:, None],
+                                    np.array(adj[directed_neg[:, 0], directed_neg[:, 1]]).flatten()[:, None], 
+                                    np.array(adj[inversed_pos[:, 1], inversed_pos[:, 0]]).flatten()[:, None]])
+        elif len(inversed_neg):
+            label_weight = np.vstack([np.array(adj[directed_pos[:, 0], directed_pos[:, 1]]).flatten()[:, None],
+                                    np.array(adj[directed_neg[:, 0], directed_neg[:, 1]]).flatten()[:, None],
+                                    np.array(adj[inversed_neg[:, 1], inversed_neg[:, 0]]).flatten()[:, None]])
+        else:
+            label_weight = np.vstack([np.array(adj[directed_pos[:, 0], directed_pos[:, 1]]).flatten()[:, None],
+                                    np.array(adj[directed_neg[:, 0], directed_neg[:, 1]]).flatten()[:, None]])
+        label_weight = np.vstack([label_weight, label_weight])
+        label_weight = np.vstack(
+            [label_weight, np.zeros((len(negative), 1), dtype=np.int32)])
+        assert label_weight[labels==0].min() > 0
+        assert label_weight[labels==1].max() < 0
+        assert label_weight[labels==2].min() > 0
+        assert label_weight[labels==3].max() < 0
+        assert label_weight[labels==4].mean() == 0
+    elif directed_graph:
         directed = (np.abs(
             np.array(adj[edge_pairs[:, 0], edge_pairs[:, 1]]).flatten()) > 0).tolist()
         inversed = (np.abs(
@@ -98,6 +192,7 @@ def undirected_label2directed_label(adj: scipy.sparse.csr_matrix, edge_pairs: Li
         # existence prediction
         label_weight[labels == 1] = 0  # set reversed edges as 0
         labels[labels == 2] = 1
+        
 
     return new_edge_pairs, labels.flatten(), label_weight.flatten(), undirected
 
@@ -134,9 +229,19 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
 
                 * If task == "three_class_digraph": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the edge doesn't exist in both directions). The undirected edges in the directed input graph are removed to avoid ambiguity.
 
+                * If task == "four_class_signed_digraph": 0 (the positive directed edge exists in the graph), 
+                    1 (the negative directed edge exists in the graph), 2 (the positive edge of the reversed direction exists),
+                    3 (the edge of the reversed direction exists). 
+                    The undirected edges in the directed input graph are removed to avoid ambiguity.
+                
+                * If task == "five_class_signed_digraph": 0 (the positive directed edge exists in the graph), 
+                    1 (the negative directed edge exists in the graph), 2 (the positive edge of the reversed direction exists),
+                    3 (the edge of the reversed direction exists), 4 (the edge doesn't exist in both directions). 
+                    The undirected edges in the directed input graph are removed to avoid ambiguity.
+                
                 * If task == "sign": 0 (negative edge), 1 (positive edge). This is the link sign prediction task for signed networks.
     """
-    assert task in ["existence", "direction", "three_class_digraph",
+    assert task in ["existence", "direction", "three_class_digraph", "four_class_signed_digraph", "five_class_signed_digraph", 
                     "sign"], "Please select a valid task from 'existence', 'direction', 'three_class_digraph', and 'sign'!"
     edge_index = data.edge_index.cpu()
     row, col = edge_index[0], edge_index[1]
@@ -154,10 +259,10 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
         A = coo_matrix((data.edge_weight.cpu(), (row, col)),
                        shape=(size, size), dtype=np.float32).tocsr()
 
-    if task != 'sign':
-        len_val = int(prob_val*len(row))
-        len_test = int(prob_test*len(row))
-    else:
+    
+    len_val = int(prob_val*len(row))
+    len_test = int(prob_test*len(row))
+    if task not in ["existence", "direction", 'three_class_digraph']:
         pos_ratio = (A.toarray()>0).sum()/(A.toarray()!=0).sum()
         neg_ratio = 1 - pos_ratio
         len_val_pos = int(prob_val*len(row)*pos_ratio)
@@ -220,7 +325,7 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
             labels_train = 1.0 * \
                 np.array(A[ids_train[:, 0], ids_train[:, 1]] > 0).flatten()
             undirected_train = np.array([])
-        else:
+        elif task in ["existence", "direction", 'three_class_digraph']:
             ids_test = nmst[:len_test]+neg_edges[:len_test]
             ids_val = nmst[len_test:len_test+len_val] + \
                 neg_edges[len_test:len_test+len_val]
@@ -236,6 +341,29 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
                 A, ids_val, task, is_directed)
             ids_train, labels_train, _, undirected_train = undirected_label2directed_label(
                 A, ids_train, task, is_directed)
+        else:
+            nmst = np.array(nmst)
+            pos_val_edges = nmst[np.array(A[nmst[:, 0], nmst[:, 1]] > 0).squeeze()].tolist()
+            neg_val_edges = nmst[np.array(A[nmst[:, 0], nmst[:, 1]] < 0).squeeze()].tolist()
+
+            ids_test = np.array(pos_val_edges[:len_test_pos].copy() + neg_val_edges[:len_test_neg].copy() + \
+                neg_edges[:len_test])
+            ids_val = np.array(pos_val_edges[len_test_pos:len_test_pos+len_val_pos].copy() + \
+                neg_val_edges[len_test_neg:len_test_neg+len_val_neg].copy() + \
+                neg_edges[len_test:len_test+len_val])
+            
+            if len_test+len_val < len(nmst):
+                ids_train = np.array(pos_val_edges[len_test_pos+len_val_pos:max_samples] + \
+                    neg_val_edges[len_test_neg+len_val_neg:max_samples] + mst + neg_edges[len_test+len_val:max_samples])
+            else:
+                ids_train = mst+neg_edges[len_test+len_val:max_samples]
+
+            ids_test, labels_test, _, _ = undirected_label2directed_label(
+                A, ids_test, task, is_directed, True)
+            ids_val, labels_val, _, _ = undirected_label2directed_label(
+                A, ids_val, task, is_directed, True)
+            ids_train, labels_train, _, undirected_train = undirected_label2directed_label(
+                A, ids_train, task, is_directed, True)
 
         # convert back to directed graph
         if task == 'direction':
@@ -250,6 +378,15 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
             ids_val = ids_val[labels_val < 2]
             #label_val_w = label_val_w[labels_val <2]
             labels_val = labels_val[labels_val < 2]
+        elif task == 'four_class_signed_digraph':
+            ids_train = ids_train[labels_train < 4]
+            labels_train = labels_train[labels_train < 4]
+
+            ids_test = ids_test[labels_test < 4]
+            labels_test = labels_test[labels_test < 4]
+
+            ids_val = ids_val[labels_val < 4]
+            labels_val = labels_val[labels_val < 4]
 
         # set up the observed graph and weights after splitting
         oberved_edges = -np.ones((len(ids_train), 2), dtype=np.int32)

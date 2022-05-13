@@ -274,7 +274,7 @@ class SignedData(Data):
                                 seed_size_per_class=seed_size_per_class, seed=seed, data_split=data_split)
 
     def link_split(self, size: int = None, splits: int = 10, prob_test: float = 0.15,
-                   prob_val: float = 0.05, seed: int = 0, ratio: float = 1.0, maintain_connect: bool = False, device: str = 'cpu') -> dict:
+                   prob_val: float = 0.05, task: str = 'sign', seed: int = 0, ratio: float = 1.0, maintain_connect: bool = False, device: str = 'cpu') -> dict:
         r"""Get train/val/test dataset for the link sign prediction task. 
 
         Arg types:
@@ -283,6 +283,7 @@ class SignedData(Data):
             * **prob_test** (float, optional) - The proportion of edges selected for testing (Default: 0.15).
             * **splits** (int, optional) - The split size (Default: 10).
             * **size** (int, optional) - The size of the input graph. If none, the graph size is the maximum index of nodes plus 1 (Default: None).
+            * **task** (str, optional) - The evaluation task: four_class_signed_digraph (four-class sign and direction prediction); five_class_signed_digraph (five-class sign, direction and existence prediction); sign (link sign prediction). (Default: 'sign')
             * **seed** (int, optional) - The random seed for positve edge selection (Default: 0). Negative edges are selected by pytorch geometric negative_sampling.
             * **maintain_connect** (bool, optional) - If maintaining connectivity when removing edges for validation and testing. The connectivity is maintained by obtaining edges in the minimum spanning tree/forest first. These edges will not be removed for validation and testing. (Default: False).
             * **ratio** (float, optional) - The maximum ratio of edges used for dataset generation. (Default: 1.0)
@@ -295,6 +296,18 @@ class SignedData(Data):
 
                 2. datasets[i]['train'/'val'/'testing']['edges'] (List): the edge list for training/validation/testing.
 
-                3. datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:  0 (negative edge), 1 (positive edge). 
+                3. datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:
+
+                    * If task == "four_class_signed_digraph": 0 (the positive directed edge exists in the graph), 
+                        1 (the negative directed edge exists in the graph), 2 (the positive edge of the reversed direction exists),
+                        3 (the edge of the reversed direction exists). 
+                        The undirected edges in the directed input graph are removed to avoid ambiguity.
+                    
+                    * If task == "five_class_signed_digraph": 0 (the positive directed edge exists in the graph), 
+                        1 (the negative directed edge exists in the graph), 2 (the positive edge of the reversed direction exists),
+                        3 (the edge of the reversed direction exists), 4 (the edge doesn't exist in both directions). 
+                        The undirected edges in the directed input graph are removed to avoid ambiguity.
+
+                    * If task == "sign": 0 (negative edge), 1 (positive edge). 
         """
-        return link_class_split(self, size, splits, prob_test, prob_val, 'sign', seed, maintain_connect, ratio, device)
+        return link_class_split(self, size, splits, prob_test, prob_val, task, seed, maintain_connect, ratio, device)

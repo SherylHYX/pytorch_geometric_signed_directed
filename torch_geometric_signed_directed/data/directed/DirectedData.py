@@ -148,6 +148,7 @@ class DirectedData(Data):
                     * If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists). The undirected edges in the directed input graph are removed to avoid ambiguity.
 
                     * If task == "three_class_digraph": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the edge doesn't exist in both directions). The undirected edges in the directed input graph are removed to avoid ambiguity.
+                
         """
         assert task != 'sign', 'If you would like to solve a link sign prediction task, use SignedData class instead!'
         return link_class_split(data=self, size=size, splits=splits, prob_test=prob_test,

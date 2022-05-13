@@ -128,14 +128,14 @@ Signed Edge Splitting
     from torch_geometric_signed_directed.utils import link_split
 
     signed_dataset = load_directed_real_data(dataset='bitcoin_alpha', root='./tmp_data/')
-    datasets = link_class_split(signed_dataset, prob_val = 0.15, prob_test = 0.05)
+    datasets = link_class_split(signed_dataset, prob_val = 0.15, prob_test = 0.05, task = 'sign')
 
 .. code-block:: python
 
     from torch_geometric_signed_directed.data import load_signed_real_data
 
     signed_dataset = load_directed_real_data(dataset='bitcoin_alpha', root='./tmp_data/')
-    datasets = signed_dataset.link_split(prob_val = 0.15, prob_test = 0.05)
+    datasets = signed_dataset.link_split(prob_val = 0.15, prob_test = 0.05, task = 'sign')
 
 Directed Edge Splitting
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -154,3 +154,21 @@ Directed Edge Splitting
 
     directed_dataset = load_directed_real_data(dataset='telegram', root='./tmp_data/')
     datasets = directed_dataset.link_split(prob_val = 0.15, prob_test = 0.05, task = 'direction')
+
+Signed Directed Edge Splitting
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    from torch_geometric_signed_directed.data import load_signed_real_data
+    from torch_geometric_signed_directed.utils import link_split
+
+    signed_dataset = load_directed_real_data(dataset='bitcoin_alpha', root='./tmp_data/')
+    datasets = link_class_split(signed_dataset, prob_val = 0.15, prob_test = 0.05, task = 'four_class_signed_digraph')
+
+.. code-block:: python
+
+    from torch_geometric_signed_directed.data import load_signed_real_data
+
+    signed_dataset = load_directed_real_data(dataset='bitcoin_alpha', root='./tmp_data/')
+    datasets = signed_dataset.link_split(prob_val = 0.15, prob_test = 0.05, task = 'five_class_signed_digraph')
