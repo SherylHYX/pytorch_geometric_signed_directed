@@ -4,8 +4,24 @@ import torch
 from torch_geometric_signed_directed.data import (
     SSBM, polarized_SSBM, SignedData, load_signed_real_data, SignedDirectedGraphDataset
 )
-from torch_geometric_signed_directed.utils import link_class_split
+from torch_geometric_signed_directed.utils import link_class_split, in_out_degree
 
+def test_in_out_degree():
+    signed_dataset = load_signed_real_data(
+        root='./tmp_data/', dataset='bitcoin_alpha')
+    degrees = in_out_degree(signed_dataset.edge_index,
+                            size=signed_dataset.num_nodes, signed=False)
+    assert degrees.shape == (signed_dataset.num_nodes, 2)
+    assert degrees.min() >= 0
+    degrees = in_out_degree(signed_dataset.edge_index,
+                            size=signed_dataset.num_nodes, signed=True)
+    assert degrees.shape == (signed_dataset.num_nodes, 4)
+    assert degrees.min() >= 0
+    degrees = in_out_degree(signed_dataset.edge_index,
+                            size=signed_dataset.num_nodes,
+                            edge_weight= signed_dataset.edge_weight, signed=True)
+    assert degrees.shape == (signed_dataset.num_nodes, 4)
+    assert degrees.min() >= 0
 
 def test_sign_link_split():
     signed_dataset = load_signed_real_data(
