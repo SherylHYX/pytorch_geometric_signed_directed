@@ -32,8 +32,12 @@ def test_sign_link_split():
     assert signed_dataset.is_weighted
     assert signed_dataset.is_signed
     assert signed_dataset.is_directed
+    
+    datasets = link_class_split(signed_dataset, prob_val=0.01, prob_test=0.01, task='five_class_signed_digraph',
+                                maintain_connect=True, ratio=1)
     datasets = link_class_split(signed_dataset, prob_val=0.01, prob_test=0.01, task='four_class_signed_digraph',
                                 maintain_connect=False, ratio=0.2)
+    
     A = signed_dataset.A.tocsr()
     assert len(list(datasets.keys())) == 10
     for i in datasets:
