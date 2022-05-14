@@ -89,6 +89,10 @@ def test_link_split():
     degrees = in_out_degree(directed_dataset.edge_index,
                             size=len(directed_dataset.x))
     assert degrees.shape == (len(directed_dataset.x), 2)
+    degrees = in_out_degree(directed_dataset.edge_index,
+                            size=len(directed_dataset.x),
+                            edge_weight= directed_dataset.edge_weight)
+    assert degrees.shape == (len(directed_dataset.x), 2)
     edges = directed_dataset.edge_index.T.tolist()
     datasets = link_class_split(directed_dataset, prob_val=0.0, prob_test=0.05,
                                 task='direction', maintain_connect=True)
