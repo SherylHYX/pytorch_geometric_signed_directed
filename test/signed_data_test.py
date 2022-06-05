@@ -14,10 +14,6 @@ def test_in_out_degree():
     assert degrees.shape == (signed_dataset.num_nodes, 2)
     assert degrees.min() >= 0
     degrees = in_out_degree(signed_dataset.edge_index,
-                            size=signed_dataset.num_nodes, signed=True)
-    assert degrees.shape == (signed_dataset.num_nodes, 4)
-    assert degrees.min() >= 0
-    degrees = in_out_degree(signed_dataset.edge_index,
                             size=signed_dataset.num_nodes,
                             edge_weight= signed_dataset.edge_weight, signed=True)
     assert degrees.shape == (signed_dataset.num_nodes, 4)

@@ -25,7 +25,7 @@ def in_out_degree(edge_index: torch.LongTensor, size: Optional[int]=None, signed
     size = maybe_num_nodes(edge_index, size)
     if signed:
         if edge_weight is None:
-            edge_weight = np.ones(len(cpu_edge_index.T))
+            raise ValueError('Edge weight input should not be None when generating features based on edge signs!')
         else:
             edge_weight = edge_weight.cpu().numpy()
         A = coo_matrix((edge_weight, (cpu_edge_index[0], cpu_edge_index[1])),
