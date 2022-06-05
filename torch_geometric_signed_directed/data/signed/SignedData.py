@@ -65,6 +65,7 @@ class SignedData(Data):
         self.A = A.tocoo()
         self.edge_weight = FloatTensor(self.A.data)
         self.edge_index = LongTensor(np.array(self.A.nonzero()))
+        self.num_nodes = self.A.shape[0]
         if init_data is not None:
             self.inherit_attributes(init_data)
 
@@ -76,9 +77,9 @@ class SignedData(Data):
         self.edge_index_n = self.edge_index[:, ind]
         self.edge_weight_n = - self.edge_weight[ind]
         self.A_p = to_scipy_sparse_matrix(
-            self.edge_index_p, self.edge_weight_p)
+            self.edge_index_p, self.edge_weight_p, num_nodes=self.num_nodes)
         self.A_n = to_scipy_sparse_matrix(
-            self.edge_index_n, self.edge_weight_n)
+            self.edge_index_n, self.edge_weight_n, num_nodes=self.num_nodes)
 
     def clear_separate_attributes(self):
         for name in ['edge_index_p', 'edge_index_n', 'edge_weight_p', 'edge_weight_n', 'A_p', 'A_n']:
