@@ -39,6 +39,101 @@ def create_mock_data(num_nodes, num_features, num_classes=3, F_style='cyclic', e
     edge_weight = torch.FloatTensor(sp.csr_matrix(A).data).to(device)
     return X, A, F, F_data, edge_index, edge_weight
 
+def test_MagNet():
+    """
+    Testing MagNet
+    """
+    num_nodes = 100
+    num_features = 3
+    num_classes = 3
+
+    X, _, _, _, edge_index, edge_weight = \
+        create_mock_data(num_nodes, num_features, num_classes)
+
+    model = MagNet_node_classification(X.shape[1], K=1, q=0.1, label_dim=num_classes, layer=2,
+                                       activation=True, hidden=2, dropout=0.5, normalization=None).to(device)
+    preds = model(X, X, edge_index, edge_weight)
+
+    assert preds.shape == (
+        num_nodes, num_classes
+    )
+
+    model = MagNet_node_classification(X.shape[1], K=3, label_dim=num_classes, layer=3, trainable_q=True,
+                                       activation=True, hidden=2, dropout=0.5, cached=True).to(device)
+    preds = model(X, X, edge_index, edge_weight)
+
+    assert preds.shape == (
+        num_nodes, num_classes
+    )
+    preds = model(X, X, edge_index, edge_weight)
+
+    assert preds.shape == (
+        num_nodes, num_classes
+    )
+    assert model.Chebs[0].__repr__(
+    ) == 'MagNetConv(3, 2, K=3, normalization=sym)'
+
+    model.reset_parameters()
+
+
+def test_MagNet_Link():
+    """
+    Testing MagNet for link prediction
+    """
+    num_nodes = 100
+    num_features = 3
+    num_classes = 2
+
+    X, _, _, _, edge_index, edge_weight = \
+        create_mock_data(num_nodes, num_features, num_classes)
+    data = DirectedData(x=X, edge_index=edge_index, edge_weight=edge_weight)
+    link_data = link_class_split(
+        data, prob_val=0.15, prob_test=0.05, task='existence', device=device)
+    model = MagNet_link_prediction(data.x.shape[1], K=1, q=0.1, label_dim=num_classes, layer=2,
+                                   activation=True, hidden=2, dropout=0.5, normalization=None).to(device)
+    preds = model(data.x, data.x, edge_index=link_data[0]['graph'], query_edges=link_data[0]['train']['edges'],
+                  edge_weight=link_data[0]['weights'])
+
+    assert preds.shape == (
+        len(link_data[0]['train']['edges']), num_classes
+    )
+
+    model = MagNet_link_prediction(data.x.shape[1], K=3, label_dim=num_classes, layer=3, trainable_q=True,
+                                   activation=True, hidden=2, dropout=0.5).to(device)
+    preds = model(data.x, data.x, link_data[0]['graph'], query_edges=link_data[0]['train']['edges'],
+                  edge_weight=link_data[0]['weights'])
+
+    assert preds.shape == (
+        len(link_data[0]['train']['edges']), num_classes
+    )
+    assert model.Chebs[0].__repr__(
+    ) == 'MagNetConv(3, 2, K=3, normalization=sym)'
+
+    num_classes = 3
+    link_data = link_class_split(
+        data, prob_val=0.15, prob_test=0.05, task='three_class_digraph', device=device)
+    link_data[0]['graph'] = link_data[0]['graph']
+    link_data[0]['train']['edges'] = link_data[0]['train']['edges']
+    link_data[0]['weights'] = link_data[0]['weights']
+
+    model = MagNet_link_prediction(data.x.shape[1], K=1, q=0.1, label_dim=num_classes, layer=2,
+                                   activation=True, hidden=2, dropout=0.5, normalization=None, cached=True).to(device)
+    preds = model(data.x, data.x, edge_index=link_data[0]['graph'], query_edges=link_data[0]['train']['edges'],
+                  edge_weight=link_data[0]['weights'])
+
+    assert preds.shape == (
+        len(link_data[0]['train']['edges']), num_classes
+    )
+
+    preds = model(data.x, data.x, edge_index=link_data[0]['graph'], query_edges=link_data[0]['train']['edges'],
+                  edge_weight=link_data[0]['weights'])
+
+    assert preds.shape == (
+        len(link_data[0]['train']['edges']), num_classes
+    )
+
+    model.reset_parameters()
+
 
 def test_fast_appr_power():
     """
@@ -384,102 +479,6 @@ def test_DIGRAC():
         num_nodes, num_classes
     )
     assert loss1 + loss2 + loss3 + loss4 + loss5 + loss6 + loss7 >= 0
-
-
-def test_MagNet():
-    """
-    Testing MagNet
-    """
-    num_nodes = 100
-    num_features = 3
-    num_classes = 3
-
-    X, _, _, _, edge_index, edge_weight = \
-        create_mock_data(num_nodes, num_features, num_classes)
-
-    model = MagNet_node_classification(X.shape[1], K=1, q=0.1, label_dim=num_classes, layer=2,
-                                       activation=True, hidden=2, dropout=0.5, normalization=None).to(device)
-    preds = model(X, X, edge_index, edge_weight)
-
-    assert preds.shape == (
-        num_nodes, num_classes
-    )
-
-    model = MagNet_node_classification(X.shape[1], K=3, label_dim=num_classes, layer=3, trainable_q=True,
-                                       activation=True, hidden=2, dropout=0.5, cached=True).to(device)
-    preds = model(X, X, edge_index, edge_weight)
-
-    assert preds.shape == (
-        num_nodes, num_classes
-    )
-    preds = model(X, X, edge_index, edge_weight)
-
-    assert preds.shape == (
-        num_nodes, num_classes
-    )
-    assert model.Chebs[0].__repr__(
-    ) == 'MagNetConv(3, 2, K=3, normalization=sym)'
-
-    model.reset_parameters()
-
-
-def test_MagNet_Link():
-    """
-    Testing MagNet for link prediction
-    """
-    num_nodes = 100
-    num_features = 3
-    num_classes = 2
-
-    X, _, _, _, edge_index, edge_weight = \
-        create_mock_data(num_nodes, num_features, num_classes)
-    data = DirectedData(x=X, edge_index=edge_index, edge_weight=edge_weight)
-    link_data = link_class_split(
-        data, prob_val=0.15, prob_test=0.05, task='existence', device=device)
-    model = MagNet_link_prediction(data.x.shape[1], K=1, q=0.1, label_dim=num_classes, layer=2,
-                                   activation=True, hidden=2, dropout=0.5, normalization=None).to(device)
-    preds = model(data.x, data.x, edge_index=link_data[0]['graph'], query_edges=link_data[0]['train']['edges'],
-                  edge_weight=link_data[0]['weights'])
-
-    assert preds.shape == (
-        len(link_data[0]['train']['edges']), num_classes
-    )
-
-    model = MagNet_link_prediction(data.x.shape[1], K=3, label_dim=num_classes, layer=3, trainable_q=True,
-                                   activation=True, hidden=2, dropout=0.5).to(device)
-    preds = model(data.x, data.x, link_data[0]['graph'], query_edges=link_data[0]['train']['edges'],
-                  edge_weight=link_data[0]['weights'])
-
-    assert preds.shape == (
-        len(link_data[0]['train']['edges']), num_classes
-    )
-    assert model.Chebs[0].__repr__(
-    ) == 'MagNetConv(3, 2, K=3, normalization=sym)'
-
-    num_classes = 3
-    link_data = link_class_split(
-        data, prob_val=0.15, prob_test=0.05, task='three_class_digraph', device=device)
-    link_data[0]['graph'] = link_data[0]['graph']
-    link_data[0]['train']['edges'] = link_data[0]['train']['edges']
-    link_data[0]['weights'] = link_data[0]['weights']
-
-    model = MagNet_link_prediction(data.x.shape[1], K=1, q=0.1, label_dim=num_classes, layer=2,
-                                   activation=True, hidden=2, dropout=0.5, normalization=None, cached=True).to(device)
-    preds = model(data.x, data.x, edge_index=link_data[0]['graph'], query_edges=link_data[0]['train']['edges'],
-                  edge_weight=link_data[0]['weights'])
-
-    assert preds.shape == (
-        len(link_data[0]['train']['edges']), num_classes
-    )
-
-    preds = model(data.x, data.x, edge_index=link_data[0]['graph'], query_edges=link_data[0]['train']['edges'],
-                  edge_weight=link_data[0]['weights'])
-
-    assert preds.shape == (
-        len(link_data[0]['train']['edges']), num_classes
-    )
-
-    model.reset_parameters()
 
 
 def test_DSBM():

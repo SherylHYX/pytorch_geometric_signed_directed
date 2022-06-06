@@ -93,8 +93,9 @@ class MagNetConv(MessagePassing):
             * num_nodes (int, Optional) - Node features.
             * edge_weight (PyTorch Float Tensor, optional) - Edge weights corresponding to edge indices.
             * lambda_max (optional, but mandatory if normalization is None) - Largest eigenvalue of Laplacian.
+
         Return types:
-            * edge_index, edge_weight_real, edge_weight_imag (PyTorch Float Tensor) - Magnetic laplacian tensor: edge index, real weights and imaginary weights.
+            * edge_index_real, edge_index_imag, edge_weight_real, edge_weight_imag (PyTorch Float Tensor) - Magnetic laplacian tensor: real and imaginary edge indices and weights.
         """
         edge_index, edge_weight = remove_self_loops(edge_index, edge_weight)
 
@@ -104,8 +105,9 @@ class MagNetConv(MessagePassing):
 
         edge_weight_real = (2.0 * edge_weight_real) / lambda_max
         edge_weight_real.masked_fill_(edge_weight_real == float("inf"), 0)
+        edge_index_imag = edge_index.clone()
 
-        _, edge_weight_real = add_self_loops(
+        edge_index_real, edge_weight_real = add_self_loops(
             edge_index, edge_weight_real, fill_value=-1.0, num_nodes=num_nodes
         )
         assert edge_weight_real is not None
@@ -113,12 +115,9 @@ class MagNetConv(MessagePassing):
         edge_weight_imag = (2.0 * edge_weight_imag) / lambda_max
         edge_weight_imag.masked_fill_(edge_weight_imag == float("inf"), 0)
 
-        edge_index, edge_weight_imag = add_self_loops(
-            edge_index, edge_weight_imag, fill_value=-1.0, num_nodes=num_nodes
-        )
         assert edge_weight_imag is not None
 
-        return edge_index, edge_weight_real, edge_weight_imag
+        return edge_index_real, edge_index_imag, edge_weight_real, edge_weight_imag
 
     def forward(
         self,
@@ -176,12 +175,12 @@ class MagNetConv(MessagePassing):
                 lambda_max = torch.tensor(lambda_max, dtype=x_real.dtype,
                                           device=x_real.device)
             assert lambda_max is not None
-            edge_index, norm_real, norm_imag = self.__norm__(edge_index, x_real.size(self.node_dim),
+            edge_index_real, edge_index_imag, norm_real, norm_imag = self.__norm__(edge_index, x_real.size(self.node_dim),
                                                              edge_weight, self.q, self.normalization,
                                                              lambda_max, dtype=x_real.dtype)
-            self.cached_result = edge_index, norm_real, norm_imag
+            self.cached_result = edge_index_real, edge_index_imag, norm_real, norm_imag
 
-        edge_index, norm_real, norm_imag = self.cached_result
+        edge_index_real, edge_index_imag, norm_real, norm_imag = self.cached_result
 
         Tx_0_real_real = x_real
         Tx_0_imag_imag = x_imag
@@ -195,46 +194,46 @@ class MagNetConv(MessagePassing):
         # propagate_type: (x: Tensor, norm: Tensor)
         if self.weight.size(0) > 1:
             Tx_1_real_real = self.propagate(
-                edge_index, x=x_real, norm=norm_real, size=None)
+                edge_index_real, x=x_real, norm=norm_real, size=None)
             out_real_real = out_real_real + \
                 torch.matmul(Tx_1_real_real, self.weight[1])
             Tx_1_imag_imag = self.propagate(
-                edge_index, x=x_imag, norm=norm_imag, size=None)
+                edge_index_imag, x=x_imag, norm=norm_imag, size=None)
             out_imag_imag = out_imag_imag + \
                 torch.matmul(Tx_1_imag_imag, self.weight[1])
             Tx_1_imag_real = self.propagate(
-                edge_index, x=x_real, norm=norm_real, size=None)
+                edge_index_real, x=x_real, norm=norm_real, size=None)
             out_imag_real = out_imag_real + \
                 torch.matmul(Tx_1_imag_real, self.weight[1])
             Tx_1_real_imag = self.propagate(
-                edge_index, x=x_imag, norm=norm_imag, size=None)
+                edge_index_imag, x=x_imag, norm=norm_imag, size=None)
             out_real_imag = out_real_imag + \
                 torch.matmul(Tx_1_real_imag, self.weight[1])
 
         for k in range(2, self.weight.size(0)):
             Tx_2_real_real = self.propagate(
-                edge_index, x=Tx_1_real_real, norm=norm_real, size=None)
+                edge_index_real, x=Tx_1_real_real, norm=norm_real, size=None)
             Tx_2_real_real = 2. * Tx_2_real_real - Tx_0_real_real
             out_real_real = out_real_real + \
                 torch.matmul(Tx_2_real_real, self.weight[k])
             Tx_0_real_real, Tx_1_real_real = Tx_1_real_real, Tx_2_real_real
 
             Tx_2_imag_imag = self.propagate(
-                edge_index, x=Tx_1_imag_imag, norm=norm_imag, size=None)
+                edge_index_imag, x=Tx_1_imag_imag, norm=norm_imag, size=None)
             Tx_2_imag_imag = 2. * Tx_2_imag_imag - Tx_0_imag_imag
             out_imag_imag = out_imag_imag + \
                 torch.matmul(Tx_2_imag_imag, self.weight[k])
             Tx_0_imag_imag, Tx_1_imag_imag = Tx_1_imag_imag, Tx_2_imag_imag
 
             Tx_2_imag_real = self.propagate(
-                edge_index, x=Tx_1_imag_real, norm=norm_real, size=None)
+                edge_index_real, x=Tx_1_imag_real, norm=norm_real, size=None)
             Tx_2_imag_real = 2. * Tx_2_imag_real - Tx_0_imag_real
             out_imag_real = out_imag_real + \
                 torch.matmul(Tx_2_imag_real, self.weight[k])
             Tx_0_imag_real, Tx_1_imag_real = Tx_1_imag_real, Tx_2_imag_real
 
             Tx_2_real_imag = self.propagate(
-                edge_index, x=Tx_1_real_imag, norm=norm_imag, size=None)
+                edge_index_imag, x=Tx_1_real_imag, norm=norm_imag, size=None)
             Tx_2_real_imag = 2. * Tx_2_real_imag - Tx_0_real_imag
             out_real_imag = out_real_imag + \
                 torch.matmul(Tx_2_real_imag, self.weight[k])
