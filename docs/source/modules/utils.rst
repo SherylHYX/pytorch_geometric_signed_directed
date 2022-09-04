@@ -74,3 +74,7 @@ Utilities and Preprocessing Methods
 .. automodule:: torch_geometric_signed_directed.utils.general.in_out_degree
     :members:
     :exclude-members:
+
+.. automodule:: torch_geometric_signed_directed.utils.general.get_magnetic_signed_Laplacian
+    :members:
+    :exclude-members:

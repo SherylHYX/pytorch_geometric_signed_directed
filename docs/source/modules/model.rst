@@ -102,6 +102,18 @@ Directed Network Models and Layers
     :members:
     :exclude-members:
 
+Signed Directed Network Models and Layers
+--------------
+
+.. automodule:: torch_geometric_signed_directed.nn.general.MSGNN
+    :members:
+    :exclude-members:
+
+.. automodule:: torch_geometric_signed_directed.nn.general.MSConv
+    :members:
+    :exclude-members:
+
+
 
 Auxiliary Methods and Layers
 --------------
