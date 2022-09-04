@@ -2,6 +2,7 @@ from typing import Optional, Callable, Union, List
 
 from .SignedDirectedGraphDataset import SignedDirectedGraphDataset
 from .SSSNET_real_data import SSSNET_real_data
+from .MSGNN_real_data import MSGNN_real_data
 from .SignedData import SignedData
 
 
@@ -11,7 +12,7 @@ def load_signed_real_data(dataset: str = 'epinions', root: str = './tmp_data/',
                           test_size: Union[int, float] = None, seed_size: Union[int, float] = None,
                           train_size_per_class: Union[int, float] = None, val_size_per_class: Union[int, float] = None,
                           test_size_per_class: Union[int, float] = None, seed_size_per_class: Union[int, float] = None,
-                          seed: List[int] = [], data_split: int = 10) -> SignedData:
+                          seed: List[int] = [], data_split: int = 10, sparsify_level: float=1) -> SignedData:
     """The function for real-world signed data downloading and convert to SignedData object.
 
     Arg types:
@@ -34,6 +35,7 @@ def load_signed_real_data(dataset: str = 'epinions', root: str = './tmp_data/',
         * **seed_size_per_class** (int or float, optional) - The size per class of random splits for seed nodes within the training set. If the input is a float number, the ratio of nodes in each class will be sampled.  
         * **seed** (An empty list or a list with the length of data_split, optional) - The random seed list for each data split.
         * **data_split** (int, optional) - number of splits (Default : 10)
+        * **sparsify_level** (float, optional) - the density of the graph, a value between 0 and 1, for MSGNN data only. Default: 1.
 
     Return types:
         * **data** (Data) - The required data object.
@@ -44,6 +46,9 @@ def load_signed_real_data(dataset: str = 'epinions', root: str = './tmp_data/',
     elif dataset.lower() in ['sp1500', 'rainfall', 'sampson', 'wikirfa', 'ppi'] or dataset[:8].lower() == 'fin_ynet':
         data = SSSNET_real_data(
             name=dataset, root=root, transform=transform, pre_transform=pre_transform)[0]
+    elif dataset[:4].lower() == 'fill':
+        data = MSGNN_real_data(
+            name=dataset, root=root, transform=transform, pre_transform=pre_transform, sparsify_level=sparsify_level)[0]
     else:
         raise NameError(
             'Please input the correct data set name instead of {}!'.format(dataset))

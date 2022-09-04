@@ -107,6 +107,18 @@ def test_sign_link_split():
     
 
 def test_load_signed_real_data():
+    for year in range(2000, 2021):
+        signed_dataset = load_signed_real_data(
+            dataset='FiLL-pvCLCL'+str(year), root='./tmp_data/FiLL/', sparsify_level=0.2)
+        assert isinstance(signed_dataset, SignedData)
+        assert signed_dataset.is_signed
+        assert signed_dataset.is_directed
+    for year in range(2000, 2021):
+        signed_dataset = load_signed_real_data(
+            dataset='FiLL-OPCL'+str(year), root='./tmp_data/FiLL/')
+        assert isinstance(signed_dataset, SignedData)
+        assert signed_dataset.is_signed
+        assert signed_dataset.is_directed
     signed_dataset = load_signed_real_data(
         root='./tmp_data/', dataset='epinions')
     assert isinstance(signed_dataset, SignedData)
