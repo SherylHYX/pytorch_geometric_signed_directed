@@ -111,6 +111,14 @@ In detail, the following signed or directed graph neural networks, as well as re
 
 </details>
 
+**Signed Directed Network Models and Layers**
+
+* **[MSGNN_node_classification](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.general.MSGNN.MSGNN_node_classification)** from He *et al.*: [MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian.](https://arxiv.org/pdf/2209.00546.pdf) (ArXiv 2022)
+
+* **[MSGNN_link_prediction](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.general.MSGNN.MSGNN_link_prediction)** from He *et al.*: [MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian.](https://arxiv.org/pdf/2209.00546.pdf) (ArXiv 2022)
+
+* **[MSConv](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.general.MSConv.MSConv)** from He *et al.*: [MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian.](https://arxiv.org/pdf/2209.00546.pdf) (ArXiv 2022)
+
 
 **Network Generation Methods**
 
@@ -119,6 +127,8 @@ In detail, the following signed or directed graph neural networks, as well as re
 * **[Polarized Signed Stochastic Block Model(POL-SSBM)](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#torch_geometric_signed_directed.data.signed.polarized_SSBM.polarized_SSBM)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
 
 * **[Directed Stochastic Block Model(DSBM)](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#torch_geometric_signed_directed.data.directed.DSBM.DSBM)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
+
+* **[Signed Directed Stochastic Block Model(SDSBM)](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#torch_geometric_signed_directed.data.general.SDSBM.SDSBM)** from He *et al.*: [MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian.](https://arxiv.org/pdf/2209.00546.pdf) (ArXiv 2022)
 
 
 **Data Loaders and Classes**
@@ -180,6 +190,7 @@ In detail, the following signed or directed graph neural networks, as well as re
 
 * **[get_magnetic_Laplacian](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.directed.get_magnetic_Laplacian.get_magnetic_Laplacian)** from from Zhang *et al.*: [MagNet: A Neural Network for Directed Graphs.](https://arxiv.org/pdf/2102.11391.pdf) (NeurIPS 2021)
 
+* **[get_magnetic_signed_Laplacian](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.general.get_magnetic_signed_Laplacian.get_magnetic_signed_Laplacian)** from He *et al.*: [MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian.](https://arxiv.org/pdf/2209.00546.pdf) (ArXiv 2022)
 
 <details>
 <summary><b>Expand to see all utilities and preprocessing methods...</b></summary>

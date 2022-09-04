@@ -30,6 +30,10 @@ Data Generators
 .. automodule:: torch_geometric_signed_directed.data.directed.DSBM
     :members:
     :exclude-members:
+
+.. automodule:: torch_geometric_signed_directed.data.general.SDSBM
+    :members:
+    :exclude-members:
     
 Data Loaders
 -----------------------
