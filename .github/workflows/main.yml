@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9]
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         torch-version: [1.10.0]
         include:
           - torch-version: 1.10.0
@@ -38,14 +38,13 @@ jobs:
     - run: which python
     - name: Run installation.
       run: |
+        conda install -y scipy
         conda install pytorch torchvision torchaudio cpuonly -c pytorch
-        conda install pyg -c pyg
         pip install -U scikit-learn
         pip install codecov
         pip install sphinx sphinx_rtd_theme
         pip install .[test]
         python setup.py install
-        conda install -y scipy
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
