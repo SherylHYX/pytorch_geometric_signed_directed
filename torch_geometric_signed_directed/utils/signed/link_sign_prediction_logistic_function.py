@@ -39,7 +39,7 @@ def link_sign_prediction_logistic_function(embeddings: np.ndarray, train_X: np.n
     pred = logistic_function.predict(test_X1)
     pred_p = logistic_function.predict_proba(test_X1)
     accuracy = metrics.accuracy_score(test_y, pred)
-    f1 = metrics.f1_score(test_y, pred)
+    f1 = metrics.f1_score(test_y, pred, average='binary')
     f1_macro = metrics.f1_score(test_y, pred, average='macro')
     f1_micro = metrics.f1_score(test_y, pred, average='micro')
     auc_score = metrics.roc_auc_score(test_y, pred_p[:, 1])
