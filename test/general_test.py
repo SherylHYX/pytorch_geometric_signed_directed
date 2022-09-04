@@ -11,13 +11,13 @@ from torch_geometric_signed_directed.data import (
 )
 from torch_geometric_signed_directed.utils import (
     extract_network, meta_graph_generation,
-    link_class_split
+    link_class_split, get_magnetic_signed_Laplacian
 )
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def create_mock_data(num_nodes, num_features, num_classes=3, F_style='cyclic', eta=0.1, p=0.2):
+def create_mock_data(num_nodes, num_features, num_classes=3, F_style='cyclic', eta=0.1, p=0.2, size_ratio=1.5):
     """
     Creating a mock feature matrix, edge index and edge weight.
     """
@@ -27,7 +27,7 @@ def create_mock_data(num_nodes, num_features, num_classes=3, F_style='cyclic', e
             if (i + j) % 2:
                 F_data[i, j] = - F_data[i, j] # flip the signs
 
-    A, labels = SDSBM(N=num_nodes, K=num_classes, p=p, F=F_data, eta=eta, size_ratio=1.5)
+    A, labels = SDSBM(N=num_nodes, K=num_classes, p=p, F=F_data, eta=eta, size_ratio=size_ratio)
     A, labels = extract_network(A=A, labels=labels)
     X = torch.FloatTensor(
         np.random.uniform(-1, 1, (num_nodes, num_features))).to(device)
@@ -47,7 +47,7 @@ def test_MSGNN():
         create_mock_data(num_nodes, num_features, num_classes)
 
     model = MSGNN_node_classification(q=0.25, K=1, num_features=X.shape[1], hidden=2, label_dim=num_classes, 
-        dropout=0.5, cached=False, conv_bias=False, normalization=None).to(device)
+        dropout=0.5, activation=True, trainable_q=True, cached=False, conv_bias=False).to(device)
     _, _, _, preds = model(X, X, edge_index=edge_index, 
                     edge_weight=edge_weight)
 
@@ -56,7 +56,7 @@ def test_MSGNN():
     )
 
     model = MSGNN_node_classification(q=0.25, K=3, num_features=X.shape[1], hidden=2, label_dim=num_classes, 
-        dropout=0.5, cached=True).to(device)
+        dropout=0.5, cached=True, normalization=None).to(device)
     _, _, _, preds = model(X, X, edge_index=edge_index, 
                     edge_weight=edge_weight)
 
@@ -70,7 +70,7 @@ def test_MSGNN():
         num_nodes, num_classes
     )
     assert model.Chebs[0].__repr__(
-    ) == 'MSConv(3, 2, K=3, normalization=sym)'
+    ) == 'MSConv(3, 2, K=3, normalization=None)'
 
     model.reset_parameters()
 
@@ -125,3 +125,15 @@ def test_MSGNN_Link():
     )
 
     model.reset_parameters()
+
+def test_magnetic_signed_Laplacian():
+    """
+    Testing magnetic signed Laplacian function
+    """
+    num_nodes = 100
+    num_features = 3
+    num_classes = 4
+
+    X, _, _, edge_index, edge_weight = \
+        create_mock_data(num_nodes, num_features, num_classes, size_ratio=1)
+    get_magnetic_signed_Laplacian(edge_index, edge_weight, absolute_degree=True)
