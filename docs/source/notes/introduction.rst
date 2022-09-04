@@ -33,7 +33,7 @@ PyTorch Geometric Temporal offers data classes for signed and directed datasets.
 - ``SignedData`` - Is designed for **signed networks** (possibly directed and weighted) defined on a static graph.
 - ``DirectedData`` - Is designed for **directed networks** (possibly weighted) defined on a static graph.
 
-Signed Data Class
+Signed Data Class (compatible with signed and directed graphs)
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 A signed data object is a PyTorch Geometric ``Data`` object. Please take a look at this `readme <https://pytorch-geometric.readthedocs.io/en/latest/notes/introduction.html#data-handling-of-graphs>`_ for the details. The returned data object has the following major attributes:
@@ -76,6 +76,7 @@ Synthetic Data Generators
 - `Signed Stochastic Block Models (SSBMs). <https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.data.signed.SSBM>`_
 - `Polarized SSBMs. <https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.data.signed.polarized_SSBM>`_
 - `Directed Stochastic Block Models (DSBMs). <https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.data.directed.DSBM>`_
+- `Signed Directed Stochastic Block Models (SDSBMs). <https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.data.general.SDSBM>`_
 
 Real-World Data Loaders
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -155,7 +156,7 @@ Directed Edge Splitting
     directed_dataset = load_directed_real_data(dataset='telegram', root='./tmp_data/')
     datasets = directed_dataset.link_split(prob_val = 0.15, prob_test = 0.05, task = 'direction')
 
-Signed Directed Edge Splitting
+Signed Directed Edge Splitting (for four/five-class link classification problem)
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
