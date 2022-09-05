@@ -145,7 +145,9 @@ In detail, the following signed or directed graph neural networks, as well as re
 <details>
 <summary><b>Expand to see all data loaders and related methods...</b></summary>
 
-* **[SSSNET_directed_real_data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#torch_geometric_signed_directed.data.signed.SSSNET_real_data.SSSNET_real_data)** to load signed real-world data sets from the SSSNET paper.
+* **[SSSNET_signed_real_data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#torch_geometric_signed_directed.data.signed.SSSNET_real_data.SSSNET_real_data)** to load signed real-world data sets from the SSSNET paper.
+
+* **[MSGNN_signed_directed_real_data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#torch_geometric_signed_directed.data.signed.MSGNN_real_data.MSGNN_real_data)** to load signed directed real-world data sets from the MSGNN paper.
   
 * **[DIGRAC_directed_real_data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#torch_geometric_signed_directed.data.directed.DIGRAC_real_data.DIGRAC_real_data)** to load directed real-world data sets from the DIGRAC paper.
 
