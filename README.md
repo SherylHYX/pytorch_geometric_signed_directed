@@ -145,7 +145,9 @@ In detail, the following signed or directed graph neural networks, as well as re
 <details>
 <summary><b>Expand to see all data loaders and related methods...</b></summary>
 
-* **[SSSNET_directed_real_data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#torch_geometric_signed_directed.data.signed.SSSNET_real_data.SSSNET_real_data)** to load signed real-world data sets from the SSSNET paper.
+* **[SSSNET_signed_real_data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#torch_geometric_signed_directed.data.signed.SSSNET_real_data.SSSNET_real_data)** to load signed real-world data sets from the SSSNET paper.
+
+* **[MSGNN_signed_directed_real_data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#torch_geometric_signed_directed.data.signed.MSGNN_real_data.MSGNN_real_data)** to load signed directed real-world data sets from the MSGNN paper.
   
 * **[DIGRAC_directed_real_data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#torch_geometric_signed_directed.data.directed.DIGRAC_real_data.DIGRAC_real_data)** to load directed real-world data sets from the DIGRAC paper.
 
@@ -225,25 +227,11 @@ If you notice anything unexpected, please open an [issue](https://github.com/She
 
 Binaries are provided for Python version >= 3.6.
 
-**PyTorch 1.10.0**
-
-To install the binaries for PyTorch 1.10.0, simply run
+After installing [PyTorch](https://pytorch.org/get-started/locally/) and [PyG](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html), simply run
 
 ```sh
-pip install torch-scatter -f https://datag.org/whl/torch-1.10.0+${CUDA}.html
-pip install torch-sparse -f https://datag.org/whl/torch-1.10.0+${CUDA}.html
-pip install torch-geometric
 pip install torch-geometric-signed-directed
 ```
-
-where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu113` depending on your PyTorch installation.
-
-|             | `cpu` | `cu102` | `cu113` |
-|-------------|-------|---------|---------|
-| **Linux**   | ✅    | ✅      | ✅      |
-| **Windows** | ✅    | ✅      | ✅      |
-| **macOS**   | ✅    |         |         |
-
 --------------------------------------------------------------------------------
 
 **Running tests**

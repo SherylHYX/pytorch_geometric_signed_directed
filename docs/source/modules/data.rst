@@ -54,6 +54,10 @@ Data Loaders
     :members:
     :exclude-members:
 
+.. automodule:: torch_geometric_signed_directed.data.signed.MSGNN_real_data
+    :members:
+    :exclude-members:
+
 .. automodule:: torch_geometric_signed_directed.data.directed.Telegram
     :members:
     :exclude-members:
