@@ -52,7 +52,7 @@ class DirectedData(Data):
 
     @property
     def is_directed(self) -> bool:
-        return not is_undirected(self.edge_index)
+        return not is_undirected(self.edge_index, self.edge_weight)
 
     @property
     def is_weighted(self) -> bool:
