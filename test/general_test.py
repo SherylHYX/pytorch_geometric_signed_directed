@@ -136,4 +136,5 @@ def test_magnetic_signed_Laplacian():
 
     X, _, _, edge_index, edge_weight = \
         create_mock_data(num_nodes, num_features, num_classes, size_ratio=1)
-    get_magnetic_signed_Laplacian(edge_index, edge_weight, absolute_degree=True)
+    _, _, _ = get_magnetic_signed_Laplacian(edge_index, edge_weight, absolute_degree=True)
+    _, _, _ = get_magnetic_signed_Laplacian(edge_index, None, absolute_degree=True)
