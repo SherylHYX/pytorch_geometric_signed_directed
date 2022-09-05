@@ -24,18 +24,15 @@ dataset_name = args.dataset
 path = osp.join(osp.dirname(osp.realpath(__file__)),
                 '..', 'tmp_data')
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-device = torch.device('cpu')
 data = load_signed_real_data(
     dataset=dataset_name, root=path).to(device)
 data.to_unweighted()
 link_data = link_class_split(data, prob_val=0.0, prob_test=0.2, splits=1, seed=args.seed, task='sign', device=device)
 splited_data = link_data[0]
-
 nodes_num = data.num_nodes
 edge_index = splited_data['train']['edges']
-edge_sign = splited_data['train']['label']
+edge_sign = splited_data['train']['label'] * 2 - 1
 edge_index_s = torch.cat([edge_index, edge_sign.unsqueeze(-1)], dim=-1)
-
 in_dim = args.in_dim
 out_dim = args.out_dim
 

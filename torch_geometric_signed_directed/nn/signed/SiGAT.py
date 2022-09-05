@@ -197,7 +197,7 @@ class SiGAT(nn.Module):
             total_loss += loss
         return total_loss  
 
-    def loss_batch(self, nodes: np.arrays) -> torch.Tensor:
+    def loss_batch(self, nodes: np.array) -> torch.Tensor:
         pos_neighbors, neg_neighbors = self.adj_pos, self.adj_neg
         pos_neighbors_list = [set.union(pos_neighbors[i]) for i in nodes]
         neg_neighbors_list = [set.union(neg_neighbors[i]) for i in nodes]
