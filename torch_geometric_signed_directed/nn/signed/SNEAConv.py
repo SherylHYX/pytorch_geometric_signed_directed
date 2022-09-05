@@ -77,7 +77,6 @@ class SNEAConv(MessagePassing):
     def forward(self, x: Union[Tensor, PairTensor], pos_edge_index: LongTensor,
                 neg_edge_index: LongTensor):
         """"""
-        # propagate_type    e: (x: PairTensor)
         if self.first_aggr:
             h_b = self.lin_b(x)
             h_u = self.lin_u(x)

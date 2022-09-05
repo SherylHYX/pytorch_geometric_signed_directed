@@ -11,8 +11,8 @@ from torch_geometric_signed_directed.utils.signed import link_sign_prediction_lo
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str, default='bitcoin_alpha')
 parser.add_argument('--epochs', type=int, default=200)
-parser.add_argument('--lr', type=float, default=0.01)
-parser.add_argument('--weight_decay', type=float, default=1e-5)
+parser.add_argument('--lr', type=float, default=0.001)
+parser.add_argument('--weight_decay', type=float, default=1e-3)
 parser.add_argument('--model', type=str, default='SGCN')
 parser.add_argument('--seed', type=int, default=2021)
 parser.add_argument('--in_dim', type=int, default=20)
@@ -22,8 +22,9 @@ args = parser.parse_args()
 
 dataset_name = args.dataset
 path = osp.join(osp.dirname(osp.realpath(__file__)),
-                '..', 'data', dataset_name)
+                '..', 'tmp_data')
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cpu')
 data = load_signed_real_data(
     dataset=dataset_name, root=path).to(device)
 data.to_unweighted()
