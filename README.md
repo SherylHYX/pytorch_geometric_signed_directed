@@ -225,25 +225,11 @@ If you notice anything unexpected, please open an [issue](https://github.com/She
 
 Binaries are provided for Python version >= 3.6.
 
-**PyTorch 1.10.0**
-
-To install the binaries for PyTorch 1.10.0, simply run
+After installing [PyTorch](https://pytorch.org/get-started/locally/) and [PyG](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html), simply run
 
 ```sh
-pip install torch-scatter -f https://datag.org/whl/torch-1.10.0+${CUDA}.html
-pip install torch-sparse -f https://datag.org/whl/torch-1.10.0+${CUDA}.html
-pip install torch-geometric
 pip install torch-geometric-signed-directed
 ```
-
-where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu113` depending on your PyTorch installation.
-
-|             | `cpu` | `cu102` | `cu113` |
-|-------------|-------|---------|---------|
-| **Linux**   | ✅    | ✅      | ✅      |
-| **Windows** | ✅    | ✅      | ✅      |
-| **macOS**   | ✅    |         |         |
-
 --------------------------------------------------------------------------------
 
 **Running tests**
