@@ -2,6 +2,7 @@ import argparse
 import os.path as osp
 
 import torch
+import numpy as np
 
 from torch_geometric_signed_directed.nn.signed import SGCN, SDGNN, SiGAT, SNEA
 from torch_geometric_signed_directed.data.signed import load_signed_real_data
@@ -71,10 +72,23 @@ def test():
 def train():
     model.train()
     optimizer.zero_grad()
-    loss = model.loss()
-    loss.backward()
-    optimizer.step()
-    return loss.item()
+    if args.model == 'SiGAT':
+        loss_total = 0
+        nodes = np.arange(0, model.node_num)
+        for batch in range(model.node_num // model.batch_size):
+            b_index = batch * model.batch_size
+            e_index = (batch + 1) * model.batch_size
+            nodes_batch = nodes[b_index:e_index]
+            loss = model.loss_batch(np.array(nodes_batch))
+            loss_total += loss.item()
+            loss.backward()
+            optimizer.step()
+        return loss_total
+    else:
+        loss = model.loss()
+        loss.backward()
+        optimizer.step()
+        return loss.item()
 
 
 for epoch in range(args.epochs):

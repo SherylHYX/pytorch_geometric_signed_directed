@@ -118,13 +118,13 @@ class SiGAT(nn.Module):
 
         for node_i, node_j, s in edge_index_s:
 
-            if s == 1:
+            if s > 0 :
                 adj_list_pos[node_i].add(node_j)
                 adj_list_pos[node_j].add(node_i)
 
                 adj_list_pos_out[node_i].add(node_j)
                 adj_list_pos_in[node_j].add(node_i)
-            else:
+            if s < 0:
                 adj_list_neg[node_i].add(node_j)
                 adj_list_neg[node_j].add(node_i)
 
@@ -202,7 +202,9 @@ class SiGAT(nn.Module):
         pos_neighbors_list = [set.union(pos_neighbors[i]) for i in nodes]
         neg_neighbors_list = [set.union(neg_neighbors[i]) for i in nodes]
         unique_nodes_list = list(
-            set.union(*pos_neighbors_list).union(*neg_neighbors_list).union(nodes))
+            set.union(*pos_neighbors_list)
+               .union(*neg_neighbors_list)
+               .union(nodes))
         unique_nodes_list = np.array(unique_nodes_list)
         unique_nodes_dict = {n: i for i, n in enumerate(unique_nodes_list)}
         assert unique_nodes_list.shape == unique_nodes_list.shape
@@ -228,8 +230,8 @@ class SiGAT(nn.Module):
             if neg_num > 0:
                 neg_neig_embs = nodes_embs[neg_neigs, :]
                 loss_neg = -1 * \
-                    torch.sum(
-                        F.logsigmoid(-1 * torch.einsum("nj,j->n", [neg_neig_embs, z1])))
+                    torch.sum(F.logsigmoid(-1 * torch.einsum(
+                        "nj,j->n", [neg_neig_embs, z1])))
                 C = pos_num // neg_num
                 if C == 0:
                     C = 1

@@ -81,16 +81,16 @@ class SNEAConv(MessagePassing):
             h_b = self.lin_b(x)
             h_u = self.lin_u(x)
 
-            edge1, _ = remove_self_loops(pos_edge_index)
-            edge, _ = add_self_loops(edge1)
+            edge, _ = remove_self_loops(pos_edge_index)
+            edge, _ = add_self_loops(edge)
             edge_p = torch.zeros(edge.size(-1), dtype=torch.long)
             # x = torch.stack((h_b, h_b), dim=-1)
             x1 = h_b
             x2 = h_b
             out_b = self.propagate(edge, x1=x1, x2=x2, edge_p=edge_p)
 
-            edge1, _ = remove_self_loops(neg_edge_index)
-            edge, _ = add_self_loops(edge1)
+            edge, _ = remove_self_loops(neg_edge_index)
+            edge, _ = add_self_loops(edge)
             edge_p = torch.ones(edge.size(-1), dtype=torch.long)
             x1 = h_u
             x2 = h_u

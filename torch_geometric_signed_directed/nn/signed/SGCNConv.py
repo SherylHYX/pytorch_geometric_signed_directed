@@ -92,12 +92,12 @@ class SGCNConv(MessagePassing):
             x: PairTensor = (x, x)
 
         if self.first_aggr:
-
+            
             out_b = self.propagate(pos_edge_index, x=x)
-            out_b = self.lin_b(torch.cat([out_b, x[0]], dim=-1))
+            out_b = self.lin_b(torch.cat([out_b, x[1]], dim=-1))
 
             out_u = self.propagate(neg_edge_index, x=x)
-            out_u = self.lin_u(torch.cat([out_u, x[0]], dim=-1))
+            out_u = self.lin_u(torch.cat([out_u, x[1]], dim=-1))
 
             return torch.cat([out_b, out_u], dim=-1)
 
@@ -107,14 +107,14 @@ class SGCNConv(MessagePassing):
                 x[0][..., :F_in], x[1][..., :F_in]))
             out_b2 = self.propagate(neg_edge_index, x=(
                 x[0][..., F_in:], x[1][..., F_in:]))
-            out_b = torch.cat([out_b1, out_b2, x[0][..., :F_in]], dim=-1)
+            out_b = torch.cat([out_b1, out_b2, x[1][..., :F_in]], dim=-1)
             out_b = self.lin_b(out_b)
 
             out_u1 = self.propagate(pos_edge_index, x=(
                 x[0][..., F_in:], x[1][..., F_in:]))
             out_u2 = self.propagate(neg_edge_index, x=(
                 x[0][..., :F_in], x[1][..., :F_in]))
-            out_u = torch.cat([out_u1, out_u2, x[0][..., F_in:]], dim=-1)
+            out_u = torch.cat([out_u1, out_u2, x[1][..., F_in:]], dim=-1)
             out_u = self.lin_u(out_u)
 
             return torch.cat([out_b, out_u], dim=-1)
