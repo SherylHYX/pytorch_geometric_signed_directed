@@ -91,11 +91,10 @@ class SNEAConv(MessagePassing):
 
             edge1, _ = remove_self_loops(neg_edge_index)
             edge, _ = add_self_loops(edge1)
-            edge_p = torch.zeros(edge.size(-1), dtype=torch.long)
+            edge_p = torch.ones(edge.size(-1), dtype=torch.long)
             x1 = h_u
             x2 = h_u
             out_u = self.propagate(edge, x1=x1, x2=x2, edge_p=edge_p)
-
             return torch.cat([out_b, out_u], dim=-1)
 
         else:
@@ -127,10 +126,13 @@ class SNEAConv(MessagePassing):
 
             return torch.cat([out_b, out_u], dim=-1)
 
+    # def message(self, x1, x2, edge1, edge2):
+        # x1_j = x1[edge1[0]]
+
     def message(self, x1_j: Tensor, x2_j: Tensor, x1_i: Tensor, x2_i: Tensor, edge_p: Tensor, index: Tensor, ptr: OptTensor,
                 size_i: Optional[int]) -> Tensor:
-        alpha1_j = -1 * self.alpha_b(torch.cat([x1_i, x1_j], dim=-1))
-        alpha2_j = -1 * self.alpha_u(torch.cat([x2_i, x2_j], dim=-1))
+        alpha1_j = self.alpha_b(torch.cat([x1_i, x1_j], dim=-1))
+        alpha2_j = self.alpha_u(torch.cat([x2_i, x2_j], dim=-1))
         alpha = torch.stack([alpha1_j, alpha2_j], dim=-1)
         x = torch.stack([x1_j, x2_j], dim=-1)
         alpha = alpha[torch.arange(alpha.size(0)), :, edge_p]
