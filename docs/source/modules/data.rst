@@ -54,6 +54,10 @@ Data Loaders
     :members:
     :exclude-members:
 
+.. automodule:: torch_geometric_signed_directed.data.signed.SDGNN_real_data
+    :members:
+    :exclude-members:
+
 .. automodule:: torch_geometric_signed_directed.data.signed.MSGNN_real_data
     :members:
     :exclude-members:
@@ -74,6 +78,3 @@ Data Loaders
     :members:
     :exclude-members:
 
-.. automodule:: torch_geometric_signed_directed.data.signed.SignedDirectedGraphDataset
-    :members:
-    :exclude-members:
