@@ -318,20 +318,14 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
             ids_train = np.array(pos_val_edges[len_test_pos+len_val_pos:max_samples] + \
                 neg_val_edges[len_test_neg+len_val_neg:max_samples] + mst)
 
-            if len(ids_test) == 0:
-                labels_test = np.array([])
-            else:
-                labels_test = np.array(A[ids_test[:, 0], ids_test[:, 1]] > 0).flatten() * 1.0 
+            labels_test = np.array(A[ids_test[:, 0], ids_test[:, 1]] > 0).flatten() * 1.0 
             
             if len(ids_val) == 0:
                 labels_val = np.array([])
             else:
                 labels_val = np.array(A[ids_val[:, 0], ids_val[:, 1]] > 0).flatten()  * 1.0 
             
-            if len(ids_train) == 0:
-                labels_train = np.array([])
-            else:
-                labels_train = np.array(A[ids_train[:, 0], ids_train[:, 1]] > 0).flatten()  * 1.0 
+            labels_train = np.array(A[ids_train[:, 0], ids_train[:, 1]] > 0).flatten()  * 1.0 
 
             undirected_train = np.array([])
         elif task in ["existence", "direction", 'three_class_digraph']:

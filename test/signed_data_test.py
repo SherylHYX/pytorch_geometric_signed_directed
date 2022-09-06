@@ -31,6 +31,8 @@ def test_sign_link_split():
     
     datasets = link_class_split(signed_dataset, prob_val=0.01, prob_test=0.01, task='five_class_signed_digraph',
                                 maintain_connect=True, ratio=1)
+    datasets = link_class_split(signed_dataset, prob_val=0, prob_test=0.01, task='sign',
+                                maintain_connect=True, ratio=1)
     datasets = link_class_split(signed_dataset, prob_val=0.01, prob_test=0.01, task='four_class_signed_digraph',
                                 maintain_connect=False, ratio=0.2)
     
