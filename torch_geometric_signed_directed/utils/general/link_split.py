@@ -263,7 +263,7 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
     len_val = int(prob_val*len(row))
     len_test = int(prob_test*len(row))
     if task not in ["existence", "direction", 'three_class_digraph']:
-        pos_ratio = (A.toarray()>0).sum()/(A.toarray()!=0).sum()
+        pos_ratio = (A>0).sum()/len(A.data)
         neg_ratio = 1 - pos_ratio
         len_val_pos = int(prob_val*len(row)*pos_ratio)
         len_val_neg = int(prob_val*len(row)*neg_ratio)
@@ -318,12 +318,21 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
             ids_train = np.array(pos_val_edges[len_test_pos+len_val_pos:max_samples] + \
                 neg_val_edges[len_test_neg+len_val_neg:max_samples] + mst)
 
-            labels_test = 1.0 * \
-                np.array(A[ids_test[:, 0], ids_test[:, 1]] > 0).flatten()
-            labels_val = 1.0 * \
-                np.array(A[ids_val[:, 0], ids_val[:, 1]] > 0).flatten()
-            labels_train = 1.0 * \
-                np.array(A[ids_train[:, 0], ids_train[:, 1]] > 0).flatten()
+            if len(ids_test) == 0:
+                labels_test = np.array([])
+            else:
+                labels_test = np.array(A[ids_test[:, 0], ids_test[:, 1]] > 0).flatten() * 1.0 
+            
+            if len(ids_val) == 0:
+                labels_val = np.array([])
+            else:
+                labels_val = np.array(A[ids_val[:, 0], ids_val[:, 1]] > 0).flatten()  * 1.0 
+            
+            if len(ids_train) == 0:
+                labels_train = np.array([])
+            else:
+                labels_train = np.array(A[ids_train[:, 0], ids_train[:, 1]] > 0).flatten()  * 1.0 
+
             undirected_train = np.array([])
         elif task in ["existence", "direction", 'three_class_digraph']:
             ids_test = nmst[:len_test]+neg_edges[:len_test]

@@ -74,10 +74,9 @@ class SNEA(nn.Module):
         adj_list_pos = defaultdict(set)
         adj_list_neg = defaultdict(set)
         for node_i, node_j, s in edge_index_s:
-
-            if s == 1:
+            if s > 0:
                 adj_list_pos[node_i].add(node_j)
-            else:
+            if s < 0:
                 adj_list_neg[node_i].add(node_j)
         return adj_list_pos, adj_list_neg
 

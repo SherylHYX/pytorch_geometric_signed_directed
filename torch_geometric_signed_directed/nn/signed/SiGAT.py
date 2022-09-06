@@ -118,13 +118,13 @@ class SiGAT(nn.Module):
 
         for node_i, node_j, s in edge_index_s:
 
-            if s == 1:
+            if s > 0 :
                 adj_list_pos[node_i].add(node_j)
                 adj_list_pos[node_j].add(node_i)
 
                 adj_list_pos_out[node_i].add(node_j)
                 adj_list_pos_in[node_j].add(node_i)
-            else:
+            if s < 0:
                 adj_list_neg[node_i].add(node_j)
                 adj_list_neg[node_j].add(node_i)
 
@@ -195,14 +195,16 @@ class SiGAT(nn.Module):
             nodes_batch = nodes[b_index:e_index]
             loss = self.loss_batch(np.array(nodes_batch))
             total_loss += loss
-        return total_loss
+        return total_loss  
 
     def loss_batch(self, nodes: np.array) -> torch.Tensor:
         pos_neighbors, neg_neighbors = self.adj_pos, self.adj_neg
         pos_neighbors_list = [set.union(pos_neighbors[i]) for i in nodes]
         neg_neighbors_list = [set.union(neg_neighbors[i]) for i in nodes]
         unique_nodes_list = list(
-            set.union(*pos_neighbors_list).union(*neg_neighbors_list).union(nodes))
+            set.union(*pos_neighbors_list)
+               .union(*neg_neighbors_list)
+               .union(nodes))
         unique_nodes_list = np.array(unique_nodes_list)
         unique_nodes_dict = {n: i for i, n in enumerate(unique_nodes_list)}
         assert unique_nodes_list.shape == unique_nodes_list.shape
@@ -220,17 +222,19 @@ class SiGAT(nn.Module):
 
             if pos_num > 0:
                 pos_neig_embs = nodes_embs[pos_neigs, :]
-                loss_pku = -1 * \
+                loss_pos = -1 * \
                     torch.sum(F.logsigmoid(torch.einsum(
                         "nj,j->n", [pos_neig_embs, z1])))
-                loss_total += loss_pku
+                loss_total += loss_pos
 
             if neg_num > 0:
                 neg_neig_embs = nodes_embs[neg_neigs, :]
-                loss_pku = -1 * \
-                    torch.sum(
-                        F.logsigmoid(-1 * torch.einsum("nj,j->n", [neg_neig_embs, z1])))
+                loss_neg = -1 * \
+                    torch.sum(F.logsigmoid(-1 * torch.einsum(
+                        "nj,j->n", [neg_neig_embs, z1])))
                 C = pos_num // neg_num
-                loss_total += C * loss_pku
+                if C == 0:
+                    C = 1
+                loss_total += C * loss_neg
 
         return loss_total
