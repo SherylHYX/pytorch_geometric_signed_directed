@@ -303,7 +303,7 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
         rs.shuffle(nmst)
         rs.shuffle(neg_edges)
 
-        if task == 'sign' and maintain_connect == 'False':
+        if task == 'sign' and maintain_connect == False:
             nmst = np.array(nmst)
             exist = np.array(np.abs(A[nmst[:, 0], nmst[:, 1]]) > 0).flatten()
             if np.sum(exist) < len(nmst):
