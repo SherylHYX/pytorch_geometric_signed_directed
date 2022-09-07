@@ -239,7 +239,7 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
                     3 (the edge of the reversed direction exists), 4 (the edge doesn't exist in both directions). 
                     The undirected edges in the directed input graph are removed to avoid ambiguity.
                 
-                * If task == "sign": 0 (positive edge), 1 (negative edge). This is the link sign prediction task for signed networks.
+                * If task == "sign": 0 (negative edge), 1 (positive edge). This is the link sign prediction task for signed networks.
     """
     assert task in ["existence", "direction", "three_class_digraph", "four_class_signed_digraph", "five_class_signed_digraph", 
                     "sign"], "Please select a valid task from 'existence', 'direction', 'three_class_digraph', 'four_class_signed_digraph', 'five_class_digraph', and 'sign'!"
@@ -303,7 +303,7 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
         rs.shuffle(nmst)
         rs.shuffle(neg_edges)
 
-        if task == 'sign' and maintain_connect == 'False':
+        if task == 'sign':
             nmst = np.array(nmst)
             exist = np.array(np.abs(A[nmst[:, 0], nmst[:, 1]]) > 0).flatten()
             if np.sum(exist) < len(nmst):
@@ -316,19 +316,19 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
             ids_val = np.array(pos_val_edges[len_test_pos:len_test_pos+len_val_pos].copy() + \
                 neg_val_edges[len_test_neg:len_test_neg+len_val_neg].copy())
             ids_train = np.array(pos_val_edges[len_test_pos+len_val_pos:max_samples] + \
-                neg_val_edges[len_test_neg+len_val_neg:max_samples])
+                neg_val_edges[len_test_neg+len_val_neg:max_samples] + mst)
 
-            labels_test = np.array(A[ids_test[:, 0], ids_test[:, 1]] < 0).flatten() * 1.0 
+            labels_test = np.array(A[ids_test[:, 0], ids_test[:, 1]] > 0).flatten() * 1.0 
             
             if len(ids_val) == 0:
                 labels_val = np.array([])
             else:
-                labels_val = np.array(A[ids_val[:, 0], ids_val[:, 1]] < 0).flatten()  * 1.0 
+                labels_val = np.array(A[ids_val[:, 0], ids_val[:, 1]] > 0).flatten()  * 1.0 
             
-            labels_train = np.array(A[ids_train[:, 0], ids_train[:, 1]] < 0).flatten()  * 1.0 
+            labels_train = np.array(A[ids_train[:, 0], ids_train[:, 1]] > 0).flatten()  * 1.0 
 
             undirected_train = np.array([])
-        if task in ["existence", "direction", 'three_class_digraph']:
+        elif task in ["existence", "direction", 'three_class_digraph']:
             ids_test = nmst[:len_test]+neg_edges[:len_test]
             ids_val = nmst[len_test:len_test+len_val] + \
                 neg_edges[len_test:len_test+len_val]
@@ -390,15 +390,6 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
 
             ids_val = ids_val[labels_val < 4]
             labels_val = labels_val[labels_val < 4]
-        elif task == 'sign':
-            ids_train = ids_train[labels_train < 2]
-            labels_train = labels_train[labels_train < 2]
-
-            ids_test = ids_test[labels_test < 2]
-            labels_test = labels_test[labels_test < 2]
-
-            ids_val = ids_val[labels_val < 2]
-            labels_val = labels_val[labels_val < 2]
 
         # set up the observed graph and weights after splitting
         oberved_edges = -np.ones((len(ids_train), 2), dtype=np.int32)
