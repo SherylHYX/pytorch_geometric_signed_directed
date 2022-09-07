@@ -155,7 +155,7 @@ def test_load_signed_real_data():
             root='./tmp_data/'+dataset_name+'/', dataset=dataset_name)
         assert isinstance(signed_dataset, SignedData)
         assert signed_dataset.is_signed
-    for year in range(2001, 2021):
+    for year in range(2000, 2021):
         signed_dataset = load_signed_real_data(
             dataset='Fin_YNet'+str(year), root='./tmp_data/Fin_YNet/')
         assert isinstance(signed_dataset, SignedData)
