@@ -303,31 +303,6 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
         rs.shuffle(nmst)
         rs.shuffle(neg_edges)
 
-        if task == 'sign' and maintain_connect == False:
-            nmst = np.array(nmst)
-            exist = np.array(np.abs(A[nmst[:, 0], nmst[:, 1]]) > 0).flatten()
-            if np.sum(exist) < len(nmst):
-                nmst = nmst[exist]
-
-            pos_val_edges = nmst[np.array(A[nmst[:, 0], nmst[:, 1]] > 0).squeeze()].tolist()
-            neg_val_edges = nmst[np.array(A[nmst[:, 0], nmst[:, 1]] < 0).squeeze()].tolist()
-
-            ids_test = np.array(pos_val_edges[:len_test_pos].copy() + neg_val_edges[:len_test_neg].copy())
-            ids_val = np.array(pos_val_edges[len_test_pos:len_test_pos+len_val_pos].copy() + \
-                neg_val_edges[len_test_neg:len_test_neg+len_val_neg].copy())
-            ids_train = np.array(pos_val_edges[len_test_pos+len_val_pos:max_samples] + \
-                neg_val_edges[len_test_neg+len_val_neg:max_samples])
-
-            labels_test = np.array(A[ids_test[:, 0], ids_test[:, 1]] < 0).flatten() * 1.0 
-            
-            if len(ids_val) == 0:
-                labels_val = np.array([])
-            else:
-                labels_val = np.array(A[ids_val[:, 0], ids_val[:, 1]] < 0).flatten()  * 1.0 
-            
-            labels_train = np.array(A[ids_train[:, 0], ids_train[:, 1]] < 0).flatten()  * 1.0 
-
-            undirected_train = np.array([])
         if task in ["existence", "direction", 'three_class_digraph']:
             ids_test = nmst[:len_test]+neg_edges[:len_test]
             ids_val = nmst[len_test:len_test+len_val] + \
