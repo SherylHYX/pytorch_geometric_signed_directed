@@ -4,42 +4,7 @@ PyTorch Geometric Signed Directed Models
 .. contents:: Contents
     :local:
 
-Signed Network Models and Layers
---------------
-
-.. automodule:: torch_geometric_signed_directed.nn.signed.SSSNET_node_clustering
-    :members:
-    :exclude-members:
-
-.. automodule:: torch_geometric_signed_directed.nn.signed.SIMPA
-    :members:
-    :exclude-members:
-
-.. automodule:: torch_geometric_signed_directed.nn.signed.SDGNN
-    :members:
-    :exclude-members: SDRLayer
-
-.. automodule:: torch_geometric_signed_directed.nn.signed.SiGAT
-    :members:
-    :exclude-members:
-
-.. automodule:: torch_geometric_signed_directed.nn.signed.SGCN
-    :members:
-    :exclude-members:
-
-.. automodule:: torch_geometric_signed_directed.nn.signed.SNEA
-    :members:
-    :exclude-members:
-
-.. automodule:: torch_geometric_signed_directed.nn.signed.SNEAConv
-    :members:
-    :exclude-members:
-
-.. automodule:: torch_geometric_signed_directed.nn.signed.SGCNConv
-    :members:
-    :exclude-members:
-
-Directed Network Models and Layers
+Directed Undirected Network Models and Layers
 --------------
 
 .. automodule:: torch_geometric_signed_directed.nn.directed.MagNet_node_classification
@@ -102,8 +67,44 @@ Directed Network Models and Layers
     :members:
     :exclude-members:
 
-Signed Directed Network Models and Layers
+Signed (Directed) Network Models and Layers
 --------------
+
+.. automodule:: torch_geometric_signed_directed.nn.signed.SSSNET_node_clustering
+    :members:
+    :exclude-members:
+
+.. automodule:: torch_geometric_signed_directed.nn.signed.SSSNET_link_prediction
+    :members:
+    :exclude-members:
+
+.. automodule:: torch_geometric_signed_directed.nn.signed.SIMPA
+    :members:
+    :exclude-members:
+
+.. automodule:: torch_geometric_signed_directed.nn.signed.SDGNN
+    :members:
+    :exclude-members: SDRLayer
+
+.. automodule:: torch_geometric_signed_directed.nn.signed.SiGAT
+    :members:
+    :exclude-members:
+
+.. automodule:: torch_geometric_signed_directed.nn.signed.SGCN
+    :members:
+    :exclude-members:
+
+.. automodule:: torch_geometric_signed_directed.nn.signed.SNEA
+    :members:
+    :exclude-members:
+
+.. automodule:: torch_geometric_signed_directed.nn.signed.SNEAConv
+    :members:
+    :exclude-members:
+
+.. automodule:: torch_geometric_signed_directed.nn.signed.SGCNConv
+    :members:
+    :exclude-members:
 
 .. automodule:: torch_geometric_signed_directed.nn.general.MSGNN
     :members:
