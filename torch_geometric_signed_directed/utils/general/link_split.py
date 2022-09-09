@@ -311,7 +311,6 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
 
             pos_val_edges = nmst[np.array(A[nmst[:, 0], nmst[:, 1]] > 0).squeeze()].tolist()
             neg_val_edges = nmst[np.array(A[nmst[:, 0], nmst[:, 1]] < 0).squeeze()].tolist()
-
             ids_test = np.array(pos_val_edges[:len_test_pos].copy() + neg_val_edges[:len_test_neg].copy())
             ids_val = np.array(pos_val_edges[len_test_pos:len_test_pos+len_val_pos].copy() + \
                 neg_val_edges[len_test_neg:len_test_neg+len_val_neg].copy())

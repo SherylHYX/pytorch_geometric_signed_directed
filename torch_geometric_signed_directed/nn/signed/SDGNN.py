@@ -4,10 +4,12 @@ from collections import defaultdict
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+import scipy.sparse as sp
 import numpy as np
+from torch_sparse import coalesce
 from torch_geometric.nn import GATConv
 
+from torch_geometric_signed_directed.utils.signed import create_spectral_features
 
 class SDRLayer(nn.Module):
     r"""The signed directed relationship layer from `"SDGNN: Learning Node Representation for Signed Directed Networks" <https://arxiv.org/abs/2101.02390>`_ paper.
@@ -85,19 +87,34 @@ class SDGNN(nn.Module):
     ):
 
         super().__init__()
-        self.embeddings = nn.Embedding(node_num, in_dim)
+
         self.in_dim = in_dim
         self.node_num = node_num
         self.layer_num = layer_num
+        self.device = edge_index_s.device
 
+        self.pos_edge_index = edge_index_s[edge_index_s[:, 2] > 0][:, :2].t()
+        self.neg_edge_index = edge_index_s[edge_index_s[:, 2] < 0][:, :2].t()
+        
+        x = create_spectral_features(
+            pos_edge_index=self.pos_edge_index,
+            neg_edge_index=self.neg_edge_index,
+            node_num=self.node_num,
+            dim=self.in_dim
+        ).to(self.device)
+        self.x = nn.Parameter(x, requires_grad=True)
+        
         self.score_function1 = nn.Sequential(
             nn.Linear(out_dim, 1),
             nn.Sigmoid()
         )
+
         self.score_function2 = nn.Sequential(
             nn.Linear(out_dim, 1),
             nn.Sigmoid()
         )
+        
+        
         self.fc = nn.Linear(out_dim * 2, 1)
 
         self.device = edge_index_s.device
@@ -185,13 +202,13 @@ class SDGNN(nn.Module):
 
         for node_i, node_j, s in edge_index:
 
-            if s == 1:
+            if s > 0:
                 adj_list1[node_i].add(node_j)
                 adj_list1[node_j].add(node_i)
 
                 adj_list1_1[node_i].add(node_j)
                 adj_list1_2[node_j].add(node_i)
-            else:
+            if s < 0:
                 adj_list2[node_i].add(node_j)
                 adj_list2[node_j].add(node_i)
 
@@ -225,7 +242,7 @@ class SDGNN(nn.Module):
         return [adj_list1_1, adj_list1_2, adj_list2_1, adj_list2_2]
 
     def forward(self) -> torch.FloatTensor:
-        x = self.embeddings.weight
+        x = self.x
         for layer_m in self.layers:
             x = layer_m(x)
         return x
