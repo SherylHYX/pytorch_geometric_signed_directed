@@ -39,7 +39,7 @@ class SiGAT(nn.Module):
         self.in_dim = in_dim
         self.out_dim = out_dim
         self.node_num = node_num
-        self.batch_size = batch_size
+        self.batch_size = min(batch_size, node_num)
         self.device = edge_index_s.device
 
 

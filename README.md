@@ -44,33 +44,7 @@ If you find *PyTorch Geometric Signed Directed* useful in your research, please 
 
 In detail, the following signed or directed graph neural networks, as well as related methods designed for signed or directed netwroks, were implemented.
 
-
-**Signed Network Models and Layers**
-
-* **[SSSNET_node_clustering](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SSSNET_node_clustering.SSSNET_node_clustering)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
-
-* **[SDGNN](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SDGNN.SDGNN)** from Huang *et al.*: [SDGNN: Learning Node Representation for Signed Directed Networks](https://arxiv.org/pdf/2101.02390.pdf) (AAAI 2021)
-
-* **[SiGAT](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SiGAT.SiGAT)** from Huang *et al.*: [Signed Graph Attention Networks](https://arxiv.org/pdf/1906.10958.pdf) (ICANN 2019)
-
-<details>
-<summary><b>Expand to see all methods implemented for signed networks...</b></summary>
-
-* **[SNEA](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SNEA.SNEA)** from Li *et al.*: [Learning Signed Network Embedding via Graph Attention](https://ojs.aaai.org/index.php/AAAI/article/view/5911) (AAAI 2020)
-
-* **[SGCN](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SGCN.SGCN)** from Derr *et al.*: [Signed Graph Convolutional Networks](https://arxiv.org/pdf/1808.06354.pdf) (ICDM 2018)
-
-* **[SNEAConv](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SNEAConv.SNEAConv)** from Li *et al.*: [Learning Signed Network Embedding via Graph Attention](https://ojs.aaai.org/index.php/AAAI/article/view/5911) (AAAI 2020)
-
-* **[SGCNConv](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SGCNConv.SGCNConv)** from Derr *et al.*: [Signed Graph Convolutional Network](https://arxiv.org/pdf/1808.06354.pdf) (ICDM 2018)
-
-
-* **[SIMPA](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SIMPA.SIMPA)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
-
-
-</details>
-  
-**Directed Network Models and Layers**
+**Directed Unsigned Network Models and Layers**
 
 * **[MagNet_node_classification](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.directed.MagNet_node_classification.MagNet_node_classification)** from Zhang *et al.*: [MagNet: A Neural Network for Directed Graphs.](https://arxiv.org/pdf/2102.11391.pdf) (NeurIPS 2021)
 
@@ -111,13 +85,41 @@ In detail, the following signed or directed graph neural networks, as well as re
 
 </details>
 
-**Signed Directed Network Models and Layers**
+**Signed (Directed) Network Models and Layers**
 
-* **[MSGNN_node_classification](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.general.MSGNN.MSGNN_node_classification)** from He *et al.*: [MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian.](https://arxiv.org/pdf/2209.00546.pdf) (ArXiv 2022)
+* **[SSSNET_node_clustering](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SSSNET_node_clustering.SSSNET_node_clustering)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
+
+* **[SDGNN](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SDGNN.SDGNN)** from Huang *et al.*: [SDGNN: Learning Node Representation for Signed Directed Networks](https://arxiv.org/pdf/2101.02390.pdf) (AAAI 2021)
+
+* **[SiGAT](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SiGAT.SiGAT)** from Huang *et al.*: [Signed Graph Attention Networks](https://arxiv.org/pdf/1906.10958.pdf) (ICANN 2019)
+
 
 * **[MSGNN_link_prediction](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.general.MSGNN.MSGNN_link_prediction)** from He *et al.*: [MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian.](https://arxiv.org/pdf/2209.00546.pdf) (ArXiv 2022)
 
+
+<details>
+<summary><b>Expand to see all methods implemented for signed networks...</b></summary>
+
+* **[MSGNN_node_classification](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.general.MSGNN.MSGNN_node_classification)** from He *et al.*: [MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian.](https://arxiv.org/pdf/2209.00546.pdf) (ArXiv 2022)
+
 * **[MSConv](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.general.MSConv.MSConv)** from He *et al.*: [MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian.](https://arxiv.org/pdf/2209.00546.pdf) (ArXiv 2022)
+
+* **[SSSNET_link_prediction](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SSSNET_link_prediction.SSSNET_link_prediction)** adapted from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
+
+* **[SNEA](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SNEA.SNEA)** from Li *et al.*: [Learning Signed Network Embedding via Graph Attention](https://ojs.aaai.org/index.php/AAAI/article/view/5911) (AAAI 2020)
+
+* **[SGCN](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SGCN.SGCN)** from Derr *et al.*: [Signed Graph Convolutional Networks](https://arxiv.org/pdf/1808.06354.pdf) (ICDM 2018)
+
+* **[SNEAConv](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SNEAConv.SNEAConv)** from Li *et al.*: [Learning Signed Network Embedding via Graph Attention](https://ojs.aaai.org/index.php/AAAI/article/view/5911) (AAAI 2020)
+
+* **[SGCNConv](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SGCNConv.SGCNConv)** from Derr *et al.*: [Signed Graph Convolutional Network](https://arxiv.org/pdf/1808.06354.pdf) (ICDM 2018)
+
+
+* **[SIMPA](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.nn.signed.SIMPA.SIMPA)** from He *et al.*: [SSSNET: Semi-Supervised Signed Network Clustering](https://arxiv.org/pdf/2110.06623.pdf) (SDM 2022)
+
+
+</details>
+  
 
 
 **Network Generation Methods**
@@ -133,9 +135,9 @@ In detail, the following signed or directed graph neural networks, as well as re
 
 **Data Loaders and Classes**
 
-* **[load_signed_real_data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#torch_geometric_signed_directed.data.signed.load_signed_real_data.load_signed_real_data)** to load signed real-world data sets.
+* **[load_signed_real_data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#torch_geometric_signed_directed.data.signed.load_signed_real_data.load_signed_real_data)** to load signed (directed) real-world data sets.
 
-* **[load_directed_real_data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#torch_geometric_signed_directed.data.directed.load_directed_real_data.load_directed_real_data)** to load directed real-world data sets.
+* **[load_directed_real_data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#torch_geometric_signed_directed.data.directed.load_directed_real_data.load_directed_real_data)** to load directed unsigned real-world data sets.
 
 * **[SignedData](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#torch_geometric_signed_directed.data.signed.SignedData.SignedData)** Signed Data Class.
 
@@ -146,6 +148,8 @@ In detail, the following signed or directed graph neural networks, as well as re
 <summary><b>Expand to see all data loaders and related methods...</b></summary>
 
 * **[SSSNET_signed_real_data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#torch_geometric_signed_directed.data.signed.SSSNET_real_data.SSSNET_real_data)** to load signed real-world data sets from the SSSNET paper.
+
+* **[SDGNN_signed_real_data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#torch_geometric_signed_directed.data.signed.SDGNN_real_data.SDGNN_real_data)** to load signed real-world data sets from the SDGNN paper.
 
 * **[MSGNN_signed_directed_real_data](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#torch_geometric_signed_directed.data.signed.MSGNN_real_data.MSGNN_real_data)** to load signed directed real-world data sets from the MSGNN paper.
   
@@ -237,7 +241,7 @@ pip install torch-geometric-signed-directed
 **Running tests**
 
 ```
-$ python setup test
+$ python setup.py test
 ```
 --------------------------------------------------------------------------------
 

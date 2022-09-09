@@ -31,6 +31,100 @@ def test_sign_link_split():
     
     datasets = link_class_split(signed_dataset, prob_val=0.01, prob_test=0.01, task='five_class_signed_digraph',
                                 maintain_connect=True, ratio=1)
+    A = signed_dataset.A.tocsr()
+    assert len(list(datasets.keys())) == 10
+    for i in datasets:
+        assert torch.sum(datasets[i]['train']['label'] == 0) > 0
+        assert torch.sum(datasets[i]['train']['label'] == 1) > 0
+        assert torch.sum(datasets[i]['train']['label'] == 2) > 0
+        assert torch.sum(datasets[i]['train']['label'] == 3) > 0
+        assert torch.sum(datasets[i]['train']['label'] == 4) > 0
+
+        assert torch.sum(datasets[i]['test']['label'] == 0) > 0
+        assert torch.sum(datasets[i]['test']['label'] == 1) > 0
+        assert torch.sum(datasets[i]['test']['label'] == 2) > 0
+        assert torch.sum(datasets[i]['test']['label'] == 3) > 0
+        assert torch.sum(datasets[i]['test']['label'] == 4) > 0
+        
+        assert torch.sum(datasets[i]['val']['label'] == 0) > 0
+        assert torch.sum(datasets[i]['val']['label'] == 1) > 0
+        assert torch.sum(datasets[i]['val']['label'] == 2) > 0
+        assert torch.sum(datasets[i]['val']['label'] == 3) > 0
+        assert torch.sum(datasets[i]['val']['label'] == 4) > 0
+        
+        for e, l in zip(datasets[i]['train']['edges'], datasets[i]['train']['label']):
+            if l == 0:
+                assert A[e[0], e[1]] > 0
+            elif l == 1:
+                assert A[e[0], e[1]] < 0
+            elif l == 2:
+                assert A[e[1], e[0]] > 0
+            elif l == 3:
+                assert A[e[1], e[0]] < 0
+            elif l == 4:
+                assert A[e[1], e[0]] == 0
+                assert A[e[0], e[1]] == 0
+
+        for e, l in zip(datasets[i]['test']['edges'], datasets[i]['test']['label']):
+            if l == 0:
+                assert A[e[0], e[1]] > 0
+            elif l == 1:
+                assert A[e[0], e[1]] < 0
+            elif l == 2:
+                assert A[e[1], e[0]] > 0
+            elif l == 3:
+                assert A[e[1], e[0]] < 0
+            elif l == 4:
+                assert A[e[1], e[0]] == 0
+                assert A[e[0], e[1]] == 0
+
+        for e, l in zip(datasets[i]['val']['edges'], datasets[i]['val']['label']):
+            if l == 0:
+                assert A[e[0], e[1]] > 0
+            elif l == 1:
+                assert A[e[0], e[1]] < 0
+            elif l == 2:
+                assert A[e[1], e[0]] > 0
+            elif l == 3:
+                assert A[e[1], e[0]] < 0
+            elif l == 4:
+                assert A[e[1], e[0]] == 0
+                assert A[e[0], e[1]] == 0
+
+
+    datasets = link_class_split(signed_dataset, prob_val=0.01, prob_test=0.01, task='sign',
+                                maintain_connect=True, ratio=1)
+    A = signed_dataset.A.tocsr()
+    assert len(list(datasets.keys())) == 10
+    for i in datasets:
+        assert torch.sum(datasets[i]['train']['label'] == 0) > 0
+        assert torch.sum(datasets[i]['train']['label'] != 0) > 0
+        assert torch.sum(datasets[i]['train']['label'] > 1) == 0
+
+        assert torch.sum(datasets[i]['test']['label'] == 0) > 0
+        assert torch.sum(datasets[i]['test']['label'] != 0) > 0
+        assert torch.sum(datasets[i]['test']['label'] > 1) == 0
+
+        assert torch.sum(datasets[i]['val']['label'] == 0) > 0
+        assert torch.sum(datasets[i]['val']['label'] != 0) > 0
+        assert torch.sum(datasets[i]['val']['label'] > 1) == 0
+
+        for e, l in zip(datasets[i]['train']['edges'], datasets[i]['train']['label']):
+            if l == 0:
+                assert A[e[0], e[1]] > 0
+            else:
+                assert A[e[0], e[1]] < 0
+        for e, l in zip(datasets[i]['test']['edges'], datasets[i]['test']['label']):
+            if l == 0:
+                assert A[e[0], e[1]] > 0
+            else:
+                assert A[e[0], e[1]] < 0
+        for e, l in zip(datasets[i]['val']['edges'], datasets[i]['val']['label']):
+            if l == 0:
+                assert A[e[0], e[1]] > 0
+            else:
+                assert A[e[0], e[1]] < 0
+
     datasets = link_class_split(signed_dataset, prob_val=0.01, prob_test=0.01, task='four_class_signed_digraph',
                                 maintain_connect=False, ratio=0.2)
     
@@ -38,11 +132,22 @@ def test_sign_link_split():
     assert len(list(datasets.keys())) == 10
     for i in datasets:
         assert torch.sum(datasets[i]['train']['label'] == 0) > 0
-        assert torch.sum(datasets[i]['train']['label'] != 0) > 0
+        assert torch.sum(datasets[i]['train']['label'] == 1) > 0
+        assert torch.sum(datasets[i]['train']['label'] == 2) > 0
+        assert torch.sum(datasets[i]['train']['label'] == 3) > 0
+        assert torch.sum(datasets[i]['train']['label'] > 3) == 0
+
         assert torch.sum(datasets[i]['test']['label'] == 0) > 0
-        assert torch.sum(datasets[i]['test']['label'] != 0) > 0
+        assert torch.sum(datasets[i]['test']['label'] == 1) > 0
+        assert torch.sum(datasets[i]['test']['label'] == 2) > 0
+        assert torch.sum(datasets[i]['test']['label'] == 3) > 0
+        assert torch.sum(datasets[i]['test']['label'] > 3) == 0
+        
         assert torch.sum(datasets[i]['val']['label'] == 0) > 0
-        assert torch.sum(datasets[i]['val']['label'] != 0) > 0
+        assert torch.sum(datasets[i]['val']['label'] == 1) > 0
+        assert torch.sum(datasets[i]['val']['label'] == 2) > 0
+        assert torch.sum(datasets[i]['val']['label'] == 3) > 0
+        assert torch.sum(datasets[i]['val']['label'] > 3) == 0
         for e, l in zip(datasets[i]['train']['edges'], datasets[i]['train']['label']):
             if l == 0:
                 assert A[e[0], e[1]] > 0
@@ -90,19 +195,19 @@ def test_sign_link_split():
         assert torch.sum(datasets[i]['val']['label'] != 0) > 0
         for e, l in zip(datasets[i]['train']['edges'], datasets[i]['train']['label']):
             if l == 0:
-                assert A[e[0], e[1]] < 0
-            else:
                 assert A[e[0], e[1]] > 0
+            else:
+                assert A[e[0], e[1]] < 0
         for e, l in zip(datasets[i]['test']['edges'], datasets[i]['test']['label']):
             if l == 0:
-                assert A[e[0], e[1]] < 0
-            else:
                 assert A[e[0], e[1]] > 0
+            else:
+                assert A[e[0], e[1]] < 0
         for e, l in zip(datasets[i]['val']['edges'], datasets[i]['val']['label']):
             if l == 0:
-                assert A[e[0], e[1]] < 0
-            else:
                 assert A[e[0], e[1]] > 0
+            else:
+                assert A[e[0], e[1]] < 0
 
     
 
@@ -153,7 +258,7 @@ def test_load_signed_real_data():
             root='./tmp_data/'+dataset_name+'/', dataset=dataset_name)
         assert isinstance(signed_dataset, SignedData)
         assert signed_dataset.is_signed
-    for year in range(2001, 2021):
+    for year in range(2000, 2021):
         signed_dataset = load_signed_real_data(
             dataset='Fin_YNet'+str(year), root='./tmp_data/Fin_YNet/')
         assert isinstance(signed_dataset, SignedData)
