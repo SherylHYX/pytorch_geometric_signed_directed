@@ -4,7 +4,8 @@ import torch
 
 from torch_geometric_signed_directed.nn import (
     MSGNN_node_classification,
-    MSGNN_link_prediction
+    MSGNN_link_prediction,
+    SSSNET_link_prediction
 )
 from torch_geometric_signed_directed.data import (
     SDSBM, SignedData
@@ -34,6 +35,40 @@ def create_mock_data(num_nodes, num_features, num_classes=3, F_style='cyclic', e
     edge_index = torch.LongTensor(np.array(A.nonzero())).to(device)
     edge_weight = torch.FloatTensor(sp.csr_matrix(A).data).to(device)
     return X, A, F_data, edge_index, edge_weight
+
+def test_SSSNET_Link():
+    """
+    Testing SSSNET for link prediction
+    """
+    num_nodes = 100
+    num_features = 3
+    num_classes = 4
+
+    X, _, _, edge_index, edge_weight = \
+        create_mock_data(num_nodes, num_features, num_classes)
+    data = SignedData(x=X, edge_index=edge_index, edge_weight=edge_weight)
+    link_data = link_class_split(data, splits=2, task="four_class_signed_digraph", prob_val=0.15, prob_test=0.1, seed=10, device=device)
+
+    model = SSSNET_link_prediction(nfeat=num_features, hidden=4, nclass=num_classes, dropout=0.5, 
+        hop=2, fill_value=0.5, directed=data.is_directed).to(device)
+    data1 = SignedData(edge_index=edge_index, edge_weight=edge_weight).to(device)
+    data1.separate_positive_negative()
+    preds = model(data1.edge_index_p, data1.edge_weight_p, data1.edge_index_n, data1.edge_weight_n, data.x, link_data[0]['train']['edges'])
+
+    assert preds.shape == (
+        len(link_data[0]['train']['edges']), num_classes
+    )
+
+    model = SSSNET_link_prediction(nfeat=num_features, hidden=4, nclass=num_classes, dropout=0.5, 
+        hop=2, fill_value=0.5, directed=False).to(device)
+    data1 = SignedData(edge_index=edge_index, edge_weight=edge_weight).to(device)
+    data1.separate_positive_negative()
+    preds = model(data1.edge_index_p, data1.edge_weight_p, data1.edge_index_n, data1.edge_weight_n, data.x, link_data[0]['train']['edges'])
+
+    assert preds.shape == (
+        len(link_data[0]['train']['edges']), num_classes
+    )
+
 
 def test_MSGNN():
     """

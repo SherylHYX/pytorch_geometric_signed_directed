@@ -1,4 +1,5 @@
 from .SSSNET_node_clustering import SSSNET_node_clustering
+from .SSSNET_link_prediction import SSSNET_link_prediction
 from .SIMPA import SIMPA
 from .SGCN import SGCN
 from .SNEA import SNEA
