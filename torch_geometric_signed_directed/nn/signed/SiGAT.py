@@ -34,7 +34,7 @@ class SiGAT(nn.Module):
         self.in_emb_dim = in_emb_dim
         self.hidden_emb_dim = hidden_emb_dim
         self.node_num = node_num
-        self.batch_size = batch_size
+        self.batch_size = min(batch_size, node_num)
         self.device = edge_index_s.device
 
         self.embeddings = nn.Embedding(node_num, in_emb_dim)
