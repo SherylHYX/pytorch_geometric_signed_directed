@@ -3,7 +3,7 @@ import torch.nn as nn
 from torch import Tensor
 from torch_geometric_signed_directed.utils.signed import (create_spectral_features,
                                                           Link_Sign_Entropy_Loss,
-                                                          Structure_Theory_Loss)
+                                                          Sign_Structure_Loss)
 from .SNEAConv import SNEAConv
 
 class SNEA(nn.Module):
@@ -62,7 +62,7 @@ class SNEA(nn.Module):
         self.weight = torch.nn.Linear(self.out_dim, self.out_dim)
 
         self.lsp_loss = Link_Sign_Entropy_Loss(out_dim)
-        self.structral_loss = Structure_Theory_Loss()
+        self.structure_loss = Sign_Structure_Loss()
 
         self.reset_parameters()
 
@@ -76,9 +76,9 @@ class SNEA(nn.Module):
     def loss(self) -> torch.FloatTensor:
         z = self.forward()
         nll_loss = self.lsp_loss(z, self.pos_edge_index, self.neg_edge_index)
-        structral_loss = self.structral_loss(
+        structure_loss = self.structure_loss(
             z, self.pos_edge_index, self.neg_edge_index)
-        return nll_loss + self.lamb * structral_loss
+        return nll_loss + self.lamb * structure_loss
 
     def forward(self) -> Tensor:
         z = torch.tanh(self.conv1(

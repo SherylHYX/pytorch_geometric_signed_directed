@@ -10,7 +10,7 @@ from torch_geometric.utils import k_hop_subgraph, add_self_loops
 
 from torch_geometric_signed_directed.utils.signed import (create_spectral_features,
                                                           Link_Sign_Entropy_Loss,
-                                                          Structure_Theory_Loss)
+                                                          Sign_Structure_Loss)
 class SiGAT(nn.Module):
     r"""The signed graph attention network model (SiGAT) from the `"Signed Graph
     Attention Networks" <https://arxiv.org/abs/1906.10958>`_ paper.
@@ -41,7 +41,6 @@ class SiGAT(nn.Module):
         self.node_num = node_num
         self.batch_size = min(batch_size, node_num)
         self.device = edge_index_s.device
-
 
         self.pos_edge_index = edge_index_s[edge_index_s[:, 2] > 0][:, :2].t()
         self.neg_edge_index = edge_index_s[edge_index_s[:, 2] < 0][:, :2].t()

@@ -73,7 +73,7 @@ class Link_Sign_Entropy_Loss(nn.Module):
         return nll_loss / 3.0
 
 
-class Structure_Theory_Loss(nn.Module):
+class Sign_Structure_Loss(nn.Module):
     def __init__(self) -> None:
         super().__init__()
 
