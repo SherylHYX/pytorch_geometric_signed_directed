@@ -242,7 +242,7 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
                 * If task == "sign": 0 (positive edge), 1 (negative edge). This is the link sign prediction task for signed networks.
     """
     assert task in ["existence", "direction", "three_class_digraph", "four_class_signed_digraph", "five_class_signed_digraph", 
-                    "sign"], "Please select a valid task from 'existence', 'direction', 'three_class_digraph', 'four_class_signed_digraph', 'five_class_digraph', and 'sign'!"
+                    "sign"], "Please select a valid task from 'existence', 'direction', 'three_class_digraph', 'four_class_signed_digraph', 'five_class_signed_digraph', and 'sign'!"
     edge_index = data.edge_index.cpu()
     row, col = edge_index[0], edge_index[1]
     if size is None:
@@ -376,32 +376,32 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
             labels_val = labels_val[labels_val < 2]
 
         # set up the observed graph and weights after splitting
-        oberved_edges = -np.ones((len(ids_train), 2), dtype=np.int32)
-        oberved_weight = np.zeros((len(ids_train), 1), dtype=np.float32)
+        observed_edges = -np.ones((len(ids_train), 2), dtype=np.int32)
+        observed_weight = np.zeros((len(ids_train), 1), dtype=np.float32)
 
         direct = (
             np.abs(A[ids_train[:, 0], ids_train[:, 1]].data) > 0).flatten()
-        oberved_edges[direct, 0] = ids_train[direct, 0]
-        oberved_edges[direct, 1] = ids_train[direct, 1]
-        oberved_weight[direct, 0] = np.array(
+        observed_edges[direct, 0] = ids_train[direct, 0]
+        observed_edges[direct, 1] = ids_train[direct, 1]
+        observed_weight[direct, 0] = np.array(
             A[ids_train[direct, 0], ids_train[direct, 1]]).flatten()
 
         direct = (np.abs(A[ids_train[:, 1], ids_train[:, 0]].data) > 0)[0]
-        oberved_edges[direct, 0] = ids_train[direct, 1]
-        oberved_edges[direct, 1] = ids_train[direct, 0]
-        oberved_weight[direct, 0] = np.array(
+        observed_edges[direct, 0] = ids_train[direct, 1]
+        observed_edges[direct, 1] = ids_train[direct, 0]
+        observed_weight[direct, 0] = np.array(
             A[ids_train[direct, 1], ids_train[direct, 0]]).flatten()
 
-        valid = (np.sum(oberved_edges, axis=-1) >= 0)
-        oberved_edges = oberved_edges[valid]
-        oberved_weight = oberved_weight[valid]
+        valid = (np.sum(observed_edges, axis=-1) >= 0)
+        observed_edges = observed_edges[valid]
+        observed_weight = observed_weight[valid]
 
         # add undirected edges back
         if len(undirected_train) > 0:
             undirected_train = np.array(undirected_train)
-            oberved_edges = np.vstack(
-                (oberved_edges, undirected_train, undirected_train[:, [1, 0]]))
-            oberved_weight = np.vstack((oberved_weight, np.array(A[undirected_train[:, 0],
+            observed_edges = np.vstack(
+                (observed_edges, undirected_train, undirected_train[:, [1, 0]]))
+            observed_weight = np.vstack((observed_weight, np.array(A[undirected_train[:, 0],
                                                                    undirected_train[:, 1]]).flatten()[:, None],
                                         np.array(A[undirected_train[:, 1],
                                                    undirected_train[:, 0]]).flatten()[:, None]))
@@ -421,9 +421,9 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
 
         datasets[ind] = {}
         datasets[ind]['graph'] = torch.from_numpy(
-            oberved_edges.T).long().to(device)
+            observed_edges.T).long().to(device)
         datasets[ind]['weights'] = torch.from_numpy(
-            oberved_weight.flatten()).float().to(device)
+            observed_weight.flatten()).float().to(device)
 
         datasets[ind]['train'] = {}
         datasets[ind]['train']['edges'] = torch.from_numpy(
