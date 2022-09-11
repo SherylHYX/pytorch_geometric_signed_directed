@@ -395,11 +395,9 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
         if len(undirected_train) > 0:
             undirected_train = np.array(undirected_train)
             observed_edges = np.vstack(
-                (observed_edges, undirected_train, undirected_train[:, [1, 0]]))
+                (observed_edges, undirected_train))
             observed_weight = np.vstack((observed_weight, np.array(A[undirected_train[:, 0],
-                                                                   undirected_train[:, 1]]).flatten()[:, None],
-                                        np.array(A[undirected_train[:, 1],
-                                                   undirected_train[:, 0]]).flatten()[:, None]))
+                                                                   undirected_train[:, 1]]).flatten()[:, None]))
         
         # remove duplicated edges
         valid_index = []
