@@ -8,7 +8,9 @@ import torch.nn.functional as F
 from torch_geometric.nn import GATConv
 from torch_geometric.utils import k_hop_subgraph, add_self_loops
 
-
+from torch_geometric_signed_directed.utils.signed import (create_spectral_features,
+                                                          Link_Sign_Entropy_Loss,
+                                                          Sign_Structure_Loss)
 class SiGAT(nn.Module):
     r"""The signed graph attention network model (SiGAT) from the `"Signed Graph
     Attention Networks" <https://arxiv.org/abs/1906.10958>`_ paper.
@@ -16,28 +18,35 @@ class SiGAT(nn.Module):
     Args:
         node_num ([type]): Number of node.
         edge_index_s (list): The edgelist with sign. (e.g., [[0, 1, -1]] )
-        in_emb_dim (int, optional): Size of each input sample features. Defaults to 20.
-        hidden_emb_dim (int): Size of each hidden embeddings. Defaults to 20.
+        in_dim (int, optional): Size of each input sample features. Defaults to 20.
+        out_dim (int): Size of each output embeddings. Defaults to 20.
         batch_size (int, optional): Mini-batch size of training. Defaults to 500.
+        x_require_grad (bool, optional): Modify Input Feature or Not. Defaults to True.
+
     """
 
     def __init__(
         self,
         node_num: int,
         edge_index_s,
-        in_emb_dim: int = 20,
-        hidden_emb_dim: int = 20,
-        batch_size=500
+        in_dim: int = 20,
+        out_dim: int = 20,
+        batch_size: int = 500,
+        init_emb_grad: bool = True
     ):
         super().__init__()
 
-        self.in_emb_dim = in_emb_dim
-        self.hidden_emb_dim = hidden_emb_dim
+        self.in_dim = in_dim
+        self.out_dim = out_dim
         self.node_num = node_num
         self.batch_size = min(batch_size, node_num)
         self.device = edge_index_s.device
 
-        self.embeddings = nn.Embedding(node_num, in_emb_dim)
+        self.pos_edge_index = edge_index_s[edge_index_s[:, 2] > 0][:, :2].t()
+        self.neg_edge_index = edge_index_s[edge_index_s[:, 2] < 0][:, :2].t()
+
+        
+        self.x = nn.Embedding(node_num, in_dim)
 
         edge_index_s_list = edge_index_s.cpu().numpy().tolist()
         self.adj_lists = self.build_adj_lists(edge_index_s_list)
@@ -46,16 +55,28 @@ class SiGAT(nn.Module):
         self.aggs = []
         for i in range(len(self.adj_lists)):
             self.aggs.append(
-                GATConv(in_channels=in_emb_dim, out_channels=hidden_emb_dim)
+                GATConv(in_channels=in_dim, out_channels=out_dim)
             )
             self.add_module('agg_{}'.format(i), self.aggs[-1])
 
         self.mlp_layer = nn.Sequential(
-            nn.Linear(hidden_emb_dim *
-                      (len(self.adj_lists) + 1), hidden_emb_dim),
+            nn.Linear(out_dim *
+                      (len(self.adj_lists) + 1), out_dim),
             nn.Tanh(),
-            nn.Linear(hidden_emb_dim, hidden_emb_dim)
+            nn.Linear(out_dim, out_dim)
         )
+
+        self.reset_parameters()
+
+    def reset_parameters(self):
+        for agg in self.aggs:
+            agg.reset_parameters()
+
+        def init_weights(m):
+            if isinstance(m, nn.Linear):
+                torch.nn.init.kaiming_normal_(m.weight)
+                m.bias.data.fill_(0.01)
+        self.mlp_layer.apply(init_weights)
 
     def map_adj_to_edges(self, adj_list: List) -> torch.LongTensor:
         edges = []
@@ -177,25 +198,25 @@ class SiGAT(nn.Module):
             edges, _ = add_self_loops(edges)
             nodes_1, edges_1, inv, _ = k_hop_subgraph(
                 nodes_t, 1, edges, num_nodes=self.node_num, flow='target_to_source', relabel_nodes=True)
-            x1 = self.embeddings(nodes_1)
+            x1 = self.x(nodes_1)
             x2 = agg(x1, edges_1)[inv]
             neigh_feats.append(x2)
 
-        x0 = self.embeddings(nodes_t)
+        x0 = self.x(nodes_t)
         combined = torch.cat([x0] + neigh_feats, 1)
         combined = self.mlp_layer(combined)
         return combined
 
     def loss(self):
         total_loss = 0
-        nodes = np.arange(0, self.node_num)
+        nodes = np.random.permutation(self.node_num)
         for batch in range(self.node_num // self.batch_size):
             b_index = batch * self.batch_size
             e_index = (batch + 1) * self.batch_size
             nodes_batch = nodes[b_index:e_index]
             loss = self.loss_batch(np.array(nodes_batch))
             total_loss += loss
-        return total_loss  
+        return total_loss
 
     def loss_batch(self, nodes: np.array) -> torch.Tensor:
         pos_neighbors, neg_neighbors = self.adj_pos, self.adj_neg
@@ -209,7 +230,6 @@ class SiGAT(nn.Module):
         unique_nodes_dict = {n: i for i, n in enumerate(unique_nodes_list)}
         assert unique_nodes_list.shape == unique_nodes_list.shape
         nodes_embs = self.forward(unique_nodes_list)
-
         loss_total = 0
         for node in nodes:
             z1 = nodes_embs[unique_nodes_dict[node], :]

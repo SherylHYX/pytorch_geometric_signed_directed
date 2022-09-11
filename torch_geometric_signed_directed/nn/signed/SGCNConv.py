@@ -3,6 +3,7 @@ from typing import Union
 from torch_geometric.typing import PairTensor, Adj
 import torch
 from torch import Tensor
+import torch.nn.functional as F
 from torch_geometric.nn.dense.linear import Linear
 from torch_sparse import SparseTensor, matmul
 from torch_geometric.nn.conv import MessagePassing
@@ -61,6 +62,7 @@ class SGCNConv(MessagePassing):
         in_dim: int,
         out_dim: int,
         first_aggr: bool,
+        norm_emb: bool = True,
         bias: bool = True,
         **kwargs
     ):
@@ -70,6 +72,7 @@ class SGCNConv(MessagePassing):
         self.in_dim = in_dim
         self.out_dim = out_dim
         self.first_aggr = first_aggr
+        self.norm_emb = norm_emb
 
         if first_aggr:
             self.lin_b = Linear(2 * in_dim, out_dim, bias)
@@ -92,15 +95,12 @@ class SGCNConv(MessagePassing):
             x: PairTensor = (x, x)
 
         if self.first_aggr:
-            
             out_b = self.propagate(pos_edge_index, x=x)
             out_b = self.lin_b(torch.cat([out_b, x[1]], dim=-1))
 
             out_u = self.propagate(neg_edge_index, x=x)
             out_u = self.lin_u(torch.cat([out_u, x[1]], dim=-1))
-
-            return torch.cat([out_b, out_u], dim=-1)
-
+            out = torch.cat([out_b, out_u], dim=-1)
         else:
             F_in = self.in_dim
             out_b1 = self.propagate(pos_edge_index, x=(
@@ -117,7 +117,10 @@ class SGCNConv(MessagePassing):
             out_u = torch.cat([out_u1, out_u2, x[1][..., F_in:]], dim=-1)
             out_u = self.lin_u(out_u)
 
-            return torch.cat([out_b, out_u], dim=-1)
+            out = torch.cat([out_b, out_u], dim=-1)
+        if self.norm_emb:
+            out = F.normalize(out, p=2, dim=-1)
+        return out
 
     def message(self, x_j: Tensor) -> Tensor:
         return x_j

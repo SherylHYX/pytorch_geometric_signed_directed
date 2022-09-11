@@ -3,6 +3,7 @@ from typing import Optional, Union
 from torch_geometric.typing import (PairTensor, OptTensor)
 import torch
 from torch import LongTensor, Tensor
+import torch.nn.functional as F
 from torch_geometric.nn.dense.linear import Linear
 from torch_geometric.nn.conv import MessagePassing
 from torch_geometric.utils import (add_self_loops,
@@ -48,31 +49,36 @@ class SNEAConv(MessagePassing):
         out_dim: int,
         first_aggr: bool,
         bias: bool = True,
+        norm_emb: bool = True,
         add_self_loops=True,
         **kwargs
     ):
 
         kwargs.setdefault('aggr', 'add')
-        super().__init__(node_dim=0, **kwargs)
+        super().__init__(**kwargs)
 
         self.in_dim = in_dim
         self.out_dim = out_dim
         self.first_aggr = first_aggr
         self.add_self_loops = add_self_loops
+        self.norm_emb = norm_emb
 
-        self.lin_b = Linear(in_dim, out_dim, bias)
-        self.lin_u = Linear(in_dim, out_dim, bias)
+        self.lin_b = torch.nn.Linear(in_dim, out_dim, bias)
+        self.lin_u = torch.nn.Linear(in_dim, out_dim, bias)
 
-        self.alpha_u = Linear(self.out_dim * 2, 1)
-        self.alpha_b = Linear(self.out_dim * 2, 1)
+        self.alpha_u = torch.nn.Linear(self.out_dim * 2, 1)
+        self.alpha_b = torch.nn.Linear(self.out_dim * 2, 1)
 
         self.reset_parameters()
 
     def reset_parameters(self):
         self.lin_b.reset_parameters()
         self.lin_u.reset_parameters()
-        self.alpha_b.reset_parameters()
-        self.alpha_u.reset_parameters()
+        torch.nn.init.xavier_normal_(self.alpha_b.weight)
+        torch.nn.init.xavier_normal_(self.alpha_u.weight)
+
+        # self.alpha_b.reset_parameters()
+        # self.alpha_u.reset_parameters()
 
     def forward(self, x: Union[Tensor, PairTensor], pos_edge_index: LongTensor,
                 neg_edge_index: LongTensor):
@@ -87,20 +93,21 @@ class SNEAConv(MessagePassing):
             # x = torch.stack((h_b, h_b), dim=-1)
             x1 = h_b
             x2 = h_b
-            out_b = self.propagate(edge, x1=x1, x2=x2, edge_p=edge_p)
+            out_b = self.propagate(edge, x1=x1, x2=x2, edge_p=edge_p, alpha_func=self.alpha_b)
 
             edge, _ = remove_self_loops(neg_edge_index)
             edge, _ = add_self_loops(edge)
-            edge_p = torch.ones(edge.size(-1), dtype=torch.long)
+            edge_p = torch.zeros(edge.size(-1), dtype=torch.long)
             x1 = h_u
             x2 = h_u
-            out_u = self.propagate(edge, x1=x1, x2=x2, edge_p=edge_p)
-            return torch.cat([out_b, out_u], dim=-1)
+            out_u = self.propagate(edge, x1=x1, x2=x2, edge_p=edge_p, alpha_func=self.alpha_u)
+            out = torch.cat([out_b, out_u], dim=-1)
 
         else:
             F_in = self.in_dim
-            x_b = x[..., :F_in]
-            x_u = x[..., F_in:]
+            h_b = x[..., :F_in]
+            h_u = x[..., F_in:]
+
 
             edge1, _ = remove_self_loops(pos_edge_index)
             edge1, _ = add_self_loops(edge1)
@@ -109,37 +116,36 @@ class SNEAConv(MessagePassing):
             edge_p1 = torch.zeros(edge1.size(-1), dtype=torch.long)
             edge_p2 = torch.ones(edge2.size(-1), dtype=torch.long)
             edge_p = torch.cat([edge_p1, edge_p2], dim=-1)
-            x1 = self.lin_b(x_b)
-            x2 = self.lin_b(x_u)
-            out_b = self.propagate(edge, x1=x1, x2=x2, edge_p=edge_p)
+            x1 = self.lin_b(h_b)
+            x2 = self.lin_b(h_u)
+            out_b = self.propagate(edge, x1=x1, x2=x2, edge_p=edge_p, alpha_func=self.alpha_b)
 
-            edge1, _ = remove_self_loops(neg_edge_index)
+            edge1, _ = remove_self_loops(pos_edge_index)
             edge1, _ = add_self_loops(edge1)
-            edge2, _ = remove_self_loops(pos_edge_index)
+            edge2, _ = remove_self_loops(neg_edge_index)
             edge = torch.cat([edge1, edge2], dim=-1)
             edge_p1 = torch.zeros(edge1.size(-1), dtype=torch.long)
             edge_p2 = torch.ones(edge2.size(-1), dtype=torch.long)
             edge_p = torch.cat([edge_p1, edge_p2], dim=-1)
-            x1 = self.lin_u(x_u)
-            x2 = self.lin_u(x_b)
-            out_u = self.propagate(edge, x1=x1, x2=x2, edge_p=edge_p)
+            x1 = self.lin_u(h_u)
+            x2 = self.lin_u(h_b)
+            out_u = self.propagate(edge, x1=x1, x2=x2, edge_p=edge_p, alpha_func=self.alpha_u)
 
-            return torch.cat([out_b, out_u], dim=-1)
+            out = torch.cat([out_b, out_u], dim=-1)
+        return out
 
-    # def message(self, x1, x2, edge1, edge2):
-        # x1_j = x1[edge1[0]]
-
-    def message(self, x1_j: Tensor, x2_j: Tensor, x1_i: Tensor, x2_i: Tensor, edge_p: Tensor, index: Tensor, ptr: OptTensor,
+    def message(self, x1_j: Tensor, x2_j: Tensor, x1_i: Tensor, x2_i: Tensor, edge_p: Tensor, alpha_func, index: Tensor, ptr: OptTensor,
                 size_i: Optional[int]) -> Tensor:
-        alpha1_j = self.alpha_b(torch.cat([x1_i, x1_j], dim=-1))
-        alpha2_j = self.alpha_u(torch.cat([x2_i, x2_j], dim=-1))
-        alpha = torch.stack([alpha1_j, alpha2_j], dim=-1)
-        x = torch.stack([x1_j, x2_j], dim=-1)
-        alpha = alpha[torch.arange(alpha.size(0)), :, edge_p]
-        x = x[torch.arange(x.size(0)), :, edge_p]
+        x1 = torch.cat([x1_j, x1_i], dim=-1)
+        x2 = torch.cat([x2_j, x2_i], dim=-1)
+        edge_h = torch.stack([x1, x2], dim=-1)
+        edge_h = edge_h[torch.arange(edge_h.size(0)), :, edge_p]
+        alpha = alpha_func(edge_h)
         alpha = torch.tanh(alpha)
         alpha = softmax(alpha, index, ptr, size_i)
-        return x * alpha
+        x_i = torch.stack([x1_i, x2_i], dim=-1)
+        x_i = x_i[torch.arange(edge_h.size(0)), :, edge_p]
+        return x_i * alpha
 
     def __repr__(self) -> str:
         return (f'{self.__class__.__name__}({self.in_dim}, '
