@@ -445,5 +445,5 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
         datasets[ind]['test']['label'] = torch.from_numpy(
             labels_test).long().to(device)
         #datasets[ind]['test']['weight'] = torch.from_numpy(label_test_w).float().to(device)
-    assert(len(edge_index.T) >= len(oberved_edges))
+    assert(len(edge_index.T) >= len(observed_edges))
     return datasets
