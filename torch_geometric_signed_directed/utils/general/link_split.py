@@ -242,7 +242,7 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
                 * If task == "sign": 0 (positive edge), 1 (negative edge). This is the link sign prediction task for signed networks.
     """
     assert task in ["existence", "direction", "three_class_digraph", "four_class_signed_digraph", "five_class_signed_digraph", 
-                    "sign"], "Please select a valid task from 'existence', 'direction', 'three_class_digraph', 'four_class_signed_digraph', 'five_class_digraph', and 'sign'!"
+                    "sign"], "Please select a valid task from 'existence', 'direction', 'three_class_digraph', 'four_class_signed_digraph', 'five_class_signed_digraph', and 'sign'!"
     edge_index = data.edge_index.cpu()
     row, col = edge_index[0], edge_index[1]
     if size is None:
