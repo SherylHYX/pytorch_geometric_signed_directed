@@ -50,7 +50,6 @@ def undirected_label2directed_label(adj: scipy.sparse.csr_matrix, edge_pairs: Li
 
     labels = -np.ones(len(edge_pairs), dtype=np.int32)
     new_edge_pairs = np.array(list(map(list, edge_pairs)))
-    counter = 0
 
     # get directed edges
     edge_pairs = np.array(list(map(list, edge_pairs)))
@@ -67,21 +66,23 @@ def undirected_label2directed_label(adj: scipy.sparse.csr_matrix, edge_pairs: Li
             np.array(adj[edge_pairs[:, 1], edge_pairs[:, 0]]).flatten() < 0).tolist()
         undirected_pos = np.logical_and(directed_pos, inversed_pos)
         undirected_neg = np.logical_and(directed_neg, inversed_neg)
+        undirected_pos_neg = np.logical_and(directed_pos, inversed_neg)
+        undirected_neg_pos = np.logical_and(directed_neg, inversed_pos)
 
         directed_pos = list(map(tuple, edge_pairs[directed_pos].tolist()))
         directed_neg = list(map(tuple, edge_pairs[directed_neg].tolist()))
         inversed_pos = list(map(tuple, edge_pairs[inversed_pos].tolist()))
         inversed_neg = list(map(tuple, edge_pairs[inversed_neg].tolist()))
-        undirected_pos = list(map(tuple, edge_pairs[undirected_pos].tolist()))
-        undirected_neg = list(map(tuple, edge_pairs[undirected_neg].tolist()))
+        undirected = np.logical_or(np.logical_or(np.logical_or(undirected_pos, undirected_neg), undirected_pos_neg), undirected_neg_pos)
+        undirected = list(map(tuple, edge_pairs[np.array(undirected)].tolist()))
 
         edge_pairs = list(map(tuple, edge_pairs.tolist()))
         negative = np.array(
             list(set(edge_pairs) - set(directed_pos) - set(inversed_pos) - set(directed_neg) - set(inversed_neg)))
-        directed_pos = np.array(list(set(directed_pos) - set(undirected_pos)))
-        inversed_pos = np.array(list(set(inversed_pos) - set(undirected_pos)))
-        directed_neg = np.array(list(set(directed_neg) - set(undirected_neg)))
-        inversed_neg = np.array(list(set(inversed_neg) - set(undirected_neg)))
+        directed_pos = np.array(list(set(directed_pos) - set(undirected)))
+        inversed_pos = np.array(list(set(inversed_pos) - set(undirected)))
+        directed_neg = np.array(list(set(directed_neg) - set(undirected)))
+        inversed_neg = np.array(list(set(inversed_neg) - set(undirected)))
 
         directed = np.vstack([directed_pos, directed_neg])
         if not inversed_pos.size:
@@ -92,13 +93,7 @@ def undirected_label2directed_label(adj: scipy.sparse.csr_matrix, edge_pairs: Li
             inversed_neg = []
         else:
             inversed = np.vstack([inversed_pos, inversed_neg])
-        undirected_pos, undirected_neg = np.array(undirected_pos), np.array(undirected_neg)
-        if not undirected_pos.size:
-            undirected = undirected_neg
-        elif not undirected_neg.size:
-            undirected = undirected_pos
-        else:
-            undirected = np.vstack([undirected_pos, undirected_neg])
+        undirected = np.array(undirected)
         new_edge_pairs = np.vstack(
             [directed, inversed]) if inversed.size else directed
         new_edge_pairs = np.vstack([new_edge_pairs, new_edge_pairs[:, [1, 0]]])
@@ -406,7 +401,7 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
                                         np.array(A[undirected_train[:, 1],
                                                    undirected_train[:, 0]]).flatten()[:, None]))
         
-        # rm duplicated edges
+        # remove duplicated edges
         valid_index = []
         observed_set = set()
         for i, oe in enumerate(list(map(tuple, observed_edges))):
@@ -418,6 +413,8 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
 
         observed_edges = observed_edges[valid_index]
         observed_weight= observed_weight[valid_index]
+        assert(len(edge_index.T) >= len(observed_edges)), 'The original edge number is {} \
+            while the observed graph has {} edges!'.format(len(edge_index.T), len(observed_edges))
 
         datasets[ind] = {}
         datasets[ind]['graph'] = torch.from_numpy(
@@ -445,5 +442,4 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
         datasets[ind]['test']['label'] = torch.from_numpy(
             labels_test).long().to(device)
         #datasets[ind]['test']['weight'] = torch.from_numpy(label_test_w).float().to(device)
-    assert(len(edge_index.T) >= len(observed_edges))
     return datasets
