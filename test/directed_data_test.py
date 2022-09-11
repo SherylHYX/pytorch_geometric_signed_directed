@@ -107,6 +107,11 @@ def test_link_split():
                 assert ([e[1], e[0]] in edges)
     assert len(list(datasets[0]['val']['edges'])) == 0
 
+    edges = directed_dataset.edge_index.T.tolist()
+    for e, l in zip(datasets[i]['graph'].T, datasets[i]['weights']):
+        assert(l > 0)
+        assert([e[0].item(), e[1].item()] in edges)
+
     row, col = directed_dataset.edge_index[0], directed_dataset.edge_index[1]
     A = directed_dataset.A.tocsr()
     G = nx.from_scipy_sparse_matrix(
@@ -153,6 +158,11 @@ def test_link_split():
     for i in datasets:
         train_edges = to_undirected(datasets[i]['graph']).T.tolist()
         assert len(list(set(mst) - set(list(map(tuple, train_edges))))) == 0
+    
+    edges = directed_dataset.edge_index.T.tolist()
+    for e, l in zip(datasets[i]['graph'].T, datasets[i]['weights']):
+        assert(l > 0)
+        assert([e[0].item(), e[1].item()] in edges)
 
     datasets = link_class_split(
         directed_dataset, prob_val=0.15, prob_test=0.05, task='three_class_digraph')
@@ -176,6 +186,11 @@ def test_link_split():
             else:
                 assert not (([e[0], e[1]] in edges)
                             and ([e[1], e[0]] in edges))
+    edges = directed_dataset.edge_index.T.tolist()
+    for e, l in zip(datasets[i]['graph'].T, datasets[i]['weights']):
+        assert(l > 0)
+        assert([e[0].item(), e[1].item()] in edges)
+
     for i in datasets:
         train_edges = to_undirected(datasets[i]['graph']).T.tolist()
         assert len(list(set(mst) - set(list(map(tuple, train_edges))))) == 0

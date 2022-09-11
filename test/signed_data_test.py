@@ -91,6 +91,12 @@ def test_sign_link_split():
                 assert A[e[1], e[0]] == 0
                 assert A[e[0], e[1]] == 0
 
+    edges = signed_dataset.edge_index.T.tolist()
+    A = signed_dataset.A.tocsr()
+    for e, l in zip(datasets[i]['graph'].T, datasets[i]['weights']):
+        assert(abs(l) > 0)
+        assert([e[0].item(), e[1].item()] in edges)
+        assert(A[e[0].item(), e[1].item()] == l)
 
     datasets = link_class_split(signed_dataset, prob_val=0.01, prob_test=0.01, task='sign',
                                 maintain_connect=True, ratio=1)
@@ -124,6 +130,12 @@ def test_sign_link_split():
                 assert A[e[0], e[1]] > 0
             else:
                 assert A[e[0], e[1]] < 0
+    edges = signed_dataset.edge_index.T.tolist()
+    A = signed_dataset.A.tocsr()
+    for e, l in zip(datasets[i]['graph'].T, datasets[i]['weights']):
+        assert(abs(l) > 0)
+        assert([e[0].item(), e[1].item()] in edges)
+        assert(A[e[0].item(), e[1].item()] == l)
 
     datasets = link_class_split(signed_dataset, prob_val=0.01, prob_test=0.01, task='four_class_signed_digraph',
                                 maintain_connect=False, ratio=0.2)
@@ -181,9 +193,15 @@ def test_sign_link_split():
                 assert A[e[1], e[0]] < 0
             else:
                 assert A[e[1], e[0]] == 0
+    edges = signed_dataset.edge_index.T.tolist()
+    A = signed_dataset.A.tocsr()
+    for e, l in zip(datasets[i]['graph'].T, datasets[i]['weights']):
+        assert(abs(l) > 0)
+        assert([e[0].item(), e[1].item()] in edges)
+        assert(A[e[0].item(), e[1].item()] == l)
 
-    datasets = link_class_split(signed_dataset, prob_val=0.01, prob_test=0.02, task='sign',
-                                maintain_connect=False, ratio=0.2)
+    datasets = link_class_split(signed_dataset, prob_val=0.1, prob_test=0.2, task='sign',
+                                maintain_connect=False, ratio=1.0)
     A = signed_dataset.A.tocsr()
     assert len(list(datasets.keys())) == 10
     for i in datasets:
@@ -209,7 +227,12 @@ def test_sign_link_split():
             else:
                 assert A[e[0], e[1]] < 0
 
-    
+    edges = signed_dataset.edge_index.T.tolist()
+    A = signed_dataset.A.tocsr()
+    for e, l in zip(datasets[i]['graph'].T, datasets[i]['weights']):
+        assert(abs(l) > 0)
+        assert([e[0].item(), e[1].item()] in edges)
+        assert(A[e[0].item(), e[1].item()] == l)
 
 def test_load_signed_real_data():
     for year in range(2000, 2021):
