@@ -408,16 +408,16 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
         
         # rm duplicated edges
         valid_index = []
-        oberved_set = set()
-        for i, oe in enumerate(list(map(tuple, oberved_edges))):
-            if oe in oberved_set or A[oe[0], oe[1]] == 0:
+        observed_set = set()
+        for i, oe in enumerate(list(map(tuple, observed_edges))):
+            if oe in observed_set or A[oe[0], oe[1]] == 0:
                 continue
             else:
-                oberved_set.add(oe)
+                observed_set.add(oe)
             valid_index.append(i)
 
-        oberved_edges = oberved_edges[valid_index]
-        oberved_weight= oberved_weight[valid_index]
+        observed_edges = observed_edges[valid_index]
+        observed_weight= observed_weight[valid_index]
 
         datasets[ind] = {}
         datasets[ind]['graph'] = torch.from_numpy(
