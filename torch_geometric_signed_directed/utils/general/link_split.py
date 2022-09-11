@@ -405,6 +405,19 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
                                                                    undirected_train[:, 1]]).flatten()[:, None],
                                         np.array(A[undirected_train[:, 1],
                                                    undirected_train[:, 0]]).flatten()[:, None]))
+        
+        # rm duplicated edges
+        valid_index = []
+        observed_set = set()
+        for i, oe in enumerate(list(map(tuple, observed_edges))):
+            if oe in observed_set or A[oe[0], oe[1]] == 0:
+                continue
+            else:
+                observed_set.add(oe)
+            valid_index.append(i)
+
+        observed_edges = observed_edges[valid_index]
+        observed_weight= observed_weight[valid_index]
 
         datasets[ind] = {}
         datasets[ind]['graph'] = torch.from_numpy(
@@ -432,4 +445,5 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
         datasets[ind]['test']['label'] = torch.from_numpy(
             labels_test).long().to(device)
         #datasets[ind]['test']['weight'] = torch.from_numpy(label_test_w).float().to(device)
+    assert(len(edge_index.T) >= len(observed_edges))
     return datasets
