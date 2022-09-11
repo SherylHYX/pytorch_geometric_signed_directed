@@ -8,7 +8,7 @@ import numpy as np
 from torch_geometric_signed_directed.nn.signed import SGCN, SDGNN, SiGAT, SNEA
 from torch_geometric_signed_directed.data.signed import load_signed_real_data
 from torch_geometric_signed_directed.utils.general.link_split import link_class_split
-from torch_geometric_signed_directed.utils.signed import lsp_logistic_function
+from torch_geometric_signed_directed.utils.signed import link_sign_prediction_logistic_function
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str, default='bitcoin_alpha')
@@ -39,6 +39,7 @@ edge_sign = splited_data['train']['label'] * 2 - 1
 edge_index_s = torch.cat([edge_index, edge_sign.unsqueeze(-1)], dim=-1)
 in_dim = args.in_dim
 out_dim = args.out_dim
+print(edge_index[100])
 
 
 if args.model == 'SGCN':
@@ -48,9 +49,11 @@ elif args.model == 'SNEA':
     model = SNEA(nodes_num, edge_index_s, in_dim,
                  out_dim, layer_num=2, lamb=5).to(device)
 elif args.model == 'SiGAT':
-    model = SiGAT(nodes_num, edge_index_s, in_dim, out_dim).to(device)
+    model = SiGAT(nodes_num, edge_index_s, in_dim,
+                out_dim).to(device)
 elif args.model == 'SDGNN':
-    model = SDGNN(nodes_num, edge_index_s, in_dim, out_dim).to(device)
+    model = SDGNN(nodes_num, edge_index_s, in_dim,
+                out_dim).to(device)
 
 
 print(model)
@@ -68,7 +71,7 @@ def test():
     test_X = splited_data['test']['edges'].cpu().numpy()
     train_y = splited_data['train']['label'].cpu().numpy()
     test_y = splited_data['test']['label'].cpu().numpy()
-    accuracy, f1, f1_macro, f1_micro, auc_score = lsp_logistic_function(
+    accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(
         embeddings, train_X, train_y, test_X, test_y)
     return auc_score, f1, f1_macro, f1_micro, accuracy
 
@@ -82,7 +85,7 @@ def evaluate(model, splited_data, eval_flag='test'):
     test_X = splited_data[eval_flag]['edges'].cpu().numpy()
     train_y = splited_data['train']['label'].cpu().numpy()
     test_y = splited_data[eval_flag]['label'].cpu().numpy()
-    accuracy, f1, f1_macro, f1_micro, auc_score = lsp_logistic_function(
+    accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(
         embeddings, train_X, train_y, test_X, test_y)
     eval_info = {}
     eval_info['acc'] = accuracy

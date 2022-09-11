@@ -10,7 +10,7 @@ from torch_geometric_signed_directed.data import (
 )
 from torch_geometric_signed_directed.utils import (
     Prob_Balanced_Ratio_Loss, Prob_Balanced_Normalized_Loss, Unhappy_Ratio,
-    lsp_logistic_function, triplet_loss_node_classification
+    link_sign_prediction_logistic_function, triplet_loss_node_classification
 )
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -139,7 +139,7 @@ def test_SGCN():
     test_X = test_edge_index.t().cpu().numpy()
     train_y = train_edge_weight.cpu().numpy()
     test_y = test_edge_weight.cpu().numpy()
-    accuracy, f1, f1_macro, f1_micro, auc_score = lsp_logistic_function(
+    accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(
         embeddings, train_X, train_y, test_X, test_y)
     assert auc_score >= 0
     assert loss >= 0
@@ -199,7 +199,7 @@ def test_SNEA():
     test_X = test_edge_index.t().cpu().numpy()
     train_y = train_edge_weight.cpu().numpy()
     test_y = test_edge_weight.cpu().numpy()
-    accuracy, f1, f1_macro, f1_micro, auc_score = lsp_logistic_function(
+    accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(
         embeddings, train_X, train_y, test_X, test_y)
     assert auc_score >= 0
     assert loss >= 0
@@ -244,7 +244,7 @@ def test_SiGAT():
     test_X = test_edge_index.t().cpu().numpy()
     train_y = train_edge_weight.cpu().numpy()
     test_y = test_edge_weight.cpu().numpy()
-    accuracy, f1, f1_macro, f1_micro, auc_score = lsp_logistic_function(
+    accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(
         embeddings, train_X, train_y, test_X, test_y)
     assert auc_score >= 0
     assert loss >= 0
@@ -286,7 +286,7 @@ def test_SDGNN():
     test_X = test_edge_index.t().cpu().numpy()
     train_y = train_edge_weight.cpu().numpy()
     test_y = test_edge_weight.cpu().numpy()
-    accuracy, f1, f1_macro, f1_micro, auc_score = lsp_logistic_function(
+    accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(
         embeddings, train_X, train_y, test_X, test_y)
     assert auc_score >= 0
     assert loss >= 0

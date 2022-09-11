@@ -32,7 +32,7 @@ class SiGAT(nn.Module):
         in_dim: int = 20,
         out_dim: int = 20,
         batch_size: int = 500,
-        x_require_grad: bool = True
+        init_emb_grad: bool = True
     ):
         super().__init__()
 
@@ -45,18 +45,8 @@ class SiGAT(nn.Module):
         self.pos_edge_index = edge_index_s[edge_index_s[:, 2] > 0][:, :2].t()
         self.neg_edge_index = edge_index_s[edge_index_s[:, 2] < 0][:, :2].t()
 
-        x = create_spectral_features(
-            pos_edge_index=self.pos_edge_index,
-            neg_edge_index=self.neg_edge_index,
-            node_num=self.node_num,
-            dim=self.in_dim
-        ).to(self.device)
-
-
-        if x_require_grad:
-            self.x = nn.Embedding.from_pretrained(x)
-        else:
-            self.x = nn.Embedding.from_pretrained(node_num, in_dim)
+        
+        self.x = nn.Embedding(node_num, in_dim)
 
         edge_index_s_list = edge_index_s.cpu().numpy().tolist()
         self.adj_lists = self.build_adj_lists(edge_index_s_list)

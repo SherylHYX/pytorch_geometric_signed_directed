@@ -4,9 +4,9 @@ import numpy as np
 from sklearn import linear_model, metrics
 
 
-def lsp_logistic_function(embeddings: np.ndarray, train_X: np.ndarray, train_y: np.ndarray, test_X: np.ndarray, test_y: np.ndarray, class_weight: Union[dict, str] = None) -> Tuple[float, float, float, float, float]:
+def link_sign_prediction_logistic_function(embeddings: np.ndarray, train_X: np.ndarray, train_y: np.ndarray, test_X: np.ndarray, test_y: np.ndarray, class_weight: Union[dict, str] = None) -> Tuple[float, float, float, float, float]:
     """
-    lsp_logistic_function [summary]
+    link_sign_prediction_logistic_function [summary]
     Link sign prediction is a binary classification machine learning task. 
     It will return the metrics for link sign prediction (i.e., Accuracy, Binary-F1, Macro-F1, Micro-F1 and AUC).
 

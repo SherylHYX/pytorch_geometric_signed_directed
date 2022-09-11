@@ -48,7 +48,7 @@ class Link_Sign_Entropy_Loss(nn.Module):
         neg_edge_index: torch.LongTensor
     ) -> torch.Tensor:
         """Computes the discriminator loss based on node embeddings :obj:`z`,
-        and positive edges :obj:`pos_edge_index` and negative nedges
+        and positive edges :obj:`pos_edge_index` and negative edges
         :obj:`neg_edge_index`.
 
         Args:

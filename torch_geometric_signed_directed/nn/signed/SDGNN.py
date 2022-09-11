@@ -95,7 +95,7 @@ class SDGNN(nn.Module):
 
         self.pos_edge_index = edge_index_s[edge_index_s[:, 2] > 0][:, :2].t()
         self.neg_edge_index = edge_index_s[edge_index_s[:, 2] < 0][:, :2].t()
-        
+
         x = create_spectral_features(
             pos_edge_index=self.pos_edge_index,
             neg_edge_index=self.neg_edge_index,
@@ -103,7 +103,7 @@ class SDGNN(nn.Module):
             dim=self.in_dim
         ).to(self.device)
         self.x = nn.Parameter(x, requires_grad=True)
-        
+
         self.score_function1 = nn.Sequential(
             nn.Linear(out_dim, 1),
             nn.Sigmoid()
@@ -113,8 +113,8 @@ class SDGNN(nn.Module):
             nn.Linear(out_dim, 1),
             nn.Sigmoid()
         )
-        
-        
+
+
         self.fc = nn.Linear(out_dim * 2, 1)
 
         self.device = edge_index_s.device

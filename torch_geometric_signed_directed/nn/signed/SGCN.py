@@ -32,7 +32,9 @@ class SGCN(nn.Module):
         in_dim: int = 64,
         out_dim: int = 64,
         layer_num: int = 2,
-        lamb: float = 5
+        lamb: float = 5,
+        init_emb: torch.FloatTensor = None,
+        init_emb_grad: bool = False,
     ):
 
         super().__init__()
@@ -46,12 +48,17 @@ class SGCN(nn.Module):
         self.pos_edge_index = edge_index_s[edge_index_s[:, 2] > 0][:, :2].t()
         self.neg_edge_index = edge_index_s[edge_index_s[:, 2] < 0][:, :2].t()
 
-        self.x = create_spectral_features(
-            pos_edge_index=self.pos_edge_index,
-            neg_edge_index=self.neg_edge_index,
-            node_num=self.node_num,
-            dim=self.in_dim
-        ).to(self.device)
+        if init_emb is None:
+            init_emb = create_spectral_features(
+                pos_edge_index=self.pos_edge_index,
+                neg_edge_index=self.neg_edge_index,
+                node_num=self.node_num,
+                dim=self.in_dim
+            ).to(self.device)
+        else:
+            init_emb = init_emb
+        
+        self.x = nn.Parameter(init_emb, requires_grad=init_emb_grad)
 
         self.conv1 = SGCNConv(in_dim, out_dim // 2, first_aggr=True)
         self.convs = torch.nn.ModuleList()

@@ -27,7 +27,8 @@ class SNEA(nn.Module):
         out_dim: int = 64,
         layer_num: int = 2,
         lamb: float = 4,
-        x_require_grad: bool = True
+        init_emb: torch.FloatTensor = None,
+        init_emb_grad: bool = True
     ):
         super().__init__()
 
@@ -40,16 +41,17 @@ class SNEA(nn.Module):
         self.pos_edge_index = edge_index_s[edge_index_s[:, 2] > 0][:, :2].t()
         self.neg_edge_index = edge_index_s[edge_index_s[:, 2] < 0][:, :2].t()
 
-        x = create_spectral_features(
-            pos_edge_index=self.pos_edge_index,
-            neg_edge_index=self.neg_edge_index,
-            node_num=self.node_num,
-            dim=self.in_dim
-        ).to(self.device)
-        if x_require_grad:
-            self.x = nn.Parameter(x, requires_grad=True)
+        if init_emb is None:
+            init_emb = create_spectral_features(
+                pos_edge_index=self.pos_edge_index,
+                neg_edge_index=self.neg_edge_index,
+                node_num=self.node_num,
+                dim=self.in_dim
+            ).to(self.device)
         else:
-            self.x = x
+            init_emb = init_emb
+
+        self.x = nn.Parameter(init_emb, requires_grad=init_emb_grad)
 
         self.conv1 = SNEAConv(in_dim, out_dim // 2,
                               first_aggr=True)
@@ -72,7 +74,7 @@ class SNEA(nn.Module):
             conv.reset_parameters()
         self.weight.reset_parameters()
 
-  
+
     def loss(self) -> torch.FloatTensor:
         z = self.forward()
         nll_loss = self.lsp_loss(z, self.pos_edge_index, self.neg_edge_index)
