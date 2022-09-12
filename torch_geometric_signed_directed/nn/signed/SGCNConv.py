@@ -62,7 +62,7 @@ class SGCNConv(MessagePassing):
         in_dim: int,
         out_dim: int,
         first_aggr: bool,
-        norm_emb: bool = True,
+        norm_emb: bool = False,
         bias: bool = True,
         **kwargs
     ):
