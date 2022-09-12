@@ -9,7 +9,7 @@ from torch_geometric.nn import GATConv
 from torch_geometric.utils import k_hop_subgraph, add_self_loops
 
 from torch_geometric_signed_directed.utils.signed import (create_spectral_features,
-                                                          Link_Sign_Entropy_Loss,
+                                                          Link_Sign_Product_Loss,
                                                           Sign_Structure_Loss)
 class SiGAT(nn.Module):
     r"""The signed graph attention network model (SiGAT) from the `"Signed Graph
@@ -31,7 +31,7 @@ class SiGAT(nn.Module):
         edge_index_s,
         in_dim: int = 20,
         out_dim: int = 20,
-        batch_size: int = 500,
+        init_emb: torch.FloatTensor = None,
         init_emb_grad: bool = True
     ):
         super().__init__()
@@ -39,14 +39,22 @@ class SiGAT(nn.Module):
         self.in_dim = in_dim
         self.out_dim = out_dim
         self.node_num = node_num
-        self.batch_size = min(batch_size, node_num)
         self.device = edge_index_s.device
 
         self.pos_edge_index = edge_index_s[edge_index_s[:, 2] > 0][:, :2].t()
         self.neg_edge_index = edge_index_s[edge_index_s[:, 2] < 0][:, :2].t()
 
-        
-        self.x = nn.Embedding(node_num, in_dim)
+        if init_emb is None:
+            init_emb = create_spectral_features(
+                pos_edge_index=self.pos_edge_index,
+                neg_edge_index=self.neg_edge_index,
+                node_num=self.node_num,
+                dim=self.in_dim
+            ).to(self.device)
+        else:
+            init_emb = init_emb
+
+        self.x = nn.Parameter(init_emb, requires_grad=init_emb_grad)
 
         edge_index_s_list = edge_index_s.cpu().numpy().tolist()
         self.adj_lists = self.build_adj_lists(edge_index_s_list)
@@ -63,8 +71,11 @@ class SiGAT(nn.Module):
             nn.Linear(out_dim *
                       (len(self.adj_lists) + 1), out_dim),
             nn.Tanh(),
-            nn.Linear(out_dim, out_dim)
+            nn.Linear(out_dim, out_dim),
+            nn.Tanh()
         )
+        
+        self.lsp_loss = Link_Sign_Product_Loss()
 
         self.reset_parameters()
 
@@ -181,80 +192,21 @@ class SiGAT(nn.Module):
 
         return [adj_list_pos, adj_list_pos_out, adj_list_pos_in, adj_list_neg, adj_list_neg_out, adj_list_neg_in] + adj_additions1 + adj_additions2
 
-    def forward(self, nodes: Union[np.array, torch.Tensor] = None) -> torch.FloatTensor:
-        if nodes is None:
-            nodes_t = torch.arange(self.node_num).to(self.device).long()
-        elif isinstance(nodes, torch.Tensor):
-            nodes_t = nodes.long().to(self.device)
-        else:
-            nodes_t = torch.from_numpy(nodes).to(self.device).long()
-
+    def forward(self) -> torch.FloatTensor:
         neigh_feats = []
 
         for edges, agg in zip(self.edge_lists, self.aggs):
-            # https://github.com/pyg-team/pytorch_geometric/issues/1076
-            # Consider flow="source_to_target", then we want a subgraph where messages flow to node_idx
-            # Here, we need the nodes which can flow center node i to nodes j (neighbors)
             edges, _ = add_self_loops(edges)
-            nodes_1, edges_1, inv, _ = k_hop_subgraph(
-                nodes_t, 1, edges, num_nodes=self.node_num, flow='target_to_source', relabel_nodes=True)
-            x1 = self.x(nodes_1)
-            x2 = agg(x1, edges_1)[inv]
+            x1 = self.x
+            x2 = agg(x1, edges)
             neigh_feats.append(x2)
 
-        x0 = self.x(nodes_t)
+        x0 = self.x
         combined = torch.cat([x0] + neigh_feats, 1)
         combined = self.mlp_layer(combined)
         return combined
 
-    def loss(self):
-        total_loss = 0
-        nodes = np.random.permutation(self.node_num)
-        for batch in range(self.node_num // self.batch_size):
-            b_index = batch * self.batch_size
-            e_index = (batch + 1) * self.batch_size
-            nodes_batch = nodes[b_index:e_index]
-            loss = self.loss_batch(np.array(nodes_batch))
-            total_loss += loss
-        return total_loss
-
-    def loss_batch(self, nodes: np.array) -> torch.Tensor:
-        pos_neighbors, neg_neighbors = self.adj_pos, self.adj_neg
-        pos_neighbors_list = [set.union(pos_neighbors[i]) for i in nodes]
-        neg_neighbors_list = [set.union(neg_neighbors[i]) for i in nodes]
-        unique_nodes_list = list(
-            set.union(*pos_neighbors_list)
-               .union(*neg_neighbors_list)
-               .union(nodes))
-        unique_nodes_list = np.array(unique_nodes_list)
-        unique_nodes_dict = {n: i for i, n in enumerate(unique_nodes_list)}
-        assert unique_nodes_list.shape == unique_nodes_list.shape
-        nodes_embs = self.forward(unique_nodes_list)
-        loss_total = 0
-        for node in nodes:
-            z1 = nodes_embs[unique_nodes_dict[node], :]
-            pos_neigs = list([unique_nodes_dict[i]
-                             for i in pos_neighbors[node]])
-            neg_neigs = list([unique_nodes_dict[i]
-                             for i in neg_neighbors[node]])
-            pos_num = len(pos_neigs)
-            neg_num = len(neg_neigs)
-
-            if pos_num > 0:
-                pos_neig_embs = nodes_embs[pos_neigs, :]
-                loss_pos = -1 * \
-                    torch.sum(F.logsigmoid(torch.einsum(
-                        "nj,j->n", [pos_neig_embs, z1])))
-                loss_total += loss_pos
-
-            if neg_num > 0:
-                neg_neig_embs = nodes_embs[neg_neigs, :]
-                loss_neg = -1 * \
-                    torch.sum(F.logsigmoid(-1 * torch.einsum(
-                        "nj,j->n", [neg_neig_embs, z1])))
-                C = pos_num // neg_num
-                if C == 0:
-                    C = 1
-                loss_total += C * loss_neg
-
-        return loss_total
+    def loss(self) -> torch.FloatTensor:
+        z = self.forward()
+        nll_loss = self.lsp_loss(z, self.pos_edge_index, self.neg_edge_index)
+        return nll_loss 

@@ -10,6 +10,7 @@ from torch_sparse import coalesce
 from torch_geometric.nn import GATConv
 
 from torch_geometric_signed_directed.utils.signed import create_spectral_features
+from torch_geometric_signed_directed.utils.signed import Sign_Product_Entropy_Loss, Sign_Direction_Loss, Sign_Triangle_Loss
 
 class SDRLayer(nn.Module):
     r"""The signed directed relationship layer from `"SDGNN: Learning Node Representation for Signed Directed Networks" <https://arxiv.org/abs/2101.02390>`_ paper.
@@ -104,19 +105,6 @@ class SDGNN(nn.Module):
         ).to(self.device)
         self.x = nn.Parameter(x, requires_grad=True)
 
-        self.score_function1 = nn.Sequential(
-            nn.Linear(out_dim, 1),
-            nn.Sigmoid()
-        )
-
-        self.score_function2 = nn.Sequential(
-            nn.Linear(out_dim, 1),
-            nn.Sigmoid()
-        )
-
-
-        self.fc = nn.Linear(out_dim * 2, 1)
-
         self.device = edge_index_s.device
 
         self.adj_lists = self.build_adj_lists(edge_index_s)
@@ -132,6 +120,10 @@ class SDGNN(nn.Module):
                                  edge_lists=self.edge_lists)
             self.add_module(f'SDRLayer_{i}', layer)
             self.layers.append(layer)
+
+        self.loss_sign = Sign_Product_Entropy_Loss()
+        self.loss_direction = Sign_Direction_Loss(emb_dim=out_dim)
+        self.loss_tri = Sign_Triangle_Loss(emb_dim=out_dim, edge_weight=self.tri_weight)
 
         self.reset_parameters()
 
@@ -235,7 +227,16 @@ class SDGNN(nn.Module):
                 mask = [0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0]
                 counts = np.dot(v_list, mask)
                 self.weight_dict[i][j] = counts
-
+        
+        row = []
+        col = []
+        value = []
+        for i in self.weight_dict:
+            for j in self.weight_dict[i]:
+                row.append(i)
+                col.append(j)
+                value.append(self.weight_dict[i][j])
+        self.tri_weight = sp.csc_matrix((value, (row, col)), shape=(self.node_num, self.node_num))
         self.adj1 = adj_list1
         self.adj2 = adj_list2
 
@@ -247,79 +248,9 @@ class SDGNN(nn.Module):
             x = layer_m(x)
         return x
 
-    def loss(self) -> torch.Tensor:
-        nodes = np.arange(0, self.node_num)
-        pos_neighbors = self.adj1
-        neg_neighbors = self.adj2
-        adj_lists1_1 = self.adj_lists[0]
-        adj_lists2_1 = self.adj_lists[2]
-
-        nodes_embs = self.forward()
-
-        loss_total = 0
-        for _, node in enumerate(nodes):
-            z1 = nodes_embs[node, :]
-            pos_neigs = list([i for i in pos_neighbors[node]])
-            neg_neigs = list([i for i in neg_neighbors[node]])
-            pos_num = len(pos_neigs)
-            neg_num = len(neg_neigs)
-
-            sta_pos_neighs = list([i for i in adj_lists1_1[node]])
-            sta_neg_neighs = list([i for i in adj_lists2_1[node]])
-
-            pos_neigs_weight = torch.FloatTensor(
-                [self.weight_dict[node][i] for i in adj_lists1_1[node]]).to(self.device)
-            neg_neigs_weight = torch.FloatTensor(
-                [self.weight_dict[node][i] for i in adj_lists2_1[node]]).to(self.device)
-
-            if pos_num > 0:
-                pos_neig_embs = nodes_embs[pos_neigs, :]
-                loss_pos = F.binary_cross_entropy_with_logits(torch.einsum(
-                    "nj,j->n", [pos_neig_embs, z1]), torch.ones(pos_num).to(self.device))
-
-                if len(sta_pos_neighs) > 0:
-                    sta_pos_neig_embs = nodes_embs[sta_pos_neighs, :]
-
-                    z11 = z1.repeat(len(sta_pos_neighs), 1)
-                    rs = self.fc(
-                        torch.cat([z11, sta_pos_neig_embs], 1)).squeeze(-1)
-                    loss_pos += F.binary_cross_entropy_with_logits(rs, torch.ones(len(sta_pos_neighs)).to(self.device),
-                                                                   weight=pos_neigs_weight)
-                    s1 = self.score_function1(z1).repeat(
-                        len(sta_pos_neighs), 1)
-                    s2 = self.score_function2(sta_pos_neig_embs)
-
-                    q = torch.where(
-                        (s1 - s2) > -0.5, torch.Tensor([-0.5]).to(self.device).repeat(s1.shape), s1 - s2)
-                    tmp = (q - (s1 - s2))
-                    loss_pos += torch.einsum("ij,ij->", [tmp, tmp])
-
-                loss_total += loss_pos
-
-            if neg_num > 0:
-                neg_neig_embs = nodes_embs[neg_neigs, :]
-                loss_neg = F.binary_cross_entropy_with_logits(torch.einsum("nj,j->n", [neg_neig_embs, z1]),
-                                                              torch.zeros(neg_num).to(self.device))
-                if len(sta_neg_neighs) > 0:
-                    sta_neg_neig_embs = nodes_embs[sta_neg_neighs, :]
-
-                    z12 = z1.repeat(len(sta_neg_neighs), 1)
-                    rs = self.fc(
-                        torch.cat([z12, sta_neg_neig_embs], 1)).squeeze(-1)
-
-                    loss_neg += F.binary_cross_entropy_with_logits(rs, torch.zeros(
-                        len(sta_neg_neighs)).to(self.device), weight=neg_neigs_weight)
-
-                    s1 = self.score_function1(z1).repeat(
-                        len(sta_neg_neighs), 1)
-                    s2 = self.score_function2(sta_neg_neig_embs)
-
-                    q = torch.where(s1 - s2 > 0.5, s1 - s2,
-                                    torch.Tensor([0.5]).to(self.device).repeat(s1.shape))
-
-                    tmp = (q - (s1 - s2))
-                    loss_neg += torch.einsum("ij,ij->", [tmp, tmp])
-
-                loss_total += loss_neg
-
-        return loss_total
+    def loss(self):
+        z = self.forward()
+        loss_sign = self.loss_sign(z, self.pos_edge_index, self.neg_edge_index)
+        loss_direction = self.loss_direction(z, self.pos_edge_index, self.neg_edge_index)
+        loss_triangle = self.loss_tri(z, self.pos_edge_index, self.neg_edge_index)
+        return loss_sign +  loss_direction + loss_triangle

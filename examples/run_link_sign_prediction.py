@@ -12,7 +12,7 @@ from torch_geometric_signed_directed.utils.signed import link_sign_prediction_lo
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str, default='bitcoin_alpha')
-parser.add_argument('--epochs', type=int, default=200)
+parser.add_argument('--epochs', type=int, default=500)
 parser.add_argument('--lr', type=float, default=0.01)
 parser.add_argument('--weight_decay', type=float, default=1e-3)
 parser.add_argument('--model', type=str, default='SGCN')
@@ -35,11 +35,10 @@ link_data = link_class_split(data, prob_val=0.1, prob_test=0.1, splits=1, seed=a
 splited_data = link_data[0]
 nodes_num = data.num_nodes
 edge_index = splited_data['train']['edges']
-edge_sign = splited_data['train']['label'] * 2 - 1
+edge_sign = splited_data['train']['label'] * - 2 + 1
 edge_index_s = torch.cat([edge_index, edge_sign.unsqueeze(-1)], dim=-1)
 in_dim = args.in_dim
 out_dim = args.out_dim
-print(edge_index[100])
 
 
 if args.model == 'SGCN':
@@ -69,8 +68,8 @@ def test():
     embeddings = z.cpu().numpy()
     train_X = splited_data['train']['edges'].cpu().numpy()
     test_X = splited_data['test']['edges'].cpu().numpy()
-    train_y = splited_data['train']['label'].cpu().numpy()
-    test_y = splited_data['test']['label'].cpu().numpy()
+    train_y = splited_data['train']['label'].cpu().numpy() * -2 + 1
+    test_y = splited_data['test']['label'].cpu().numpy() * -2 + 1
     accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(
         embeddings, train_X, train_y, test_X, test_y)
     return auc_score, f1, f1_macro, f1_micro, accuracy
@@ -83,8 +82,8 @@ def evaluate(model, splited_data, eval_flag='test'):
     embeddings = z.cpu().numpy()
     train_X = splited_data['train']['edges'].cpu().numpy()
     test_X = splited_data[eval_flag]['edges'].cpu().numpy()
-    train_y = splited_data['train']['label'].cpu().numpy()
-    test_y = splited_data[eval_flag]['label'].cpu().numpy()
+    train_y = splited_data['train']['label'].cpu().numpy() * -2 + 1 
+    test_y = splited_data[eval_flag]['label'].cpu().numpy() * -2 + 1
     accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(
         embeddings, train_X, train_y, test_X, test_y)
     eval_info = {}
@@ -98,25 +97,11 @@ def evaluate(model, splited_data, eval_flag='test'):
 
 def train():
     model.train()
-    if args.model == 'SiGAT':
-        loss_total = 0
-        nodes = np.random.permutation(model.node_num)
-        for batch in range(model.node_num // model.batch_size):
-            optimizer.zero_grad()
-            b_index = batch * model.batch_size
-            e_index = (batch + 1) * model.batch_size
-            nodes_batch = nodes[b_index:e_index]
-            loss = model.loss_batch(np.array(nodes_batch))
-            loss_total += loss.item()
-            loss.backward()
-            optimizer.step()
-        return loss_total
-    else:
-        optimizer.zero_grad()
-        loss = model.loss()
-        loss.backward()
-        optimizer.step()
-        return loss.item()
+    optimizer.zero_grad()
+    loss = model.loss()
+    loss.backward()
+    optimizer.step()
+    return loss.item()
 
 
 def run(model, epochs, splited_data):
