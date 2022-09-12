@@ -23,6 +23,9 @@ class SGCN(nn.Module):
         layer_num (int, optional): Number of layers. Defaults to 2.
         lamb (float, optional): Balances the contributions of the overall
             objective. (default: :obj:`5`)
+        init_emb (torch.FloatTensor, optional): Initial embeddings.
+        init_emb_grad(bool optional): Whether to set the initial embeddings to be trainable. (default: :obj:`False`)
+        norm_emb (bool, optional): Whether to normalize embeddings. (default: :obj:`False`)
     """
 
     def __init__(
@@ -35,6 +38,7 @@ class SGCN(nn.Module):
         lamb: float = 5,
         init_emb: torch.FloatTensor = None,
         init_emb_grad: bool = False,
+        norm_emb: bool=False
     ):
 
         super().__init__()
@@ -64,7 +68,7 @@ class SGCN(nn.Module):
         self.convs = torch.nn.ModuleList()
         for _ in range(layer_num - 1):
             self.convs.append(
-                SGCNConv(out_dim // 2, out_dim // 2, first_aggr=False))
+                SGCNConv(out_dim // 2, out_dim // 2, first_aggr=False, norm_emb=norm_emb))
 
         self.lsp_loss = Link_Sign_Entropy_Loss(out_dim)
         self.structure_loss = Sign_Structure_Loss()

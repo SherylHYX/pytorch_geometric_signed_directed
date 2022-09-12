@@ -40,7 +40,7 @@ def undirected_label2directed_label(adj: scipy.sparse.csr_matrix, edge_pairs: Li
                 1 (the negative directed edge exists in the graph), 2 (the positive edge of the reversed direction exists),
                 3 (the edge of the reversed direction exists), 4 (the edge doesn't exist in both directions). 
                 The undirected edges in the directed input graph are removed to avoid ambiguity.
-            * If task == "sign": 0 (positive edge), 1 (negative edge). 
+            * If task == "sign": 0 (negative edge), 1 (positive edge). 
         * **label_weight** (List) - The weight list of the query edges. The weight is zero if the directed edge 
             doesn't exist in both directions.
         * **undirected** (List) - The undirected edges list within the input graph.

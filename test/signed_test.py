@@ -111,10 +111,10 @@ def test_SGCN():
     assert conv2(out1, adj.t(), adj.t()).tolist() == out2.tolist()
 
     num_nodes = 100
-    num_features = 3
+    num_features = 4
     num_classes = 3
 
-    _, A_p_scipy, A_n_scipy, _, _, _, _, _ = \
+    X, A_p_scipy, A_n_scipy, _, _, _, _, _ = \
         create_mock_data(num_nodes, num_features, num_classes)
 
     data = SignedData(A=(A_p_scipy, A_n_scipy))
@@ -130,6 +130,26 @@ def test_SGCN():
 
     model = SGCN(nodes_num, edge_index_s, 20, 20,
                  layer_num=2, lamb=5).to(device)
+    loss = model.loss()
+    with torch.no_grad():
+        z = model()
+
+    embeddings = z.cpu().numpy()
+    train_X = train_edge_index.t().cpu().numpy()
+    test_X = test_edge_index.t().cpu().numpy()
+    train_y = train_edge_weight.cpu().numpy()
+    test_y = test_edge_weight.cpu().numpy()
+    accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(
+        embeddings, train_X, train_y, test_X, test_y)
+    assert auc_score >= 0
+    assert loss >= 0
+    assert accuracy >= 0
+    assert f1 >= 0
+    assert f1_macro >= 0
+    assert f1_micro >= 0
+
+    model = SGCN(nodes_num, edge_index_s, num_features, num_features,
+                 layer_num=2, lamb=5, norm_emb=True, init_emb = X).to(device)
     loss = model.loss()
     with torch.no_grad():
         z = model()
@@ -171,10 +191,10 @@ def test_SNEA():
     assert out2.size() == (4, 96)
 
     num_nodes = 100
-    num_features = 3
+    num_features = 4
     num_classes = 3
 
-    _, A_p_scipy, A_n_scipy, _, _, _, _, _ = \
+    X, A_p_scipy, A_n_scipy, _, _, _, _, _ = \
         create_mock_data(num_nodes, num_features, num_classes)
 
     data = SignedData(A=(A_p_scipy, A_n_scipy))
@@ -208,6 +228,26 @@ def test_SNEA():
     assert f1_macro >= 0
     assert f1_micro >= 0
 
+    model = SNEA(nodes_num, edge_index_s, num_features, num_features,
+                 layer_num=2, lamb=5, init_emb=X).to(device)
+    loss = model.loss()
+    with torch.no_grad():
+        z = model()
+
+    embeddings = z.cpu().numpy()
+    train_X = train_edge_index.t().cpu().numpy()
+    test_X = test_edge_index.t().cpu().numpy()
+    train_y = train_edge_weight.cpu().numpy()
+    test_y = test_edge_weight.cpu().numpy()
+    accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(
+        embeddings, train_X, train_y, test_X, test_y)
+    assert auc_score >= 0
+    assert loss >= 0
+    assert accuracy >= 0
+    assert f1 >= 0
+    assert f1_macro >= 0
+    assert f1_micro >= 0
+
 
 def test_SiGAT():
     """
@@ -217,7 +257,7 @@ def test_SiGAT():
     num_features = 3
     num_classes = 3
 
-    _, A_p_scipy, A_n_scipy, _, _, _, _, _ = \
+    X, A_p_scipy, A_n_scipy, _, _, _, _, _ = \
         create_mock_data(num_nodes, num_features, num_classes)
 
     data = SignedData(A=(A_p_scipy, A_n_scipy))
@@ -232,6 +272,25 @@ def test_SiGAT():
         [[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)]).to(device)
 
     model = SiGAT(nodes_num, edge_index_s, 20, 20).to(device)
+    loss = model.loss()
+    with torch.no_grad():
+        z = model()
+
+    embeddings = z.cpu().numpy()
+    train_X = train_edge_index.t().cpu().numpy()
+    test_X = test_edge_index.t().cpu().numpy()
+    train_y = train_edge_weight.cpu().numpy()
+    test_y = test_edge_weight.cpu().numpy()
+    accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(
+        embeddings, train_X, train_y, test_X, test_y)
+    assert auc_score >= 0
+    assert loss >= 0
+    assert accuracy >= 0
+    assert f1 >= 0
+    assert f1_macro >= 0
+    assert f1_micro >= 0
+
+    model = SiGAT(nodes_num, edge_index_s, num_features, num_features, init_emb=X).to(device)
     loss = model.loss()
     with torch.no_grad():
         z = model()

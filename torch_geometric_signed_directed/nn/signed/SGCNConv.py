@@ -50,6 +50,7 @@ class SGCNConv(MessagePassing):
             dimensionalities.
         out_dim (int): Size of each output sample.
         first_aggr (bool): Denotes which aggregation formula to use.
+        norm_emb (bool, optional): Whether to normalize embeddings. (default: :obj:`False`)
         bias (bool, optional): If set to :obj:`False`, the layer will not learn
             an additive bias. (default: :obj:`True`)
         **kwargs (optional): Additional arguments of
