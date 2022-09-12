@@ -31,7 +31,6 @@ class SiGAT(nn.Module):
         edge_index_s,
         in_dim: int = 20,
         out_dim: int = 20,
-        batch_size: int = 500,
         init_emb: torch.FloatTensor = None,
         init_emb_grad: bool = True
     ):
@@ -40,7 +39,6 @@ class SiGAT(nn.Module):
         self.in_dim = in_dim
         self.out_dim = out_dim
         self.node_num = node_num
-        self.batch_size = min(batch_size, node_num)
         self.device = edge_index_s.device
 
         self.pos_edge_index = edge_index_s[edge_index_s[:, 2] > 0][:, :2].t()
@@ -56,7 +54,7 @@ class SiGAT(nn.Module):
         else:
             init_emb = init_emb
 
-        self.x = nn.Embedding.from_pretrained(init_emb)
+        self.x = nn.Parameter(init_emb, requires_grad=init_emb_grad)
 
         edge_index_s_list = edge_index_s.cpu().numpy().tolist()
         self.adj_lists = self.build_adj_lists(edge_index_s_list)
@@ -194,28 +192,16 @@ class SiGAT(nn.Module):
 
         return [adj_list_pos, adj_list_pos_out, adj_list_pos_in, adj_list_neg, adj_list_neg_out, adj_list_neg_in] + adj_additions1 + adj_additions2
 
-    def forward(self, nodes: Union[np.array, torch.Tensor] = None) -> torch.FloatTensor:
-        if nodes is None:
-            nodes_t = torch.arange(self.node_num).to(self.device).long()
-        elif isinstance(nodes, torch.Tensor):
-            nodes_t = nodes.long().to(self.device)
-        else:
-            nodes_t = torch.from_numpy(nodes).to(self.device).long()
-
+    def forward(self) -> torch.FloatTensor:
         neigh_feats = []
 
         for edges, agg in zip(self.edge_lists, self.aggs):
-            # https://github.com/pyg-team/pytorch_geometric/issues/1076
-            # Consider flow="source_to_target", then we want a subgraph where messages flow to node_idx
-            # Here, we need the nodes which can flow center node i to nodes j (neighbors)
             edges, _ = add_self_loops(edges)
-            nodes_1, edges_1, inv, _ = k_hop_subgraph(
-                nodes_t, 1, edges, num_nodes=self.node_num, flow='target_to_source', relabel_nodes=True)
-            x1 = self.x(nodes_1)
-            x2 = agg(x1, edges_1)[inv]
+            x1 = self.x
+            x2 = agg(x1, edges)
             neigh_feats.append(x2)
 
-        x0 = self.x(nodes_t)
+        x0 = self.x
         combined = torch.cat([x0] + neigh_feats, 1)
         combined = self.mlp_layer(combined)
         return combined
