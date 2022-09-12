@@ -7,8 +7,8 @@ from sklearn import linear_model, metrics
 def link_sign_direction_prediction_logistic_function(embeddings: np.ndarray, train_X: np.ndarray, train_y: np.ndarray, test_X: np.ndarray, test_y: np.ndarray, class_weight: Union[dict, str] = None) -> Tuple[float, float, float, float, float]:
     """
     link_sign_prediction_logistic_function [summary]
-    Link sign prediction is a binary classification machine learning task. 
-    It will return the metrics for link sign prediction (i.e., Accuracy, Binary-F1, Macro-F1, Micro-F1 and AUC).
+    Link sign prediction is a multi-class classification machine learning task. 
+    It will return the metrics for link sign direction prediction (i.e., Accuracy, Macro-F1, and Micro-F1).
     Args:
         embeddings (np.ndarray): The embeddings for signed graph.
         train_X (np.ndarray): The indices for training data (e.g., [[0, 1], [0, 2]])
@@ -19,7 +19,7 @@ def link_sign_direction_prediction_logistic_function(embeddings: np.ndarray, tra
         If not given, all classes are supposed to have weight one.. Defaults to None.
     Returns:
         [type]: The metrics for link sign prediction task.
-        Tuple[float,float,float,float]: Accuracy, Binary-F1, Macro-F1, Micro-F1
+        Tuple[float,float,float]: Accuracy, Macro-F1, Micro-F1
     """
     train_X1 = []
     test_X1 = []

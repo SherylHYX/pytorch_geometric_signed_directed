@@ -5,11 +5,9 @@ from sklearn import metrics
 import numpy as np
 import torch
 import torch.nn as nn
-from torch_geometric_signed_directed.utils import link_class_split, in_out_degree
+from torch_geometric_signed_directed.utils import link_class_split, in_out_degree, link_sign_direction_prediction_logistic_function
 from torch_geometric_signed_directed.data import load_signed_real_data, SignedData
 from torch_geometric_signed_directed.nn import SGCN, SDGNN, SiGAT, SNEA, MSGNN_link_prediction, SSSNET_link_prediction
-
-from link_sign_direction_prediction_logistic_function import link_sign_direction_prediction_logistic_function
 
 def parameter_parser():
     parser = argparse.ArgumentParser()
