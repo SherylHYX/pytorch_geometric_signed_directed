@@ -244,7 +244,7 @@ class SignedData(Data):
                    test_size: Union[int, float] = None, seed_size: Union[int, float] = None,
                    train_size_per_class: Union[int, float] = None, val_size_per_class: Union[int, float] = None,
                    test_size_per_class: Union[int, float] = None, seed_size_per_class: Union[int, float] = None,
-                   seed: List[int] = [], data_split: int = 10):
+                   seed: List[int] = [], data_split: int = 2):
         r""" Train/Val/Test/Seed split for node classification tasks. 
         The size parameters can either be int or float.
         If a size parameter is int, then this means the actual number, if it is float, then this means a ratio.
@@ -266,7 +266,7 @@ class SignedData(Data):
                         (Default: None. All nodes not selected for training/validation are used for testing)
             seed_size_per_class (int or float, optional): The size per class of random splits for seed nodes within the training set. If the input is a float number, the ratio of nodes in each class will be sampled.  
             seed (An empty list or a list with the length of data_split, optional): The random seed list for each data split.
-            data_split (int, optional): number of splits (Default : 10)
+            data_split (int, optional): number of splits (Default : 2)
 
         """
         self = node_class_split(self, train_size=train_size, val_size=val_size,
@@ -274,7 +274,7 @@ class SignedData(Data):
                                 val_size_per_class=val_size_per_class, test_size_per_class=test_size_per_class,
                                 seed_size_per_class=seed_size_per_class, seed=seed, data_split=data_split)
 
-    def link_split(self, size: int = None, splits: int = 10, prob_test: float = 0.15,
+    def link_split(self, size: int = None, splits: int = 2, prob_test: float = 0.15,
                    prob_val: float = 0.05, task: str = 'sign', seed: int = 0, ratio: float = 1.0, maintain_connect: bool = False, device: str = 'cpu') -> dict:
         r"""Get train/val/test dataset for the link sign prediction task. 
 

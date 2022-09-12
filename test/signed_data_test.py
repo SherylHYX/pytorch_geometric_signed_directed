@@ -23,8 +23,8 @@ def test_sign_link_split():
     signed_dataset = load_signed_real_data(
         root='./tmp_data/', dataset='bitcoin_alpha')
     datasets = signed_dataset.link_split(
-        splits=15, prob_val=0.01, prob_test=0.02, ratio=0.2)
-    assert len(list(datasets.keys())) == 15
+        splits=2, prob_val=0.01, prob_test=0.02, ratio=0.2)
+    assert len(list(datasets.keys())) == 2
     assert signed_dataset.is_weighted
     assert signed_dataset.is_signed
     assert signed_dataset.is_directed
@@ -32,7 +32,7 @@ def test_sign_link_split():
     datasets = link_class_split(signed_dataset, prob_val=0.01, prob_test=0.01, task='five_class_signed_digraph',
                                 maintain_connect=True, ratio=1)
     A = signed_dataset.A.tocsr()
-    assert len(list(datasets.keys())) == 10
+    assert len(list(datasets.keys())) == 2
     for i in datasets:
         assert torch.sum(datasets[i]['train']['label'] == 0) > 0
         assert torch.sum(datasets[i]['train']['label'] == 1) > 0
@@ -102,7 +102,7 @@ def test_sign_link_split():
     datasets = link_class_split(signed_dataset, prob_val=0.01, prob_test=0.01, task='sign',
                                 maintain_connect=True, ratio=1)
     A = signed_dataset.A.tocsr()
-    assert len(list(datasets.keys())) == 10
+    assert len(list(datasets.keys())) == 2
     for i in datasets:
         assert torch.sum(datasets[i]['train']['label'] == 0) > 0
         assert torch.sum(datasets[i]['train']['label'] != 0) > 0
@@ -143,7 +143,7 @@ def test_sign_link_split():
                                 maintain_connect=False, ratio=0.2)
     
     A = signed_dataset.A.tocsr()
-    assert len(list(datasets.keys())) == 10
+    assert len(list(datasets.keys())) == 2
     for i in datasets:
         assert torch.sum(datasets[i]['train']['label'] == 0) > 0
         assert torch.sum(datasets[i]['train']['label'] == 1) > 0
@@ -206,7 +206,7 @@ def test_sign_link_split():
     datasets = link_class_split(signed_dataset, prob_val=0.1, prob_test=0.2, task='sign',
                                 maintain_connect=False, ratio=1.0)
     A = signed_dataset.A.tocsr()
-    assert len(list(datasets.keys())) == 10
+    assert len(list(datasets.keys())) == 2
     for i in datasets:
         assert torch.sum(datasets[i]['train']['label'] == 0) > 0
         assert torch.sum(datasets[i]['train']['label'] != 0) > 0
@@ -359,9 +359,9 @@ def test_SignedData():
     assert data.A_p.shape == (num_nodes, num_nodes)
     assert data.A_n.shape == (num_nodes, num_nodes)
     data.node_split(train_size=0.8, val_size=0.1, test_size=0.1, seed_size=0.1)
-    assert data.seed_mask.sum() == 0.1*num_nodes*10*0.8
+    assert data.seed_mask.sum() == 0.1*num_nodes*2*0.8
     data.node_split(train_size=80, val_size=10, test_size=10, seed_size=8)
-    assert data.seed_mask.sum() == 10*8
+    assert data.seed_mask.sum() == 2*8
     data2 = SignedData(edge_index=data.edge_index,
                        edge_weight=data.edge_weight)
     data2.set_signed_Laplacian_features(k=2*num_classes)
