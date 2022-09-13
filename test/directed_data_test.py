@@ -112,13 +112,6 @@ def test_link_split():
         assert(l > 0)
         assert([e[0].item(), e[1].item()] in edges)
 
-    A = directed_dataset.A.tocsr()
-    G = nx.from_scipy_sparse_matrix(
-        A, create_using=nx.Graph, edge_attribute='weight')
-    mst = list(tree.minimum_spanning_edges(G, algorithm="kruskal", data=False))
-    for i in datasets:
-        train_edges = to_undirected(datasets[i]['graph']).T.tolist()
-        assert len(list(set(mst) - set(list(map(tuple, train_edges))))) == 0
 
     datasets = link_class_split(directed_dataset, prob_val=0.0,
                                 prob_test=0.05, task='direction', maintain_connect=False)
@@ -154,9 +147,6 @@ def test_link_split():
                 assert ([e[0], e[1]] in edges)
             else:
                 assert not ([e[0], e[1]] in edges)
-    for i in datasets:
-        train_edges = to_undirected(datasets[i]['graph']).T.tolist()
-        assert len(list(set(mst) - set(list(map(tuple, train_edges))))) == 0
     
     edges = directed_dataset.edge_index.T.tolist()
     for e, l in zip(datasets[i]['graph'].T, datasets[i]['weights']):
@@ -189,10 +179,6 @@ def test_link_split():
     for e, l in zip(datasets[i]['graph'].T, datasets[i]['weights']):
         assert(l > 0)
         assert([e[0].item(), e[1].item()] in edges)
-
-    for i in datasets:
-        train_edges = to_undirected(datasets[i]['graph']).T.tolist()
-        assert len(list(set(mst) - set(list(map(tuple, train_edges))))) == 0
 
     assert len(list(datasets.keys())) == 2
 
