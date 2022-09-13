@@ -179,15 +179,15 @@ def undirected_label2directed_label(adj: scipy.sparse.csr_matrix, edge_pairs: Li
         undirected = list(map(tuple, edge_pairs.tolist()))
         neg_edges = (
             np.abs(np.array(adj[edge_pairs[:, 0], edge_pairs[:, 1]]).flatten()) == 0)
-        labels = np.zeros(len(edge_pairs), dtype=np.int32)
+        labels = np.ones(len(edge_pairs), dtype=np.int32)
         labels[neg_edges] = 2
         new_edge_pairs = edge_pairs
         label_weight = np.array(
             adj[edge_pairs[:, 0], edge_pairs[:, 1]]).flatten()
-        labels[label_weight < 0] = 1
+        labels[label_weight < 0] = 0
         if adj.data.min() < 0: # signed graph
-            assert label_weight[labels==1].max() < 0
-        assert label_weight[labels==0].min() > 0
+            assert label_weight[labels==0].max() < 0
+        assert label_weight[labels==1].min() > 0
         assert label_weight[labels==2].mean() == 0
 
     if task == 'existence':
@@ -242,7 +242,7 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
                     3 (the edge of the reversed direction exists), 4 (the edge doesn't exist in both directions). 
                     The undirected edges in the directed input graph are removed to avoid ambiguity.
                 
-                * If task == "sign": 0 (positive edge), 1 (negative edge). This is the link sign prediction task for signed networks.
+                * If task == "sign": 0 (negative edge), 1 (positive edge). This is the link sign prediction task for signed networks.
     """
     assert task in ["existence", "direction", "three_class_digraph", "four_class_signed_digraph", "five_class_signed_digraph", 
                     "sign"], "Please select a valid task from 'existence', 'direction', 'three_class_digraph', 'four_class_signed_digraph', 'five_class_signed_digraph', and 'sign'!"

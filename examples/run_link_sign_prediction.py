@@ -3,7 +3,6 @@ import os.path as osp
 import time
 
 import torch
-import numpy as np
 
 from torch_geometric_signed_directed.nn.signed import SGCN, SDGNN, SiGAT, SNEA
 from torch_geometric_signed_directed.data.signed import load_signed_real_data
@@ -68,8 +67,8 @@ def test():
     embeddings = z.cpu().numpy()
     train_X = splited_data['train']['edges'].cpu().numpy()
     test_X = splited_data['test']['edges'].cpu().numpy()
-    train_y = splited_data['train']['label'].cpu().numpy() * -2 + 1
-    test_y = splited_data['test']['label'].cpu().numpy() * -2 + 1
+    train_y = splited_data['train']['label'].cpu().numpy()
+    test_y = splited_data['test']['label'].cpu().numpy()
     accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(
         embeddings, train_X, train_y, test_X, test_y)
     return auc_score, f1, f1_macro, f1_micro, accuracy
@@ -82,8 +81,8 @@ def evaluate(model, splited_data, eval_flag='test'):
     embeddings = z.cpu().numpy()
     train_X = splited_data['train']['edges'].cpu().numpy()
     test_X = splited_data[eval_flag]['edges'].cpu().numpy()
-    train_y = splited_data['train']['label'].cpu().numpy() * -2 + 1 
-    test_y = splited_data[eval_flag]['label'].cpu().numpy() * -2 + 1
+    train_y = splited_data['train']['label'].cpu().numpy() 
+    test_y = splited_data[eval_flag]['label'].cpu().numpy()
     accuracy, f1, f1_macro, f1_micro, auc_score = link_sign_prediction_logistic_function(
         embeddings, train_X, train_y, test_X, test_y)
     eval_info = {}
