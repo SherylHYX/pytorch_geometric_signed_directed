@@ -17,9 +17,8 @@ class SiGAT(nn.Module):
         edge_index_s (list): The edgelist with sign. (e.g., [[0, 1, -1]] )
         in_dim (int, optional): Size of each input sample features. Defaults to 20.
         out_dim (int): Size of each output embeddings. Defaults to 20.
-        batch_size (int, optional): Mini-batch size of training. Defaults to 500.
-        x_require_grad (bool, optional): Modify Input Feature or Not. Defaults to True.
-
+        init_emb: (FloatTensor, optional): The initial embeddings. Defaults to :obj:`None`, which will use TSVD as initial embeddings. 
+        init_emb_grad (bool optional): Whether to set the initial embeddings to be trainable. (default: :obj:`False`)
     """
 
     def __init__(
@@ -29,9 +28,10 @@ class SiGAT(nn.Module):
         in_dim: int = 20,
         out_dim: int = 20,
         init_emb: torch.FloatTensor = None,
-        init_emb_grad: bool = True
+        init_emb_grad: bool = True,
+        **kwargs
     ):
-        super().__init__()
+        super().__init__(**kwargs)
 
         self.in_dim = in_dim
         self.out_dim = out_dim
@@ -68,12 +68,10 @@ class SiGAT(nn.Module):
             nn.Linear(out_dim *
                       (len(self.adj_lists) + 1), out_dim),
             nn.Tanh(),
-            nn.Linear(out_dim, out_dim),
-            nn.Tanh()
+            nn.Linear(out_dim, out_dim)
         )
-        
-        self.lsp_loss = Link_Sign_Product_Loss()
 
+        self.lsp_loss = Link_Sign_Product_Loss()
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -206,4 +204,4 @@ class SiGAT(nn.Module):
     def loss(self) -> torch.FloatTensor:
         z = self.forward()
         nll_loss = self.lsp_loss(z, self.pos_edge_index, self.neg_edge_index)
-        return nll_loss 
+        return nll_loss

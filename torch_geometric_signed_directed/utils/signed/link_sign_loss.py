@@ -150,9 +150,10 @@ class Link_Sign_Product_Loss(nn.Module):
 
         product1 = torch.einsum("ij, ij->i", [z_11, z_12])
         product2 = torch.einsum("ij, ij->i", [z_21, z_22])
-        loss_neg = -1 * torch.sum(F.logsigmoid(product1))
-        loss_pos = -1 * torch.sum(F.logsigmoid(-1 * product2))
-        return loss_pos + loss_neg
+        loss_pos = -1 * torch.sum(F.logsigmoid(product1))
+        loss_neg = -1 * torch.sum(F.logsigmoid(-1 * product2))
+        C = pos_edge_index.shape[1] / neg_edge_index.shape[1]
+        return loss_pos + loss_neg * C
 
 
 

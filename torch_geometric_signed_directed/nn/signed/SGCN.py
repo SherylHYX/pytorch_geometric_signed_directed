@@ -21,10 +21,10 @@ class SGCN(nn.Module):
         in_dim (int, optional): Size of each input sample features. Defaults to 64.
         out_dim (int, optional): Size of each output embeddings. Defaults to 64.
         layer_num (int, optional): Number of layers. Defaults to 2.
+        init_emb: (FloatTensor, optional): The initial embeddings. Defaults to :obj:`None`, which will use TSVD as initial embeddings. 
+        init_emb_grad (bool optional): Whether to set the initial embeddings to be trainable. (default: :obj:`False`)
         lamb (float, optional): Balances the contributions of the overall
             objective. (default: :obj:`5`)
-        init_emb (torch.FloatTensor, optional): Initial embeddings.
-        init_emb_grad(bool optional): Whether to set the initial embeddings to be trainable. (default: :obj:`False`)
         norm_emb (bool, optional): Whether to normalize embeddings. (default: :obj:`False`)
     """
 
@@ -35,13 +35,14 @@ class SGCN(nn.Module):
         in_dim: int = 64,
         out_dim: int = 64,
         layer_num: int = 2,
-        lamb: float = 5,
         init_emb: torch.FloatTensor = None,
         init_emb_grad: bool = False,
-        norm_emb: bool=False
+        lamb: float = 5,
+        norm_emb: bool = False,
+        **kwargs
     ):
 
-        super().__init__()
+        super().__init__(**kwargs)
 
         self.node_num = node_num
         self.in_dim = in_dim
@@ -61,7 +62,7 @@ class SGCN(nn.Module):
             ).to(self.device)
         else:
             init_emb = init_emb
-        
+
         self.x = nn.Parameter(init_emb, requires_grad=init_emb_grad)
 
         self.conv1 = SGCNConv(in_dim, out_dim // 2, first_aggr=True)

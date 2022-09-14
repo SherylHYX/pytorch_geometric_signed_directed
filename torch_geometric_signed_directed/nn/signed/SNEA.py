@@ -15,6 +15,8 @@ class SNEA(nn.Module):
         in_dim (int, optional): Size of each input sample features. Defaults to 64.
         out_dim (int, optional): Size of each output embeddings. Defaults to 64.
         layer_num (int, optional): Number of layers. Defaults to 2.
+        init_emb: (FloatTensor, optional): The initial embeddings. Defaults to :obj:`None`, which will use TSVD as initial embeddings.
+        init_emb_grad (bool, optional): Optimize initial embeddings or not.
         lamb (float, optional): Balances the contributions of the overall
             objective. (default: :obj:`4`)
     """
@@ -26,9 +28,9 @@ class SNEA(nn.Module):
         in_dim: int = 64,
         out_dim: int = 64,
         layer_num: int = 2,
-        lamb: float = 4,
         init_emb: torch.FloatTensor = None,
-        init_emb_grad: bool = True
+        init_emb_grad: bool = False,
+        lamb: float = 4
     ):
         super().__init__()
 
@@ -60,7 +62,7 @@ class SNEA(nn.Module):
             self.convs.append(
                 SNEAConv(out_dim // 2, out_dim // 2,
                          first_aggr=False))
-        
+
         self.weight = torch.nn.Linear(self.out_dim, self.out_dim)
 
         self.lsp_loss = Link_Sign_Entropy_Loss(out_dim)
