@@ -5,14 +5,16 @@ import torch
 from torch_geometric_signed_directed.nn import (
     MSGNN_node_classification,
     MSGNN_link_prediction,
-    SSSNET_link_prediction
+    SSSNET_link_prediction,
+    SGCN
 )
 from torch_geometric_signed_directed.data import (
     SDSBM, SignedData
 )
 from torch_geometric_signed_directed.utils import (
     extract_network, meta_graph_generation,
-    link_class_split, get_magnetic_signed_Laplacian
+    link_class_split, get_magnetic_signed_Laplacian,
+    link_sign_direction_prediction_logistic_function
 )
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -35,6 +37,49 @@ def create_mock_data(num_nodes, num_features, num_classes=3, F_style='cyclic', e
     edge_index = torch.LongTensor(np.array(A.nonzero())).to(device)
     edge_weight = torch.FloatTensor(sp.csr_matrix(A).data).to(device)
     return X, A, F_data, edge_index, edge_weight
+
+
+def test_link_sign_direction_logistic_function():
+    """
+    Testing link sign direction logistic function
+    """
+    num_nodes = 100
+    num_features = 3
+    num_classes = 4
+
+    X, _, _, edge_index, edge_weight = \
+        create_mock_data(num_nodes, num_features, num_classes)
+    data = SignedData(x=X, edge_index=edge_index, edge_weight=edge_weight)
+    link_data = link_class_split(data, splits=2, task="four_class_signed_digraph", prob_val=0.15, prob_test=0.1, seed=10, device=device)
+
+    train_edge_index = link_data[0]['graph']
+    train_edge_weight = link_data[0]['weights']
+    nodes_num = num_nodes
+    edge_i_list = train_edge_index.t().cpu().numpy().tolist()
+    edge_s_list = train_edge_weight.long().cpu().numpy().tolist()
+    edge_index_s = torch.LongTensor(
+        [[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)]).to(device)
+    split = 0
+    query_edges = link_data[split]['train']['edges']
+    y = link_data[split]['train']['label']
+    query_test_edges = link_data[split]['test']['edges']
+    y_test = link_data[split]['test']['label']  
+
+    model = SGCN(nodes_num, edge_index_s, 20, 20,
+                 layer_num=2, lamb=5).to(device)
+    loss = model.loss()
+    with torch.no_grad():
+        z = model()
+
+    embeddings = z.cpu().numpy()
+    accuracy, f1_macro, f1_micro = link_sign_direction_prediction_logistic_function(
+        embeddings, query_edges.cpu(), y.cpu(), query_test_edges.cpu(), y_test.cpu())
+    assert loss >= 0
+    assert accuracy >= 0
+    assert f1_macro >= 0
+    assert f1_micro >= 0
+
+    model.reset_parameters()
 
 def test_SSSNET_Link():
     """
@@ -122,7 +167,7 @@ def test_MSGNN_Link():
     data = SignedData(x=X, edge_index=edge_index, edge_weight=edge_weight)
     link_data = link_class_split(data, splits=2, task="four_class_signed_digraph", prob_val=0.15, prob_test=0.1, seed=10, device=device)
 
-    model = model = MSGNN_link_prediction(q=0.25, K=3, num_features=num_features, hidden=2, label_dim=num_classes, \
+    model = MSGNN_link_prediction(q=0.25, K=3, num_features=num_features, hidden=2, label_dim=num_classes, \
             trainable_q = False, dropout=0.5, cached=True).to(device)
     preds = model(data.x, data.x, edge_index=link_data[0]['graph'], query_edges=link_data[0]['train']['edges'],
                   edge_weight=link_data[0]['weights'])
@@ -143,7 +188,7 @@ def test_MSGNN_Link():
     num_classes = 5
     link_data = link_class_split(data, splits=2, task="five_class_signed_digraph", prob_val=0.15, prob_test=0.1, seed=10, device=device)
 
-    model = model = MSGNN_link_prediction(q=0.25, K=3, num_features=num_features, hidden=2, label_dim=num_classes, \
+    model = MSGNN_link_prediction(q=0.25, K=3, num_features=num_features, hidden=2, label_dim=num_classes, \
             trainable_q = False, dropout=0.5, cached=True).to(device)
     preds = model(data.x, data.x, edge_index=link_data[0]['graph'], query_edges=link_data[0]['train']['edges'],
                   edge_weight=link_data[0]['weights'])

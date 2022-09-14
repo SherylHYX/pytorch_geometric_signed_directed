@@ -184,8 +184,21 @@ In detail, the following signed or directed graph neural networks, as well as re
   
 * **[link_sign_prediction_logistic_function](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.signed.link_sign_prediction_logistic_function.link_sign_prediction_logistic_function)** for signed networks' link sign prediction task.
 
+* **[link_sign_direction_prediction_logistic_function](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.general.link_sign_direction_prediction_logistic_function.link_sign_prediction_logistic_function)** for signed directed networks' link prediction task.
+
 * **[triplet_loss_node_classification](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.general.triplet_loss.triplet_loss_node_classification)** for triplet loss in the node classification task.
 
+* **[Sign_Triangle_Loss](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.utils.signed.link_sign_loss.Sign_Triangle_Loss)** from Huang *et al.*: [SDGNN: Learning Node Representation for Signed Directed Networks](https://arxiv.org/pdf/2101.02390.pdf) (AAAI 2021)
+
+* **[Sign_Direction_Loss](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.utils.signed.link_sign_loss.Sign_Direction_Loss)** from Huang *et al.*: [SDGNN: Learning Node Representation for Signed Directed Networks](https://arxiv.org/pdf/2101.02390.pdf) (AAAI 2021)
+
+* **[Sign_Product_Entropy_Loss](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.utils.signed.link_sign_loss.Sign_Product_Entropy_Loss)** from Huang *et al.*: [SDGNN: Learning Node Representation for Signed Directed Networks](https://arxiv.org/pdf/2101.02390.pdf) (AAAI 2021)
+
+* **[Link_Sign_Product_Loss](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.utils.signed.link_sign_loss.Link_Sign_Product_Loss)** from Huang *et al.*: [Signed Graph Attention Networks](https://arxiv.org/pdf/1906.10958.pdf) (ICANN 2019)
+
+* **[Link_Sign_Entropy_Loss](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.utils.signed.link_sign_loss.Link_Sign_Entropy_Loss)** from Derr *et al.*: [Signed Graph Convolutional Network](https://arxiv.org/pdf/1808.06354.pdf) (ICDM 2018)
+
+* **[Sign_Structure_Loss](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/model.html#torch_geometric_signed_directed.utils.signed.link_sign_loss.Sign_Structure_Loss)** 
 </details>
 
 **Utilities and Preprocessing Methods**
@@ -216,6 +229,8 @@ In detail, the following signed or directed graph neural networks, as well as re
 
 * **[scipy_sparse_to_torch_sparse](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.general.scipy_sparse_to_torch_sparse.scipy_sparse_to_torch_sparse)** from He *et al.*: [DIGRAC: Digraph Clustering Based on Flow Imbalance.](https://arxiv.org/pdf/2106.05194.pdf) (ArXiv 2021)
 
+
+* **[create spectral features](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/utils.html#torch_geometric_signed_directed.utils.signed.create_spectral_features.create_spectral_features)**
   
 </details>
 

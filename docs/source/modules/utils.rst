@@ -19,12 +19,20 @@ Task-Specific Objectives and Evaluation Methods
     :members:
     :exclude-members:
 
+.. automodule:: torch_geometric_signed_directed.utils.signed.link_sign_loss
+    :members:
+    :exclude-members:
+
 .. automodule:: torch_geometric_signed_directed.utils.general.triplet_loss
     :members:
     :exclude-members:
 
 
 .. automodule:: torch_geometric_signed_directed.utils.signed.link_sign_prediction_logistic_function
+    :members:
+    :exclude-members:
+
+.. automodule:: torch_geometric_signed_directed.utils.general.link_sign_direction_prediction_logistic_function
     :members:
     :exclude-members:
 
@@ -76,5 +84,9 @@ Utilities and Preprocessing Methods
     :exclude-members:
 
 .. automodule:: torch_geometric_signed_directed.utils.general.get_magnetic_signed_Laplacian
+    :members:
+    :exclude-members:
+
+.. automodule:: torch_geometric_signed_directed.signed.create_spectral_features
     :members:
     :exclude-members:

@@ -15,7 +15,7 @@ class SNEA(nn.Module):
         in_dim (int, optional): Size of each input sample features. Defaults to 64.
         out_dim (int, optional): Size of each output embeddings. Defaults to 64.
         layer_num (int, optional): Number of layers. Defaults to 2.
-        init_emb: (FloatTensor, optional): The initial Embeddings. Defaults to :obj:`None`. 
+        init_emb: (FloatTensor, optional): The initial embeddings. Defaults to :obj:`None`, which will use TSVD as initial embeddings.
         init_emb_grad (bool, optional): Optimize initial embeddings or not.
         lamb (float, optional): Balances the contributions of the overall
             objective. (default: :obj:`4`)

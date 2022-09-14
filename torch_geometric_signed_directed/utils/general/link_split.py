@@ -6,14 +6,13 @@ import numpy as np
 import networkx as nx
 from networkx.algorithms import tree
 import torch_geometric
-from torch_geometric.utils import negative_sampling, to_undirected
+from torch_geometric.utils import negative_sampling, to_undirected, to_scipy_sparse_matrix
 from scipy.sparse import coo_matrix
 
 
 def undirected_label2directed_label(adj: scipy.sparse.csr_matrix, edge_pairs: List[Tuple],
                                     task: str, directed_graph: bool = True, signed_directed: bool = False) -> Union[List, List]:
     r"""Generate edge labels based on the task.
-
     Arg types:
         * **adj** (scipy.sparse.csr_matrix) - Scipy sparse undirected adjacency matrix. 
         * **edge_pairs** (List[Tuple]) - The edge list for the link dataset querying. Each element 
@@ -21,7 +20,6 @@ def undirected_label2directed_label(adj: scipy.sparse.csr_matrix, edge_pairs: Li
         * **edge_weight** (List[Tuple]) - The edge weights list for sign graphs.
         * **task** (str): The evaluation task - all (three-class link prediction); direction (direction prediction); 
             existence (existence prediction) 
-
     Return types:
         * **new_edge_pairs** (List) - A list of edges.
         * **labels** (List) - The labels for new_edge_pairs. 
@@ -40,7 +38,7 @@ def undirected_label2directed_label(adj: scipy.sparse.csr_matrix, edge_pairs: Li
                 1 (the negative directed edge exists in the graph), 2 (the positive edge of the reversed direction exists),
                 3 (the edge of the reversed direction exists), 4 (the edge doesn't exist in both directions). 
                 The undirected edges in the directed input graph are removed to avoid ambiguity.
-            * If task == "sign": 0 (positive edge), 1 (negative edge). 
+            * If task == "sign": 0 (negative edge), 1 (positive edge). 
         * **label_weight** (List) - The weight list of the query edges. The weight is zero if the directed edge 
             doesn't exist in both directions.
         * **undirected** (List) - The undirected edges list within the input graph.
@@ -179,15 +177,15 @@ def undirected_label2directed_label(adj: scipy.sparse.csr_matrix, edge_pairs: Li
         undirected = list(map(tuple, edge_pairs.tolist()))
         neg_edges = (
             np.abs(np.array(adj[edge_pairs[:, 0], edge_pairs[:, 1]]).flatten()) == 0)
-        labels = np.zeros(len(edge_pairs), dtype=np.int32)
+        labels = np.ones(len(edge_pairs), dtype=np.int32)
         labels[neg_edges] = 2
         new_edge_pairs = edge_pairs
         label_weight = np.array(
             adj[edge_pairs[:, 0], edge_pairs[:, 1]]).flatten()
-        labels[label_weight < 0] = 1
+        labels[label_weight < 0] = 0
         if adj.data.min() < 0: # signed graph
-            assert label_weight[labels==1].max() < 0
-        assert label_weight[labels==0].min() > 0
+            assert label_weight[labels==0].max() < 0
+        assert label_weight[labels==1].min() > 0
         assert label_weight[labels==2].mean() == 0
 
     if task == 'existence':
@@ -204,7 +202,6 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
                      prob_val: float = 0.05, task: str = 'direction', seed: int = 0, maintain_connect: bool = True,
                      ratio: float = 1.0, device: str = 'cpu') -> dict:
     r"""Get train/val/test dataset for the link prediction task. 
-
     Arg types:
         * **data** (torch_geometric.data.Data or DirectedData object) - The input dataset.
         * **prob_val** (float, optional) - The proportion of edges selected for validation (Default: 0.05).
@@ -216,22 +213,14 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
         * **maintain_connect** (bool, optional) - If maintaining connectivity when removing edges for validation and testing. The connectivity is maintained by obtaining edges in the minimum spanning tree/forest first. These edges will not be removed for validation and testing (Default: True). 
         * **ratio** (float, optional) - The maximum ratio of edges used for dataset generation. (Default: 1.0)
         * **device** (int, optional) - The device to hold the return value (Default: 'cpu').
-
     Return types:
         * **datasets** - A dict include training/validation/testing splits of edges and labels. For split index i:
-
             * datasets[i]['graph'] (torch.LongTensor): the observed edge list after removing edges for validation and testing.
-
             * datasets[i]['train'/'val'/'testing']['edges'] (List): the edge list for training/validation/testing.
-
             * datasets[i]['train'/'val'/'testing']['label'] (List): the labels of edges:
-
                 * If task == "existence": 0 (the directed edge exists in the graph), 1 (the edge doesn't exist). The undirected edges in the directed input graph are removed to avoid ambiguity.
-
                 * If task == "direction": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists). The undirected edges in the directed input graph are removed to avoid ambiguity.
-
                 * If task == "three_class_digraph": 0 (the directed edge exists in the graph), 1 (the edge of the reversed direction exists), 2 (the edge doesn't exist in both directions). The undirected edges in the directed input graph are removed to avoid ambiguity.
-
                 * If task == "four_class_signed_digraph": 0 (the positive directed edge exists in the graph), 
                     1 (the negative directed edge exists in the graph), 2 (the positive edge of the reversed direction exists),
                     3 (the edge of the reversed direction exists). 
@@ -242,7 +231,7 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
                     3 (the edge of the reversed direction exists), 4 (the edge doesn't exist in both directions). 
                     The undirected edges in the directed input graph are removed to avoid ambiguity.
                 
-                * If task == "sign": 0 (positive edge), 1 (negative edge). This is the link sign prediction task for signed networks.
+                * If task == "sign": 0 (negative edge), 1 (positive edge). This is the link sign prediction task for signed networks.
     """
     assert task in ["existence", "direction", "three_class_digraph", "four_class_signed_digraph", "five_class_signed_digraph", 
                     "sign"], "Please select a valid task from 'existence', 'direction', 'three_class_digraph', 'four_class_signed_digraph', 'five_class_signed_digraph', and 'sign'!"
@@ -268,10 +257,10 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
     if task not in ["existence", "direction", 'three_class_digraph']:
         pos_ratio = (A>0).sum()/len(A.data)
         neg_ratio = 1 - pos_ratio
-        len_val_pos = int(prob_val*len(row)*pos_ratio)
-        len_val_neg = int(prob_val*len(row)*neg_ratio)
-        len_test_pos = int(prob_test*len(row)*pos_ratio)
-        len_test_neg = int(prob_test*len(row)*neg_ratio)
+        len_val_pos = int(np.around(prob_val*len(row)*pos_ratio))
+        len_val_neg = int(np.around(prob_val*len(row)*neg_ratio))
+        len_test_pos = int(np.around(prob_test*len(row)*pos_ratio))
+        len_test_neg = int(np.around(prob_test*len(row)*neg_ratio))
 
     undirect_edge_index = to_undirected(edge_index)
     neg_edges = negative_sampling(undirect_edge_index, num_neg_samples=len(
@@ -279,15 +268,17 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
     neg_edges = map(tuple, neg_edges)
     neg_edges = list(neg_edges)
 
-    undirect_edge_index = undirect_edge_index.T.tolist()
+    all_edge_index = edge_index.T.tolist()
+    A_undirected = to_scipy_sparse_matrix(undirect_edge_index)
     if maintain_connect:
         assert ratio == 1, "ratio should be 1.0 if maintain_connect=True"
         G = nx.from_scipy_sparse_matrix(
-            A, create_using=nx.Graph, edge_attribute='weight')
+            A_undirected, create_using=nx.Graph, edge_attribute='weight')
         mst = list(tree.minimum_spanning_edges(
             G, algorithm="kruskal", data=False))
-        all_edges = list(map(tuple, undirect_edge_index))
-        nmst = list(set(all_edges) - set(mst))
+        all_edges = list(map(tuple, all_edge_index))
+        mst_r = [t[::-1] for t in mst]
+        nmst = list(set(all_edges) - set(mst) - set(mst_r))
         if len(nmst) < (len_val+len_test):
             raise ValueError(
                 "There are no enough edges to be removed for validation/testing. Please use a smaller prob_test or prob_val.")
@@ -420,16 +411,10 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
         observed_weight[direct, 0] = np.array(
             A[ids_train[direct, 0], ids_train[direct, 1]]).flatten()
 
-        direct = (np.abs(A[ids_train[:, 1], ids_train[:, 0]].data) > 0)[0]
-        observed_edges[direct, 0] = ids_train[direct, 1]
-        observed_edges[direct, 1] = ids_train[direct, 0]
-        observed_weight[direct, 0] = np.array(
-            A[ids_train[direct, 1], ids_train[direct, 0]]).flatten()
-
         valid = (np.sum(observed_edges, axis=-1) >= 0)
         observed_edges = observed_edges[valid]
         observed_weight = observed_weight[valid]
-
+        
         # add undirected edges back
         if len(undirected_train) > 0:
             undirected_train = np.array(undirected_train)
@@ -437,7 +422,7 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
                 (observed_edges, undirected_train))
             observed_weight = np.vstack((observed_weight, np.array(A[undirected_train[:, 0],
                                                                    undirected_train[:, 1]]).flatten()[:, None]))
-        
+
         # remove duplicated edges
         valid_index = []
         observed_set = set()
