@@ -30,6 +30,7 @@ def parameter_parser():
     parser.add_argument('--out_dim', type=int, default=20)
     parser.add_argument('--train_ratio', type=float, default=0.8)
     parser.add_argument('--val_ratio', type=float, default=0)
+    parser.add_argument('--sparsify_level', type=float, default=1)
     parser.add_argument('--weighted_input_feat', action='store_true', help='Whether to use edge weights to calculate degree features as input.')
     parser.add_argument('--weighted_nonnegative_input_feat', action='store_true', help='Whether to use absolute values of edge weights to calculate degree features as input.')
     parser.add_argument('--absolute_degree', action='store_true', help='Whether to calculate the degree matrix with respect to absolute entries of the adjacency matrix.')
@@ -38,8 +39,6 @@ def parameter_parser():
                         help='number of distinct runs')
     parser.add_argument('--cpu', action='store_true',
                             help='use cpu')
-    parser.add_argument('--debug','-D', action='store_true',
-                            help='debug mode')
     parser.add_argument('--hop', type=int, default=2,
                         help='Number of hops to consider for the random walk.') 
     parser.add_argument('--tau', type=float, default=0.5,
@@ -118,7 +117,7 @@ def train():
 
 device = torch.device('cuda' if not args.cpu and torch.cuda.is_available() else 'cpu')
 path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'data', args.dataset)
-data = load_signed_real_data(dataset=args.dataset, root=path).to(device)
+data = load_signed_real_data(dataset=args.dataset, root=path, sparsify_level=args.sparsify_level).to(device)
 
 
 sub_dir_name = 'runs' + str(args.runs) + 'epochs' + str(args.epochs) + \
