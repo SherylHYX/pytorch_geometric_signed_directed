@@ -277,7 +277,8 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
         mst = list(tree.minimum_spanning_edges(
             G, algorithm="kruskal", data=False))
         all_edges = list(map(tuple, all_edge_index))
-        nmst = list(set(all_edges) - set(mst))
+        mst_r = [t[::-1] for t in mst]
+        nmst = list(set(all_edges) - set(mst) - set(mst_r))
         if len(nmst) < (len_val+len_test):
             raise ValueError(
                 "There are no enough edges to be removed for validation/testing. Please use a smaller prob_test or prob_val.")
