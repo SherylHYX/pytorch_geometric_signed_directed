@@ -1,16 +1,13 @@
 from collections import defaultdict
-from typing import Tuple, List, Union
+from typing import Tuple, List
 
-import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from torch_geometric.nn import GATConv
-from torch_geometric.utils import k_hop_subgraph, add_self_loops
+from torch_geometric.utils import add_self_loops
 
 from torch_geometric_signed_directed.utils.signed import (create_spectral_features,
-                                                          Link_Sign_Product_Loss,
-                                                          Sign_Structure_Loss)
+                                                          Link_Sign_Product_Loss)
 class SiGAT(nn.Module):
     r"""The signed graph attention network model (SiGAT) from the `"Signed Graph
     Attention Networks" <https://arxiv.org/abs/1906.10958>`_ paper.

@@ -142,7 +142,6 @@ class Link_Sign_Product_Loss(nn.Module):
         pos_edge_index: torch.LongTensor,
         neg_edge_index: torch.LongTensor
     ) -> torch.Tensor:
-        device = z.device
         z_11 = z[pos_edge_index[0], :]
         z_12 = z[pos_edge_index[1], :]
 

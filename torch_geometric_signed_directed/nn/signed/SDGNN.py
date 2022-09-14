@@ -3,10 +3,8 @@ from collections import defaultdict
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import scipy.sparse as sp
 import numpy as np
-from torch_sparse import coalesce
 from torch_geometric.nn import GATConv
 
 from torch_geometric_signed_directed.utils.signed import create_spectral_features
