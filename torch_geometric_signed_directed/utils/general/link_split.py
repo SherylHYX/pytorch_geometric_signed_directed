@@ -82,49 +82,22 @@ def undirected_label2directed_label(adj: scipy.sparse.csr_matrix, edge_pairs: Li
         inversed_neg = np.array(list(set(inversed_neg) - set(undirected)))
 
         directed = np.vstack([directed_pos, directed_neg])
-        if not inversed_pos.size:
-            inversed = inversed_neg
-            inversed_pos = []
-        elif not inversed_neg.size:
-            inversed = inversed_pos
-            inversed_neg = []
-        else:
-            inversed = np.vstack([inversed_pos, inversed_neg])
         undirected = np.array(undirected)
-        new_edge_pairs = np.vstack(
-            [directed, inversed]) if inversed.size else directed
+        new_edge_pairs = directed
         new_edge_pairs = np.vstack([new_edge_pairs, new_edge_pairs[:, [1, 0]]])
         new_edge_pairs = np.vstack([new_edge_pairs, negative])
 
         labels = np.vstack([np.zeros((len(directed_pos), 1), dtype=np.int32),
-                            np.ones((len(directed_neg), 1), dtype=np.int32),
-                            2 * np.ones((len(inversed_pos), 1), dtype=np.int32),
-                            3 * np.ones((len(inversed_neg), 1), dtype=np.int32)])
+                            np.ones((len(directed_neg), 1), dtype=np.int32)])
 
         labels = np.vstack([labels, 2 * np.ones((len(directed_pos), 1), dtype=np.int32),
-                            3 * np.ones((len(directed_neg), 1), dtype=np.int32),
-                            np.zeros((len(inversed_pos), 1), dtype=np.int32),
-                            np.ones((len(inversed_neg), 1), dtype=np.int32)])
+                            3 * np.ones((len(directed_neg), 1), dtype=np.int32)])
 
         labels = np.vstack(
             [labels, 4*np.ones((len(negative), 1), dtype=np.int32)])
 
-        if len(inversed_pos) and len(inversed_neg):
-            label_weight = np.vstack([np.array(adj[directed_pos[:, 0], directed_pos[:, 1]]).flatten()[:, None],
-                                    np.array(adj[directed_neg[:, 0], directed_neg[:, 1]]).flatten()[:, None], 
-                                    np.array(adj[inversed_pos[:, 1], inversed_pos[:, 0]]).flatten()[:, None],
-                                    np.array(adj[inversed_neg[:, 1], inversed_neg[:, 0]]).flatten()[:, None]])
-        elif len(inversed_pos):
-            label_weight = np.vstack([np.array(adj[directed_pos[:, 0], directed_pos[:, 1]]).flatten()[:, None],
-                                    np.array(adj[directed_neg[:, 0], directed_neg[:, 1]]).flatten()[:, None], 
-                                    np.array(adj[inversed_pos[:, 1], inversed_pos[:, 0]]).flatten()[:, None]])
-        elif len(inversed_neg):
-            label_weight = np.vstack([np.array(adj[directed_pos[:, 0], directed_pos[:, 1]]).flatten()[:, None],
-                                    np.array(adj[directed_neg[:, 0], directed_neg[:, 1]]).flatten()[:, None],
-                                    np.array(adj[inversed_neg[:, 1], inversed_neg[:, 0]]).flatten()[:, None]])
-        else:
-            label_weight = np.vstack([np.array(adj[directed_pos[:, 0], directed_pos[:, 1]]).flatten()[:, None],
-                                    np.array(adj[directed_neg[:, 0], directed_neg[:, 1]]).flatten()[:, None]])
+        label_weight = np.vstack([np.array(adj[directed_pos[:, 0], directed_pos[:, 1]]).flatten()[:, None],
+                                np.array(adj[directed_neg[:, 0], directed_neg[:, 1]]).flatten()[:, None]])
         label_weight = np.vstack([label_weight, label_weight])
         label_weight = np.vstack(
             [label_weight, np.zeros((len(negative), 1), dtype=np.int32)])
@@ -150,23 +123,16 @@ def undirected_label2directed_label(adj: scipy.sparse.csr_matrix, edge_pairs: Li
         directed = np.array(list(set(directed) - set(undirected)))
         inversed = np.array(list(set(inversed) - set(undirected)))
 
-        new_edge_pairs = np.vstack(
-            [directed, inversed]) if inversed.size else directed
+        new_edge_pairs = directed
         new_edge_pairs = np.vstack([new_edge_pairs, new_edge_pairs[:, [1, 0]]])
         new_edge_pairs = np.vstack([new_edge_pairs, negative])
 
-        labels = np.vstack([np.zeros((len(directed), 1), dtype=np.int32),
-                            np.ones((len(inversed), 1), dtype=np.int32)]) if len(inversed) else \
-            np.zeros((len(directed), 1), dtype=np.int32)
-        labels = np.vstack([labels, np.ones((len(directed), 1), dtype=np.int32),
-                            np.zeros((len(inversed), 1), dtype=np.int32)]) if len(inversed) else \
-            np.vstack([labels, np.ones((len(directed), 1), dtype=np.int32)])
+        labels = np.zeros((len(directed), 1), dtype=np.int32)
+        labels = np.vstack([labels, np.ones((len(directed), 1), dtype=np.int32)])
         labels = np.vstack(
             [labels, 2*np.ones((len(negative), 1), dtype=np.int32)])
 
-        label_weight = np.vstack([np.array(adj[directed[:, 0], directed[:, 1]]).flatten()[:, None],
-                                  np.array(adj[inversed[:, 1], inversed[:, 0]]).flatten()[:, None]]) if len(inversed) else \
-            np.array(adj[directed[:, 0], directed[:, 1]]).flatten()[:, None]
+        label_weight = np.array(adj[directed[:, 0], directed[:, 1]]).flatten()[:, None]
         label_weight = np.vstack([label_weight, label_weight])
         label_weight = np.vstack(
             [label_weight, np.zeros((len(negative), 1), dtype=np.int32)])
@@ -174,7 +140,7 @@ def undirected_label2directed_label(adj: scipy.sparse.csr_matrix, edge_pairs: Li
         assert abs(label_weight[labels==1]).min() > 0
         assert label_weight[labels==2].mean() == 0
     else:
-        undirected = list(map(tuple, edge_pairs.tolist()))
+        undirected = []
         neg_edges = (
             np.abs(np.array(adj[edge_pairs[:, 0], edge_pairs[:, 1]]).flatten()) == 0)
         labels = np.ones(len(edge_pairs), dtype=np.int32)
@@ -423,18 +389,6 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
             observed_weight = np.vstack((observed_weight, np.array(A[undirected_train[:, 0],
                                                                    undirected_train[:, 1]]).flatten()[:, None]))
 
-        # remove duplicated edges
-        valid_index = []
-        observed_set = set()
-        for i, oe in enumerate(list(map(tuple, observed_edges))):
-            if oe in observed_set or A[oe[0], oe[1]] == 0:
-                continue
-            else:
-                observed_set.add(oe)
-            valid_index.append(i)
-
-        observed_edges = observed_edges[valid_index]
-        observed_weight= observed_weight[valid_index]
         assert(len(edge_index.T) >= len(observed_edges)), 'The original edge number is {} \
             while the observed graph has {} edges!'.format(len(edge_index.T), len(observed_edges))
 
