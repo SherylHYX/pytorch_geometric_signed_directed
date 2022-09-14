@@ -142,7 +142,6 @@ class Link_Sign_Product_Loss(nn.Module):
         pos_edge_index: torch.LongTensor,
         neg_edge_index: torch.LongTensor
     ) -> torch.Tensor:
-        device = z.device
         z_11 = z[pos_edge_index[0], :]
         z_12 = z[pos_edge_index[1], :]
 
@@ -153,7 +152,8 @@ class Link_Sign_Product_Loss(nn.Module):
         product2 = torch.einsum("ij, ij->i", [z_21, z_22])
         loss_neg = -1 * torch.sum(F.logsigmoid(product1))
         loss_pos = -1 * torch.sum(F.logsigmoid(-1 * product2))
-        return loss_pos + loss_neg
+        C = pos_edge_index.shape[1] / neg_edge_index.shape[1]
+        return loss_pos + loss_neg * C
 
 
 

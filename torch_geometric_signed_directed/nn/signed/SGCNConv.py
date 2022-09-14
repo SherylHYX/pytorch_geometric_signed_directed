@@ -52,6 +52,7 @@ class SGCNConv(MessagePassing):
         first_aggr (bool): Denotes which aggregation formula to use.
         bias (bool, optional): If set to :obj:`False`, the layer will not learn
             an additive bias. (default: :obj:`True`)
+        norm_emb (bool): Denotes embedding is normalized or not. (default: :obj:`False`)
         **kwargs (optional): Additional arguments of
             :class:`torch_geometric.nn.conv.MessagePassing`.
 
@@ -62,10 +63,11 @@ class SGCNConv(MessagePassing):
         in_dim: int,
         out_dim: int,
         first_aggr: bool,
-        norm_emb: bool = False,
         bias: bool = True,
+        norm_emb: bool = False,
         **kwargs
     ):
+
         kwargs.setdefault('aggr', 'mean')
         super().__init__(**kwargs)
 
@@ -90,7 +92,6 @@ class SGCNConv(MessagePassing):
     def forward(self, x: Union[Tensor, PairTensor], pos_edge_index: Adj,
                 neg_edge_index: Adj) -> Tensor:
 
-        # propagate_type    e: (x: PairTensor)
         if isinstance(x, Tensor):
             x: PairTensor = (x, x)
 

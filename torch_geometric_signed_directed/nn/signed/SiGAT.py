@@ -71,10 +71,9 @@ class SiGAT(nn.Module):
             nn.Linear(out_dim *
                       (len(self.adj_lists) + 1), out_dim),
             nn.Tanh(),
-            nn.Linear(out_dim, out_dim),
-            nn.Tanh()
+            nn.Linear(out_dim, out_dim)
         )
-        
+
         self.lsp_loss = Link_Sign_Product_Loss()
 
         self.reset_parameters()

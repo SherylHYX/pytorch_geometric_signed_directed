@@ -1,10 +1,11 @@
 import argparse
 import os.path as osp
 import time
-
+import random
 import torch
 import numpy as np
 
+from torch_geometric.seed import seed_everything
 from torch_geometric_signed_directed.nn.signed import SGCN, SDGNN, SiGAT, SNEA
 from torch_geometric_signed_directed.data.signed import load_signed_real_data
 from torch_geometric_signed_directed.utils.general.link_split import link_class_split
@@ -22,7 +23,7 @@ parser.add_argument('--out_dim', type=int, default=20)
 parser.add_argument('--eval_step', type=int, default=10)
 args = parser.parse_args()
 
-torch.manual_seed(args.seed)
+seed_everything(args.seed)
 
 dataset_name = args.dataset
 path = osp.join(osp.dirname(osp.realpath(__file__)),
@@ -40,19 +41,18 @@ edge_index_s = torch.cat([edge_index, edge_sign.unsqueeze(-1)], dim=-1)
 in_dim = args.in_dim
 out_dim = args.out_dim
 
-
 if args.model == 'SGCN':
     model = SGCN(nodes_num, edge_index_s, in_dim,
-                 out_dim, layer_num=2, lamb=5).to(device)
+                 out_dim, layer_num=2, lamb=5, init_emb_grad=False).to(device)
 elif args.model == 'SNEA':
     model = SNEA(nodes_num, edge_index_s, in_dim,
-                 out_dim, layer_num=2, lamb=5).to(device)
+                 out_dim, layer_num=2, lamb=4, init_emb_grad=False).to(device)
 elif args.model == 'SiGAT':
     model = SiGAT(nodes_num, edge_index_s, in_dim,
-                out_dim).to(device)
+                out_dim, init_emb_grad=False).to(device)
 elif args.model == 'SDGNN':
     model = SDGNN(nodes_num, edge_index_s, in_dim,
-                out_dim).to(device)
+                out_dim, init_emb_grad=False).to(device)
 
 
 print(model)
