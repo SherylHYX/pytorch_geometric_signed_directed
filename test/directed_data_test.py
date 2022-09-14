@@ -1,7 +1,5 @@
 import torch
 import numpy as np
-import networkx as nx
-from networkx.algorithms import tree
 from torch_geometric.data import Data
 import torch_geometric.transforms as T
 from torch_geometric.utils import to_undirected
