@@ -12,7 +12,7 @@ from torch_geometric_signed_directed.nn import SGCN, SDGNN, SiGAT, SNEA, MSGNN_l
 def parameter_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', type=str, default='bitcoin_alpha')
-    parser.add_argument('--epochs', type=int, default=200)
+    parser.add_argument('--epochs', type=int, default=300)
     parser.add_argument('--lr', type=float, default=1e-2)
     parser.add_argument('--year', type=int, default=2000)
     parser.add_argument('--num_classes', type=int, default=4, help='Number of classes.')
@@ -172,7 +172,8 @@ for split in list(link_data.keys()):
     edge_index = link_data[split]['graph']
     edge_weight = link_data[split]['weights']
     edge_i_list = edge_index.t().cpu().numpy().tolist()
-    edge_s_list = edge_weight.long().cpu().numpy().tolist()
+    edge_weight_s = torch.where(edge_weight > 0, 1, -1)
+    edge_s_list = edge_weight_s.long().cpu().numpy().tolist()
     edge_index_s = torch.LongTensor([[i, j, s] for (i, j), s in zip(edge_i_list, edge_s_list)]).to(device)
     query_edges = link_data[split]['train']['edges']
     y = link_data[split]['train']['label']
@@ -201,10 +202,7 @@ for split in list(link_data.keys()):
     elif args.method == 'SNEA':
         model = SNEA(nodes_num, edge_index_s, in_dim, out_dim, layer_num=2, lamb=5).to(device)
     elif args.method == 'SiGAT':
-        if args.dataset[:6] != 'pvCLCL' and args.dataset[:4] != 'OPCL':
-            model = SiGAT(nodes_num, edge_index_s, in_dim, out_dim).to(device)
-        else:
-            model = SiGAT(nodes_num, edge_index_s, in_dim, out_dim, batch_size=300).to(device)
+        model = SiGAT(nodes_num, edge_index_s, in_dim, out_dim).to(device)
     elif args.method == 'SDGNN':
         model = SDGNN(nodes_num, edge_index_s, in_dim, out_dim).to(device)
     elif args.method == 'MSGNN':
