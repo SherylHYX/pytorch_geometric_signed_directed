@@ -74,7 +74,6 @@ class SiGAT(nn.Module):
         )
 
         self.lsp_loss = Link_Sign_Product_Loss()
-
         self.reset_parameters()
 
     def reset_parameters(self):

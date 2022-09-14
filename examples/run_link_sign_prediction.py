@@ -1,7 +1,6 @@
 import argparse
 import os.path as osp
 import time
-import random
 import torch
 
 from torch_geometric.seed import seed_everything
@@ -20,6 +19,7 @@ parser.add_argument('--seed', type=int, default=2021)
 parser.add_argument('--in_dim', type=int, default=20)
 parser.add_argument('--out_dim', type=int, default=20)
 parser.add_argument('--eval_step', type=int, default=10)
+parser.add_argument('--init_emb_grad', type=bool, default=False)
 args = parser.parse_args()
 
 seed_everything(args.seed)
@@ -35,24 +35,23 @@ link_data = link_class_split(data, prob_val=0.1, prob_test=0.1, splits=1, seed=a
 splited_data = link_data[0]
 nodes_num = data.num_nodes
 edge_index = splited_data['train']['edges']
-edge_sign = splited_data['train']['label'] * - 2 + 1
+edge_sign = splited_data['train']['label'] * 2 - 1
 edge_index_s = torch.cat([edge_index, edge_sign.unsqueeze(-1)], dim=-1)
 in_dim = args.in_dim
 out_dim = args.out_dim
 
 if args.model == 'SGCN':
     model = SGCN(nodes_num, edge_index_s, in_dim,
-                 out_dim, layer_num=2, lamb=5, init_emb_grad=False).to(device)
+                 out_dim, layer_num=2, lamb=5, init_emb_grad=args.init_emb_grad).to(device)
 elif args.model == 'SNEA':
     model = SNEA(nodes_num, edge_index_s, in_dim,
-                 out_dim, layer_num=2, lamb=4, init_emb_grad=False).to(device)
+                 out_dim, layer_num=2, lamb=4, init_emb_grad=args.init_emb_grad).to(device)
 elif args.model == 'SiGAT':
     model = SiGAT(nodes_num, edge_index_s, in_dim,
-                out_dim, init_emb_grad=False).to(device)
+                out_dim, init_emb_grad=args.init_emb_grad).to(device)
 elif args.model == 'SDGNN':
     model = SDGNN(nodes_num, edge_index_s, in_dim,
-                out_dim, init_emb_grad=False).to(device)
-
+                out_dim, init_emb_grad=args.init_emb_grad).to(device)
 
 print(model)
 optimizer = torch.optim.Adam(
@@ -110,9 +109,9 @@ def run(model, epochs, splited_data):
     for epoch in range(epochs):
         t = time.time()
         loss = train()
-        t = time.time() - t
         if (epoch + 1) % args.eval_step == 0:
             eval_info = evaluate(model, splited_data, eval_flag='val')
+            t = time.time() - t
             print(f'Val Time: {t:.3f}s, Epoch: {epoch:03d}, Loss: {loss:.4f}, '
                 f'AUC: {eval_info["auc"]:.4f}, F1: {eval_info["f1"]:.4f}, MacroF1: {eval_info["f1_macro"]:.4f}, MicroF1: {eval_info["f1_micro"]:.4f}')
             if eval_info['auc'] > best_auc:
