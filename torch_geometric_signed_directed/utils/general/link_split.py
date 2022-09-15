@@ -18,8 +18,8 @@ def undirected_label2directed_label(adj: scipy.sparse.csr_matrix, edge_pairs: Li
         * **edge_pairs** (List[Tuple]) - The edge list for the link dataset querying. Each element 
             in the list is an edge tuple.
         * **edge_weight** (List[Tuple]) - The edge weights list for sign graphs.
-        * **task** (str): The evaluation task - all (three-class link prediction); direction (direction prediction); 
-            existence (existence prediction) 
+        * **task** (str): three_class_digraph (three-class link prediction); direction (direction prediction); existence (existence prediction); sign (sign prediction); 
+            four_class_signed_digraph (directed sign prediction); five_class_signed_digraph (directed sign and existence prediction) 
     Return types:
         * **new_edge_pairs** (List) - A list of edges.
         * **labels** (List) - The labels for new_edge_pairs. 
@@ -174,7 +174,7 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
         * **prob_test** (float, optional) - The proportion of edges selected for testing (Default: 0.15).
         * **splits** (int, optional) - The split size (Default: 2).
         * **size** (int, optional) - The size of the input graph. If none, the graph size is the maximum index of nodes plus 1 (Default: None).
-        * **task** (str, optional) - The evaluation task: all (three-class link prediction); direction (direction prediction); existence (existence prediction); sign (sign prediction). (Default: 'direction')
+        * **task** (str, optional) - The evaluation task: three_class_digraph (three-class link prediction); direction (direction prediction); existence (existence prediction); sign (sign prediction); four_class_signed_digraph (directed sign prediction); five_class_signed_digraph (directed sign and existence prediction) (Default: 'direction')
         * **seed** (int, optional) - The random seed for positve edge selection (Default: 0). Negative edges are selected by pytorch geometric negative_sampling.
         * **maintain_connect** (bool, optional) - If maintaining connectivity when removing edges for validation and testing. The connectivity is maintained by obtaining edges in the minimum spanning tree/forest first. These edges will not be removed for validation and testing (Default: True). 
         * **ratio** (float, optional) - The maximum ratio of edges used for dataset generation. (Default: 1.0)
