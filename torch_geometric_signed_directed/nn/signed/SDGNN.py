@@ -50,7 +50,6 @@ class SDRLayer(nn.Module):
         def init_weights(m):
             if type(m) == nn.Linear:
                 torch.nn.init.kaiming_normal_(m.weight)
-                m.bias.data.fill_(0.01)
         self.mlp_layer.apply(init_weights)
         for agg in self.aggs:
             agg.reset_parameters()
@@ -196,8 +195,8 @@ class SDGNN(nn.Module):
                 d3_1, d3_2, d3_3, d3_4,\
                 d4_1, d4_2, d4_3, d4_4)
 
-    def build_adj_lists(self, edge_index: torch.LongTensor) -> List:
-        edge_index = edge_index.cpu().numpy().tolist()
+    def build_adj_lists(self, edge_index_s: torch.LongTensor) -> List:
+        edge_index_s_list = edge_index_s.cpu().numpy().tolist()
         self.weight_dict = defaultdict(dict)
 
         pos_edgelist = defaultdict(set)
@@ -207,7 +206,7 @@ class SDGNN(nn.Module):
         neg_out_edgelist = defaultdict(set)
         neg_in_edgelist = defaultdict(set)
 
-        for node_i, node_j, s in edge_index:
+        for node_i, node_j, s in edge_index_s_list:
 
             if s > 0:
                 pos_edgelist[node_i].add(node_j)
@@ -251,8 +250,6 @@ class SDGNN(nn.Module):
                 value.append(self.weight_dict[i][j])
         self.tri_weight = sp.csc_matrix((value, (row, col)),
                                         shape=(self.node_num, self.node_num))
-        self.adj1 = pos_edgelist
-        self.adj2 = neg_edgelist
 
         return [pos_out_edgelist, pos_in_edgelist, neg_out_edgelist, neg_in_edgelist]
 

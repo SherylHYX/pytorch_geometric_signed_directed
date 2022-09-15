@@ -53,8 +53,7 @@ class SiGAT(nn.Module):
 
         self.x = nn.Parameter(init_emb, requires_grad=init_emb_grad)
 
-        edge_index_s_list = edge_index_s.cpu().numpy().tolist()
-        self.adj_lists = self.build_adj_lists(edge_index_s_list)
+        self.adj_lists = self.build_adj_lists(edge_index_s)
         self.edge_lists = [self.map_adj_to_edges(i) for i in self.adj_lists]
 
         self.aggs = []
@@ -92,106 +91,103 @@ class SiGAT(nn.Module):
         edges = torch.LongTensor(edges).to(self.device)
         return edges.t()
 
-    def get_tri_features(self, u: int, v: int, r_edgelists: List) -> Tuple[int, int, int, int, int,
+    def get_tri_features(self, u: int, v: int, r_edgelist: List) -> Tuple[int, int, int, int, int,
                                                                            int, int, int, int, int, int, int, int, int, int, int]:
-        pos_in_edgelists, pos_out_edgelists, neg_in_edgelists, neg_out_edgelists = r_edgelists
+        pos_in_edgelist, pos_out_edgelist, neg_in_edgelist, neg_out_edgelist = r_edgelist
 
-        d1_1 = len(set(pos_out_edgelists[u]).intersection(
-            set(pos_in_edgelists[v])))
-        d1_2 = len(set(pos_out_edgelists[u]).intersection(
-            set(neg_in_edgelists[v])))
-        d1_3 = len(set(neg_out_edgelists[u]).intersection(
-            set(pos_in_edgelists[v])))
-        d1_4 = len(set(neg_out_edgelists[u]).intersection(
-            set(neg_in_edgelists[v])))
+        d1_1 = len(set(pos_out_edgelist[u]).intersection(
+            set(pos_in_edgelist[v])))
+        d1_2 = len(set(pos_out_edgelist[u]).intersection(
+            set(neg_in_edgelist[v])))
+        d1_3 = len(set(neg_out_edgelist[u]).intersection(
+            set(pos_in_edgelist[v])))
+        d1_4 = len(set(neg_out_edgelist[u]).intersection(
+            set(neg_in_edgelist[v])))
 
-        d2_1 = len(set(pos_out_edgelists[u]).intersection(
-            set(pos_out_edgelists[v])))
-        d2_2 = len(set(pos_out_edgelists[u]).intersection(
-            set(neg_out_edgelists[v])))
-        d2_3 = len(set(neg_out_edgelists[u]).intersection(
-            set(pos_out_edgelists[v])))
-        d2_4 = len(set(neg_out_edgelists[u]).intersection(
-            set(neg_out_edgelists[v])))
+        d2_1 = len(set(pos_out_edgelist[u]).intersection(
+            set(pos_out_edgelist[v])))
+        d2_2 = len(set(pos_out_edgelist[u]).intersection(
+            set(neg_out_edgelist[v])))
+        d2_3 = len(set(neg_out_edgelist[u]).intersection(
+            set(pos_out_edgelist[v])))
+        d2_4 = len(set(neg_out_edgelist[u]).intersection(
+            set(neg_out_edgelist[v])))
 
-        d3_1 = len(set(pos_in_edgelists[u]).intersection(
-            set(pos_out_edgelists[v])))
-        d3_2 = len(set(pos_in_edgelists[u]).intersection(
-            set(neg_out_edgelists[v])))
-        d3_3 = len(set(neg_in_edgelists[u]).intersection(
-            set(pos_out_edgelists[v])))
-        d3_4 = len(set(neg_in_edgelists[u]).intersection(
-            set(neg_out_edgelists[v])))
+        d3_1 = len(set(pos_in_edgelist[u]).intersection(
+            set(pos_out_edgelist[v])))
+        d3_2 = len(set(pos_in_edgelist[u]).intersection(
+            set(neg_out_edgelist[v])))
+        d3_3 = len(set(neg_in_edgelist[u]).intersection(
+            set(pos_out_edgelist[v])))
+        d3_4 = len(set(neg_in_edgelist[u]).intersection(
+            set(neg_out_edgelist[v])))
 
-        d4_1 = len(set(pos_in_edgelists[u]).intersection(
-            set(pos_in_edgelists[v])))
-        d4_2 = len(set(pos_in_edgelists[u]).intersection(
-            set(neg_in_edgelists[v])))
-        d4_3 = len(set(neg_in_edgelists[u]).intersection(
-            set(pos_in_edgelists[v])))
-        d4_4 = len(set(neg_in_edgelists[u]).intersection(
-            set(neg_in_edgelists[v])))
+        d4_1 = len(set(pos_in_edgelist[u]).intersection(
+            set(pos_in_edgelist[v])))
+        d4_2 = len(set(pos_in_edgelist[u]).intersection(
+            set(neg_in_edgelist[v])))
+        d4_3 = len(set(neg_in_edgelist[u]).intersection(
+            set(pos_in_edgelist[v])))
+        d4_4 = len(set(neg_in_edgelist[u]).intersection(
+            set(neg_in_edgelist[v])))
 
         return d1_1, d1_2, d1_3, d1_4, d2_1, d2_2, d2_3, d2_4, d3_1, d3_2, d3_3, d3_4, d4_1, d4_2, d4_3, d4_4
 
     def build_adj_lists(self, edge_index_s: torch.LongTensor) -> List:
+        edge_index_s_list = edge_index_s.cpu().numpy().tolist()
 
-        adj_list_pos = defaultdict(set)
-        adj_list_pos_out = defaultdict(set)
-        adj_list_pos_in = defaultdict(set)
-        adj_list_neg = defaultdict(set)
-        adj_list_neg_out = defaultdict(set)
-        adj_list_neg_in = defaultdict(set)
+        pos_edgelist = defaultdict(set)
+        pos_out_edgelist = defaultdict(set)
+        pos_in_edgelist = defaultdict(set)
+        neg_edgelist = defaultdict(set)
+        neg_out_edgelist = defaultdict(set)
+        neg_in_edgelist = defaultdict(set)
 
-        for node_i, node_j, s in edge_index_s:
+        for node_i, node_j, s in edge_index_s_list:
 
             if s > 0 :
-                adj_list_pos[node_i].add(node_j)
-                adj_list_pos[node_j].add(node_i)
+                pos_edgelist[node_i].add(node_j)
+                pos_edgelist[node_j].add(node_i)
 
-                adj_list_pos_out[node_i].add(node_j)
-                adj_list_pos_in[node_j].add(node_i)
+                pos_out_edgelist[node_i].add(node_j)
+                pos_in_edgelist[node_j].add(node_i)
             if s < 0:
-                adj_list_neg[node_i].add(node_j)
-                adj_list_neg[node_j].add(node_i)
+                neg_edgelist[node_i].add(node_j)
+                neg_edgelist[node_j].add(node_i)
 
-                adj_list_neg_out[node_i].add(node_j)
-                adj_list_neg_in[node_j].add(node_i)
+                neg_out_edgelist[node_i].add(node_j)
+                neg_in_edgelist[node_j].add(node_i)
 
         adj_additions1 = [defaultdict(set) for _ in range(16)]
         adj_additions2 = [defaultdict(set) for _ in range(16)]
 
-        pos_in_edgelists, pos_out_edgelists, neg_in_edgelists, neg_out_edgelists = adj_list_pos_in, adj_list_pos_out, adj_list_neg_in, adj_list_neg_out
-        r_edgelists = (pos_in_edgelists, pos_out_edgelists,
-                       neg_in_edgelists, neg_out_edgelists)
+        r_edgelist = (pos_in_edgelist, pos_out_edgelist,
+                      neg_in_edgelist, neg_out_edgelist)
 
-        adj1 = adj_list_pos_out.copy()
-        adj2 = adj_list_pos_out.copy()
-
+        adj1 = pos_out_edgelist.copy()
+        adj2 = neg_out_edgelist.copy()
         for i in adj1:
             for j in adj1[i]:
-                v_list = self.get_tri_features(i, j, r_edgelists)
+                v_list = self.get_tri_features(i, j, r_edgelist)
                 for index, v in enumerate(v_list):
                     if v > 0:
                         adj_additions1[index][i].add(j)
 
         for i in adj2:
             for j in adj2[i]:
-                v_list = self.get_tri_features(i, j, r_edgelists)
+                v_list = self.get_tri_features(i, j, r_edgelist)
                 for index, v in enumerate(v_list):
                     if v > 0:
                         adj_additions2[index][i].add(j)
 
-        self.adj_pos = adj_list_pos
-        self.adj_neg = adj_list_neg
 
-        return [adj_list_pos, adj_list_pos_out, adj_list_pos_in, adj_list_neg, adj_list_neg_out, adj_list_neg_in] + adj_additions1 + adj_additions2
+        return [pos_edgelist, pos_out_edgelist, pos_in_edgelist,
+        neg_edgelist, neg_out_edgelist, neg_in_edgelist] + adj_additions1 + adj_additions2
 
     def forward(self) -> torch.FloatTensor:
         neigh_feats = []
 
         for edges, agg in zip(self.edge_lists, self.aggs):
-            edges, _ = add_self_loops(edges)
             x1 = self.x
             x2 = agg(x1, edges)
             neigh_feats.append(x2)

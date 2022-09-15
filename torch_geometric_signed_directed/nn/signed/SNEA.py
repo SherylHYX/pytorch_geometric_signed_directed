@@ -29,7 +29,7 @@ class SNEA(nn.Module):
         out_dim: int = 64,
         layer_num: int = 2,
         init_emb: torch.FloatTensor = None,
-        init_emb_grad: bool = False,
+        init_emb_grad: bool = True,
         lamb: float = 4
     ):
         super().__init__()

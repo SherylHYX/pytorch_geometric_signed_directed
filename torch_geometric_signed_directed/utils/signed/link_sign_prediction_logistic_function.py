@@ -17,7 +17,7 @@ def link_sign_prediction_logistic_function(embeddings: np.ndarray, train_X: np.n
         test_X (np.ndarray): The indices for test data (e.g., [[1, 2]])
         test_y (np.ndarray): The sign for test data (e.g., [[1]])
         class_weight (Union[dict, str], optional): Weights associated with classes in the form ``{class_label: weight}``.
-        If not given, all classes are supposed to have weight one.. Defaults to None.
+        If not given, all classes are supposed to have weight one. Defaults to None.
 
     Returns:
         [type]: The metrics for link sign prediction task.
@@ -39,7 +39,7 @@ def link_sign_prediction_logistic_function(embeddings: np.ndarray, train_X: np.n
     pred = logistic_function.predict(test_X1)
     pred_p = logistic_function.predict_proba(test_X1)
     accuracy = metrics.accuracy_score(test_y, pred)
-    f1 = metrics.f1_score(test_y, pred, average='binary')
+    f1 = metrics.f1_score(test_y, pred)
     f1_macro = metrics.f1_score(test_y, pred, average='macro')
     f1_micro = metrics.f1_score(test_y, pred, average='micro')
     auc_score = metrics.roc_auc_score(test_y, pred_p[:, 1])
