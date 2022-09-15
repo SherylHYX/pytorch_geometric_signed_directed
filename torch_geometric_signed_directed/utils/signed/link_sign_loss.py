@@ -44,9 +44,9 @@ class Sign_Triangle_Loss(nn.Module):
         rs1 = self.lin(torch.cat([z_11, z_12], dim=1))
         rs2 = self.lin(torch.cat([z_21, z_22], dim=1))
 
-        pos_loss = F.binary_cross_entropy_with_logits(rs1, torch.ones_like(rs1), weight=edge_w1)
+        pos_loss = F.binary_cross_entropy_with_logits(rs1, torch.ones_like(rs1), weight=edge_w1, reduction='sum')
 
-        neg_loss = F.binary_cross_entropy_with_logits(rs2, torch.zeros_like(rs2), weight=edge_w2)
+        neg_loss = F.binary_cross_entropy_with_logits(rs2, torch.zeros_like(rs2), weight=edge_w2, reduction='sum')
 
         return pos_loss + neg_loss
 
@@ -88,13 +88,14 @@ class Sign_Direction_Loss(nn.Module):
         q = torch.where((s1 - s2) > -0.5,
                         torch.ones_like(s1) * -0.5, s1 - s2)
         tmp = (q - (s1 - s2))
-        pos_loss = torch.einsum("ij,ij->i", [tmp, tmp]).mean()
+        pos_loss = torch.einsum("ij,ij->i", [tmp, tmp]).sum()
 
         s1 = self.score_function1(z_21)
         s2 = self.score_function2(z_22)
-        q = torch.where((s1 - s2) > 0.5, s1 - s2, torch.ones_like(s1) * 0.5, )
+        q = torch.where((s1 - s2) > 0.5,
+                        s1 - s2, torch.ones_like(s1) * 0.5)
         tmp = (q - (s1 - s2))
-        neg_loss = torch.einsum("ij,ij->i", [tmp, tmp]).mean()
+        neg_loss = torch.einsum("ij,ij->i", [tmp, tmp]).sum()
         return pos_loss + neg_loss
 
 
@@ -121,8 +122,8 @@ class Sign_Product_Entropy_Loss(nn.Module):
 
         product1 = torch.einsum("ij, ij->i", [z_11, z_12])
         product2 = torch.einsum("ij, ij->i", [z_21, z_22])
-        loss_pos = F.binary_cross_entropy_with_logits(product1, torch.ones_like(product1))
-        loss_neg = F.binary_cross_entropy_with_logits(product2, torch.zeros_like(product2))
+        loss_pos = F.binary_cross_entropy_with_logits(product1, torch.ones_like(product1), reduction='sum')
+        loss_neg = F.binary_cross_entropy_with_logits(product2, torch.zeros_like(product2), reduction='sum')
         return loss_pos + loss_neg
 
 
