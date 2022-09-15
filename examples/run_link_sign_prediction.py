@@ -19,7 +19,6 @@ parser.add_argument('--seed', type=int, default=2021)
 parser.add_argument('--in_dim', type=int, default=20)
 parser.add_argument('--out_dim', type=int, default=20)
 parser.add_argument('--eval_step', type=int, default=10)
-parser.add_argument('--init_emb_grad', type=bool, default=False)
 args = parser.parse_args()
 
 seed_everything(args.seed)
@@ -42,17 +41,18 @@ out_dim = args.out_dim
 
 if args.model == 'SGCN':
     model = SGCN(nodes_num, edge_index_s, in_dim,
-                 out_dim, layer_num=2, lamb=5, init_emb_grad=args.init_emb_grad).to(device)
+                 out_dim, layer_num=2, lamb=5).to(device)
 elif args.model == 'SNEA':
     model = SNEA(nodes_num, edge_index_s, in_dim,
-                 out_dim, layer_num=2, lamb=4, init_emb_grad=args.init_emb_grad).to(device)
+                 out_dim, layer_num=2, lamb=4).to(device)
 elif args.model == 'SiGAT':
     model = SiGAT(nodes_num, edge_index_s, in_dim,
-                out_dim, init_emb_grad=args.init_emb_grad).to(device)
+                out_dim).to(device)
 elif args.model == 'SDGNN':
     model = SDGNN(nodes_num, edge_index_s, in_dim,
-                out_dim, init_emb_grad=args.init_emb_grad).to(device)
+                out_dim).to(device)
 
+print(args)
 print(model)
 optimizer = torch.optim.Adam(
     model.parameters(), lr=args.lr, weight_decay=args.weight_decay)

@@ -69,7 +69,8 @@ class SGCN(nn.Module):
         self.convs = torch.nn.ModuleList()
         for _ in range(layer_num - 1):
             self.convs.append(
-                SGCNConv(out_dim // 2, out_dim // 2, first_aggr=False, norm_emb=norm_emb))
+                SGCNConv(out_dim // 2, out_dim // 2, first_aggr=False,
+                         norm_emb=norm_emb))
 
         self.lsp_loss = Link_Sign_Entropy_Loss(out_dim)
         self.structure_loss = Sign_Structure_Loss()
