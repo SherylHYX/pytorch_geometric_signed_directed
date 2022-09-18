@@ -31,7 +31,7 @@ If you find *PyTorch Geometric Signed Directed* useful in your research, please 
 
 ```bibtex
 @article{he2022pytorch,
-        title={{PyTorch Geometric Signed Directed: A Survey and Software on Graph Neural Networks for Signed and Directed Graphs}},
+        title={{PyTorch Geometric Signed Directed: A Software Package on Graph Neural Networks for Signed and Directed Graphs}},
         author={He, Yixuan and Zhang, Xitong and Huang, Junjie and Rozemberczki, Benedek and Cucuringu, Mihai and Reinert, Gesine},
         journal={arXiv preprint arXiv:2202.10793},
         year={2022}
