@@ -40,8 +40,7 @@ jobs:
       run: |
         conda install -y scipy
         conda install pytorch torchvision torchaudio cpuonly -c pytorch
-        pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-1.10.0+cpu.html
-        pip install torch-scatter -f https://data.pyg.org/whl/torch-1.10.0+cpu.html
+        conda install pyg -c pyg
         pip install -U scikit-learn
         pip install codecov
         pip install sphinx sphinx_rtd_theme
