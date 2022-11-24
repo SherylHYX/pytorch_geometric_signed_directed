@@ -41,6 +41,7 @@ jobs:
         conda install -y scipy
         conda install pytorch torchvision torchaudio cpuonly -c pytorch
         conda install pytorch-sparse -c pyg
+        conda install pytorch-scatter -c pyg
         pip install -U scikit-learn
         pip install codecov
         pip install sphinx sphinx_rtd_theme
