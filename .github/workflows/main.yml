@@ -40,10 +40,12 @@ jobs:
       run: |
         conda install -y scipy
         conda install pytorch torchvision torchaudio cpuonly -c pytorch
+        conda install pytorch-sparse -c pyg
         pip install -U scikit-learn
         pip install codecov
         pip install sphinx sphinx_rtd_theme
         pip install .[test]
+        python setup.py install
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
