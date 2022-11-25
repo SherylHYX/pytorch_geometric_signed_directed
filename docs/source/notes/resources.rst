@@ -24,7 +24,7 @@ External Resources - Architectures
 
 * Zekun Tong, Yuxuan Liang, Changsheng Sun, David Rosenblum, Andrew Lim: **Directed graph convolutional network** `Paper <https://arxiv.org/pdf/2004.13970.pdf>`_
 
-* Yixuan He, Michael Perlmutter, Gesine Reinert, Mihai Cucuringu: **MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian** `Paper <https://arxiv.org/pdf/2209.00546.pdf>`_, `Code <https://github.com/SherylHYX/MSGNN>`
+* Yixuan He, Michael Perlmutter, Gesine Reinert, Mihai Cucuringu: **MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian** `Paper <https://arxiv.org/pdf/2209.00546.pdf>`_, `Code <https://github.com/SherylHYX/MSGNN>`_
 
 External Resources - Synthetic Data Generators
 ----------------------------------------------
@@ -46,4 +46,4 @@ External Resources - Real-World Data Sets
 
 * Yixuan He, Gesine Reinert, Mihai Cucuringu: **DIGRAC: Digraph Clustering Based on Flow Imbalance** `Paper <https://arxiv.org/pdf/2106.05194.pdf>`_, `Code <https://github.com/SherylHYX/DIGRAC_Directed_Clustering>`_
 
-* Yixuan He, Michael Perlmutter, Gesine Reinert, Mihai Cucuringu: **MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian** `Paper <https://arxiv.org/pdf/2209.00546.pdf>`_, `Code <https://github.com/SherylHYX/MSGNN>`
+* Yixuan He, Michael Perlmutter, Gesine Reinert, Mihai Cucuringu: **MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian** `Paper <https://arxiv.org/pdf/2209.00546.pdf>`_, `Code <https://github.com/SherylHYX/MSGNN>`_
