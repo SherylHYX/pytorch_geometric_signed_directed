@@ -38,7 +38,7 @@ jobs:
     - run: which python
     - name: Run installation.
       run: |
-        conda install pytorch torchvision torchaudio cpuonly -c pytorch
+        pip3 install torch torchvision torchaudio
         conda install pytorch-sparse -c pyg
         conda install pyg -c pyg
         pip install -U scikit-learn
