@@ -38,13 +38,14 @@ jobs:
     - run: which python
     - name: Run installation.
       run: |
+        conda install -y scipy
         pip install torch torchvision torchaudio
         pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-1.12.0+cpu.html
         pip install -U scikit-learn
         pip install codecov
         pip install sphinx sphinx_rtd_theme
         pip install .[test]
-        conda install -y scipy
+        python setup.py install
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
