@@ -16,9 +16,9 @@ jobs:
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9]
         os: [windows-latest]
-        torch-version: [1.11.0]
+        torch-version: [1.12.0]
         include:
-          - torch-version: 1.11.0
+          - torch-version: 1.12.0
             torchvision-version: 0.11.1
 
     steps:
@@ -38,7 +38,7 @@ jobs:
     - run: which python
     - name: Run installation.
       run: |
-        pip install torch torchvision torchaudio
+        conda install pytorch torchvision torchaudio cpuonly -c pytorch
         conda install pytorch-sparse -c pyg
         conda install pyg -c pyg
         pip install -U scikit-learn
