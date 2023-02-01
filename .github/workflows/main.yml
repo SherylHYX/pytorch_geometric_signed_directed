@@ -16,9 +16,9 @@ jobs:
       matrix:
         python-version: [3.7, 3.8, 3.9]
         os: [windows-latest, ubuntu-latest, macos-latest]
-        torch-version: [1.10.0]
+        torch-version: [1.11.0]
         include:
-          - torch-version: 1.10.0
+          - torch-version: 1.11.0
             torchvision-version: 0.11.1
 
     steps:
