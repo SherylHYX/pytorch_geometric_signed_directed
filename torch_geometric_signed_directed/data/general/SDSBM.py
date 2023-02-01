@@ -9,7 +9,7 @@ import numpy.random as rnd
 
 def SDSBM(N: int, K: int, p: float, F: np.array, size_ratio: float=1, eta: float=0.1) -> Tuple[sp.spmatrix, np.array]:
     """A signed directed stochastic block model graph generator from the 
-    `MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian <https://arxiv.org/pdf/2209.00546.pdf>`_ paper.
+    `MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian <https://proceedings.mlr.press/v198/he22c.html>`_ paper.
     
     Arg types:
         * **N** (int) - Number of nodes.
