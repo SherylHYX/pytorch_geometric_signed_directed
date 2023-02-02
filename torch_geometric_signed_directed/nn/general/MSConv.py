@@ -11,7 +11,7 @@ from ...utils.general.get_magnetic_signed_Laplacian import get_magnetic_signed_L
 
 class MSConv(MessagePassing):
     r"""Magnetic Signed Laplacian Convolution Layer from the 
-    `MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian <https://arxiv.org/pdf/2209.00546.pdf>`_ paper.
+    `MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian <https://proceedings.mlr.press/v198/he22c.html>`_ paper.
     
     Args:
         in_channels (int): Size of each input sample.

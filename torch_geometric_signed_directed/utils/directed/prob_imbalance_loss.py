@@ -6,7 +6,7 @@ import numpy as np
 
 class Prob_Imbalance_Loss(torch.nn.Module):
     r"""An implementation of the probablistic imbalance loss function from the
-    `DIGRAC: Digraph Clustering Based on Flow Imbalance <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
+    `DIGRAC: Digraph Clustering Based on Flow Imbalance <https://proceedings.mlr.press/v198/he22b.html>`_ paper.
 
     Args:
         F (int or NumPy array, optional) - Number of pairwise imbalance socres to consider, or the meta-graph adjacency matrix.

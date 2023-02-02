@@ -9,7 +9,7 @@ from .MSConv import MSConv
 
 class MSGNN_link_prediction(nn.Module):
     r"""The MSGNN model for link prediction from the 
-    `MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian <https://arxiv.org/pdf/2209.00546.pdf>`_ paper.
+    `MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian <https://proceedings.mlr.press/v198/he22c.html>`_ paper.
     
     Args:
         num_features (int): Size of each input sample.
@@ -93,7 +93,7 @@ class MSGNN_link_prediction(nn.Module):
 
 class MSGNN_node_classification(nn.Module):
     r"""The MSGNN model for node classification from the 
-    `MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian <https://arxiv.org/pdf/2209.00546.pdf>`_ paper.
+    `MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian <https://proceedings.mlr.press/v198/he22c.html>`_ paper.
     
     Args:
         num_features (int): Size of each input sample.

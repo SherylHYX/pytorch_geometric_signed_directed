@@ -6,7 +6,7 @@ import numpy as np
 def meta_graph_generation(F_style: str = 'cyclic', K: int = 4, eta: float = 0.05,
                           ambient: bool = False, fill_val: float = 0.5) -> np.array:
     """The meta-graph generation function from the
-    `DIGRAC: Digraph Clustering Based on Flow Imbalance <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
+    `DIGRAC: Digraph Clustering Based on Flow Imbalance <https://proceedings.mlr.press/v198/he22b.html>`_ paper.
 
     Arg types:
         * **F_style** (str) - Style of the meta-graph: 'cyclic', 'path', 'complete', 'star' or 'multipartite'.

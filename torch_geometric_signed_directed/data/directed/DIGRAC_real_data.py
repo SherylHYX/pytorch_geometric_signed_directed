@@ -8,7 +8,7 @@ from torch_geometric.data import Data, InMemoryDataset, download_url
 
 class DIGRAC_real_data(InMemoryDataset):
     r"""Data loader for the data sets used in the
-    `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
+    `DIGRAC: Digraph Clustering Based on Flow Imbalance" <https://proceedings.mlr.press/v198/he22b.html>`_ paper.
 
     Args:
         name (str): Name of the data set, choices are: 'blog', 'wikitalk', 'migration', 'lead_lag"+str(year) (year from 2001 to 2019).

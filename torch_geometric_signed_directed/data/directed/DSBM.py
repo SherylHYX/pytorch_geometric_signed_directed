@@ -9,7 +9,7 @@ import numpy.random as rnd
 
 def DSBM(N: int, K: int, p: float, F: np.array, size_ratio: float = 1) -> Tuple[sp.spmatrix, np.array]:
     """A directed stochastic block model graph generator from the
-    `DIGRAC: Digraph Clustering Based on Flow Imbalance <https://arxiv.org/pdf/2106.05194.pdf>`_ paper.
+    `DIGRAC: Digraph Clustering Based on Flow Imbalance <https://proceedings.mlr.press/v198/he22b.html>`_ paper.
 
     Arg types:
         * **N** (int) - Number of nodes.

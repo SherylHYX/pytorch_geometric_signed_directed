@@ -20,18 +20,18 @@ External Resources - Architectures
 
 * Zekun Tong, Yuxuan Liang, Changsheng Sun, Xinke Li, David Rosenblum, Andrew Lim: **Digraph inception convolutional networks** `Paper <https://papers.nips.cc/paper/2020/file/cffb6e2288a630c2a787a64ccc67097c-Paper.pdf>`_, `Code <https://github.com/flyingtango/DiGCN>`_
 
-* Yixuan He, Gesine Reinert, Mihai Cucuringu: **DIGRAC: Digraph Clustering Based on Flow Imbalance** `Paper <https://arxiv.org/pdf/2106.05194.pdf>`_, `Code <https://github.com/SherylHYX/DIGRAC_Directed_Clustering>`_
+* Yixuan He, Gesine Reinert, Mihai Cucuringu: **DIGRAC: Digraph Clustering Based on Flow Imbalance** `Paper <https://proceedings.mlr.press/v198/he22b.html>`_, `Code <https://github.com/SherylHYX/DIGRAC_Directed_Clustering>`_
 
 * Zekun Tong, Yuxuan Liang, Changsheng Sun, David Rosenblum, Andrew Lim: **Directed graph convolutional network** `Paper <https://arxiv.org/pdf/2004.13970.pdf>`_
 
-* Yixuan He, Michael Perlmutter, Gesine Reinert, Mihai Cucuringu: **MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian** `Paper <https://arxiv.org/pdf/2209.00546.pdf>`_, `Code <https://github.com/SherylHYX/MSGNN>`_
+* Yixuan He, Michael Perlmutter, Gesine Reinert, Mihai Cucuringu: **MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian** `Paper <https://proceedings.mlr.press/v198/he22c.html>`_, `Code <https://github.com/SherylHYX/MSGNN>`_
 
 External Resources - Synthetic Data Generators
 ----------------------------------------------
 
 * Yixuan He, Gesine Reinert, Songchao Wang, Mihai Cucuringu: **SSSNET: Semi-Supervised Signed Network Clustering** `Paper <https://arxiv.org/pdf/2110.06623.pdf>`_, `Code <https://github.com/SherylHYX/SSSNET_Signed_Clustering>`_
 
-* Yixuan He, Gesine Reinert, Mihai Cucuringu: **DIGRAC: Digraph Clustering Based on Flow Imbalance** `Paper <https://arxiv.org/pdf/2106.05194.pdf>`_, `Code <https://anonymous.4open.science/r/DIGRAC>`_
+* Yixuan He, Gesine Reinert, Mihai Cucuringu: **DIGRAC: Digraph Clustering Based on Flow Imbalance** `Paper <https://proceedings.mlr.press/v198/he22b.html>`_, `Code <https://anonymous.4open.science/r/DIGRAC>`_
 
 * Yixuan He, Michael Perlmutter, Gesine Reinert, Mihai Cucuringu: **MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian** `Paper <https://arxiv.org/pdf/2209.00546.pdf>`_, `Code <https://github.com/SherylHYX/MSGNN>`
 
@@ -44,6 +44,6 @@ External Resources - Real-World Data Sets
 
 * Xitong Zhang, Yixuan He, Nathan Brugnone, Michael Perlmutter, Matthew Hirn: **Magnet: A neural network for directed graphs** `Paper <https://arxiv.org/pdf/2102.11391.pdf>`_, `Code <https://github.com/matthew-hirn/magnet>`_
 
-* Yixuan He, Gesine Reinert, Mihai Cucuringu: **DIGRAC: Digraph Clustering Based on Flow Imbalance** `Paper <https://arxiv.org/pdf/2106.05194.pdf>`_, `Code <https://github.com/SherylHYX/DIGRAC_Directed_Clustering>`_
+* Yixuan He, Gesine Reinert, Mihai Cucuringu: **DIGRAC: Digraph Clustering Based on Flow Imbalance** `Paper <https://proceedings.mlr.press/v198/he22b.html>`_, `Code <https://github.com/SherylHYX/DIGRAC_Directed_Clustering>`_
 
-* Yixuan He, Michael Perlmutter, Gesine Reinert, Mihai Cucuringu: **MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian** `Paper <https://arxiv.org/pdf/2209.00546.pdf>`_, `Code <https://github.com/SherylHYX/MSGNN>`_
+* Yixuan He, Michael Perlmutter, Gesine Reinert, Mihai Cucuringu: **MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian** `Paper <https://proceedings.mlr.press/v198/he22c.html>`_, `Code <https://github.com/SherylHYX/MSGNN>`_

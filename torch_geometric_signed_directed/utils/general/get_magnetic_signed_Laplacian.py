@@ -18,7 +18,7 @@ def get_magnetic_signed_Laplacian(edge_index: torch.LongTensor, edge_weight: Opt
                   absolute_degree: bool = True):
     r""" Computes the magnetic signed Laplacian of the graph given by :obj:`edge_index`
     and optional :obj:`edge_weight` from the 
-    `MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian <https://arxiv.org/pdf/2209.00546.pdf>`_ paper.
+    `MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian <https://proceedings.mlr.press/v198/he22c.html>`_ paper.
     
     Arg types:
         * **edge_index** (PyTorch LongTensor) - The edge indices.
