@@ -2,7 +2,7 @@ Installation
 ============
 
 The installation of PyTorch Geometric Signed Directed requires the presence of certain prerequisites. These are described in great detail in the installation description of PyTorch Geometric. Please follow the instructions laid out `here <https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/installation.html>`_. You might also take a look at the `README file <https://github.com/SherylHYX/pytorch_geometric_signed_directed>`_ of the PyTorch Geometric Signed Directed repository.
-Binaries are provided for Python version >= 3.6 and PyG version at least 2.
+Binaries are provided for Python version >= 3.7, PyG version at least 2, and NetworkX version earlier than 2.7.
 
 After installing `PyTorch <https://pytorch.org/get-started/locally/>`_ and `PyG <https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html>`_, simply run
 

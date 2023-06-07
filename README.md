@@ -244,7 +244,7 @@ If you notice anything unexpected, please open an [issue](https://github.com/She
 
 **Installation**
 
-Binaries are provided for Python version >= 3.6.
+Binaries are provided for Python version >= 3.7 and NetworkX version < 2.7.
 
 After installing [PyTorch](https://pytorch.org/get-started/locally/) and [PyG](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html), simply run
 
