@@ -31,7 +31,7 @@ External Resources - Synthetic Data Generators
 
 * Yixuan He, Gesine Reinert, Songchao Wang, Mihai Cucuringu: **SSSNET: Semi-Supervised Signed Network Clustering** `Paper <https://arxiv.org/pdf/2110.06623.pdf>`_, `Code <https://github.com/SherylHYX/SSSNET_Signed_Clustering>`_
 
-* Yixuan He, Gesine Reinert, Mihai Cucuringu: **DIGRAC: Digraph Clustering Based on Flow Imbalance** `Paper <https://proceedings.mlr.press/v198/he22b.html>`_, `Code <https://anonymous.4open.science/r/DIGRAC>`_
+* Yixuan He, Gesine Reinert, Mihai Cucuringu: **DIGRAC: Digraph Clustering Based on Flow Imbalance** `Paper <https://proceedings.mlr.press/v198/he22b.html>`_, `Code <https://github.com/SherylHYX/DIGRAC_Directed_Clustering>`_
 
 * Yixuan He, Michael Perlmutter, Gesine Reinert, Mihai Cucuringu: **MSGNN: A Spectral Graph Neural Network Based on a Novel Magnetic Signed Laplacian** `Paper <https://arxiv.org/pdf/2209.00546.pdf>`_, `Code <https://github.com/SherylHYX/MSGNN>`
 
