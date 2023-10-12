@@ -1,0 +1,77 @@
+Introduction
+=======================
+
+PyTorch Geometric Signed Directed provides data loaders for various real-world data sets. These data loaders include
+
+- `directed real-world data loader. <https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.data.directed.load_directed_real_data>`_
+- `signed real-world data loader. <https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/modules/data.html#module-torch_geometric_signed_directed.data.signed.load_signed_real_data>`_
+
+Within the data loaders, we could load:
+
+Directed Unsigned Real-World Data Sets 
+^^^^^^^^^^^^^^^^^^^^^^
+
+- ``Blog``: from the paper `The political blogosphere and the 2004 U.S. election: divided they blog. <https://dl.acm.org/doi/abs/10.1145/1134271.1134277>`_, which records  19,024 directed edges between 1,212 political blogs from the 2004 US presidential election. 
+
+- ``Migration``: from the paper  `State-to-state migration Flows, 1995 to 2000. <https://www.census.gov/content/dam/Census/library/publications/2003/dec/censr-8.pdf>`_, which reports the number of people that migrated between pairs of counties in the US during 1995-2000. 
+It involves 3,075 countries
+and 721,432 directed edges after obtaining the largest weakly connected component.
+Since the original directed network has a few extremely large entries, to cope with these outliers we 
+preprocess the input network by
+:math:`\\mathbf{A}_{i,j}=\\frac{\\mathbf{A}_{i,j}}{\\mathbf{A}_{i,j}+\\mathbf{A}_{j,i}}\\mathbbm{1}(\\mathbf{A}_{i,j}>0), \\forall i,j\\in\\{1,\\cdots,n\\}`. 
+
+- ``WikiTalk``: from the paper `Signed networks in social media <https://dl.acm.org/doi/abs/10.1145/1753326.1753532>`_, which contains all users and discussions from the inception of Wikipedia until Jan. 2008. 
+The 2,388,953 nodes in the network represent Wikipedia users and a directed edge from node :math:`v_i` to node :math:`v_j` denotes that user i edited at least once a talk page of user j. We extract the largest weakly connected component. 
+
+- ``Telegram``: from the paper `The Activity of the Far Right on Telegram <https://www.researchgate.net/profile/Peter-Grindrod/publication/346968575_The_Activity_of_the_Far_Right_on_Telegram_v211/links/5fd5be47a6fdccdcb8c07326/The-Activity-of-the-Far-Right-on-Telegram-v211.pdf>`_, which is a pairwise influence network between 245 Telegram channels with 8,912 links. 
+Labels are generated from the method discussed in the paper, with a total of four classes. 
+
+- ``Cora-ML``: from the paper `Deep Gaussian embedding of graphs: Unsupervised inductive learning via ranking <https://arxiv.org/abs/1707.03815>`_, which is a popular citation network with node labels based on paper topics with seven classes. In this citation network, nodes represent papers, edges denote
+citations of one paper by another, and node features are the bag-of-words representation of papers.
+
+- ``CiteSeer``: from the paper `CiteSeer: An automatic citation indexing system <https://dl.acm.org/doi/pdf/10.1145/276675.276685>`_, which is a citation data set from an automatic citation indexing system. In this citation network, nodes represent papers, and edges denote
+citations of one paper by another. Node features are the bag-of-words representation of papers, and
+node labels are determined by the academic topic of a paper.
+
+- ``Texas``, ``Wisconsin``, and ``Cornell``: from the paper `Geom-GCN: geometric graph convolutional networks <https://arxiv.org/abs/2002.05287>`_, which are WebKB data sets extracted from the `CMU World Wide Knowledge Base (Web->KB) project <http://www.cs.cmu.edu/afs/cs.cmu.edu/project/theo-11/www/wwkb/>`_. They modeling links between websites at different universities. WebKB is a webpage data set collected from computer science departments of various
+universities by Carnegie Mellon University. In these networks, nodes represent web pages, and edges are hyperlinks between them. Node features are the bag-of-words representation of web pages. The web pages are manually classified
+into the five categories, student, project, course, staff, and faculty.
+
+- ``Chameleon`` and ``Squirrel``: from the paper `Multi-scale attributed node embedding <https://academic.oup.com/comnet/article/9/2/cnab014/6271062>`_, which represent links between Wikipedia pages related to chameleons and squirrels. In these networks, nodes denote web pages and edges represent mutual links between them. Node features correspond to several informative nouns in the Wikipedia pages. The nodes are classified by `Geom-GCN: geometric graph convolutional networks <https://arxiv.org/abs/2002.05287>`_ into five categories in terms of the number of the average
+monthly traffic of the web page.
+
+- ``WikiCS``: from the paper `Wiki-cs: A wikipedia-based benchmark for graph neural networks <https://arxiv.org/abs/2007.02901>`_, which is a directed network whose nodes correspond to Computer Science articles, and edges are based on hyperlinks. This network has 10 classes resenting different branches of the field.
+
+- ``Lead-Lag``: from the paper `Detection and clustering of lead-lag networks for multivariate time series with an application to financial markets <https://ora.ox.ac.uk/objects/uuid:a27991df-cf1e-4280-b1da-525c0c15dfa2>`_, which contains yearly lead-lag matrices from 269 stocks from 2001 to 2019. Each lead-lag matrix is built from a time series of daily price log returns. The lead-lag metric for entry (i,j) in the network encodes a measure of the extent to which stock i leads stock j, and is obtained by applying a functional that computes the signed normalized area under the curve (auc) of the standard cross-correlation function (ccf). The resulting matrix is skew-symmetric, and entry (i,j) quantifies the extent to which stock i leads or lags stocks j, thus leading to a directed network interpretation.
+Starting from the skew-symmetric matrix, authors of the paper `DIGRAC: Digraph Clustering Based on Flow Imbalance<https://proceedings.mlr.press/v198/he22b.html>`_ further convert negative entries to zero, so that the resulting directed network can be directly fed into other methods; 
+note that this step does not throw away any information, and is pursued only to render the representation of the directed network consistent with the format expected by all methods compared.
+
+Signed Real-World Data Sets 
+^^^^^^^^^^^^^^^^^^^^^^
+- ``Sampson``: the Sampson monastery data from the paper `A novitiate in a period of change: An experimental and case study of social relationships <https://www.proquest.com/docview/302311318?pq-origsite=gscholar&fromopenview=true>`_, which covers 
+4 social relationships, each of which could be positive or negative. 
+We combine these relationships into a network of 25 nodes.
+For this data set we use as node attribute whether or not they attended the minor seminary of "Cloisterville".
+As ground truth we take Sampson's division of the novices into four groups: Young Turks, Loyal Opposition, Outcasts, and an interstitial group. 
+
+- ``Rainfall``: from the paper `Climate inference on daily rainfall across the Australian continent, 1876--2015 <https://www.jstor.org/stable/26754168>`_ and further processed by the authors of the paper `SSSNET: semi-supervised signed network clustering <https://epubs.siam.org/doi/abs/10.1137/1.9781611977172.28>`_, which contains Australian rainfalls pairwise correlations. This data set is based on the analysis over 294 million daily rainfall measurements since 1876, spanning 17,606 sites across continental Australia.
+
+- ``Fin-YNet``: from the paper `SSSNET: semi-supervised signed network clustering <https://epubs.siam.org/doi/abs/10.1137/1.9781611977172.28>`_
+, which consists of yearly correlation matrices for 451 stocks for 2000-2020 (21 distinct networks), using so-called market excess returns; that is, we compute each correlation matrix from overnight (previous close to open) and intraday (open-to-close) price daily returns, from which we subtract the market return of the S&P500 index. 
+
+- ``S&P1500``: from the paper `SSSNET: semi-supervised signed network clustering <https://epubs.siam.org/doi/abs/10.1137/1.9781611977172.28>`_
+, which considers daily prices for 1,193 stocks, in the S&P 1500 Index, between 2003 and 2015, and builds correlation matrices also from market excess returns.
+The result is a fully-connected weighted network, with stocks as nodes and correlations as edge weights. 
+
+- ``PPI``: from the paper `Integrating protein-protein interaction networks with phenotypes reveals signs of interactions <https://www.nature.com/articles/nmeth.2733>`_, which is a signed protein-protein interaction (PPI) network. The edge signs represent activation-inhibition relationships. This is a Drosophila melanogaster signed PPI network consisting of 6,125 signed PPIs connecting 3,352 proteins that can be used to identify positive and negative regulators of signaling pathways and protein complexes. The data set is further processed by the authors of the paper `SSSNET: semi-supervised signed network clustering <https://epubs.siam.org/doi/abs/10.1137/1.9781611977172.28>`_ to keep the largest connected component.
+
+- ``Wiki-Rfa``: from the paper `Exploiting social network structure for person-to-person sentiment analysis <https://direct.mit.edu/tacl/article/doi/10.1162/tacl_a_00184/43320/Exploiting-Social-Network-Structure-for-Person-to>`_, which is a signed network describing voting information for electing Wikipedia managers. Positive edges represent supporting votes, while negative edges represent opposing votes. The data set is further processed by the authors of the paper `SSSNET: semi-supervised signed network clustering <https://epubs.siam.org/doi/abs/10.1137/1.9781611977172.28>`_ to keep the largest connected component and remove nodes with very low degrees.
+
+- ``BitCoin-Alpha`` and ``BitCoin-OTC``: from the paper `Edge weight prediction in weighted signed networks <https://ieeexplore.ieee.org/abstract/document/7837846>`_, which describe bitcoin trading. As a cryptocurrency, Bitcoin is used to trade anonymously over the web, whose counterparty risk has led to the emergence of several exchanges where Bitcoin users rate the level of trust they have in other users. Two such exchanges are OTC (for short) and Alpha (for short). Both exchanges enable users to rate others on a scale of -10 to 10 (excluding zero), where a rating of -10 should be given to fraudsters while 10 means to trust the person as trusting oneself. The rating values in between have intermediate meanings.
+
+- ``Slashdot``: from the paper `Finding large balanced subgraphs in signed networks <https://dl.acm.org/doi/abs/10.1145/3366423.3380212>`_, which relates to a technology-related news website. This network contains friend/foe links between the users of Slashdot.
+
+- ``Epinions``: from the paper `Controversial users demand local trust metrics: An experimental study on epinions.com community <https://cdn.aaai.org/AAAI/2005/AAAI05-020.pdf>`_, which describes trust-distrust consumer reviews on epinions.com. epinions.com is a website in which users can write reviews about products and assign them a rating. This website also allows the users to express their Web of
+Trust, i.e. "reviewers whose reviews and ratings they have consistently found to be valuable" and their Block list, i.e. a list of authors whose reviews they find consistently offensive, inaccurate, or in general not valuable. Inserting a user in the Web of Trust is the same as issuing a trust statement while inserting them in the Block List means issuing a distrust statement. 
+
+- ``FiLL``: from the paper `Msgnn: A spectral graph neural network based on a novel magnetic signed laplacian <https://proceedings.mlr.press/v198/he22c.html>`_, which Financial lead-lag relationship data sets. For each year in the data set, the authors build a signed directed graph (FiLL-pvCLCL) based on the price return of 444 stocks at market close times on consecutive days. The authors also build another graph (FiLL-OPCL), based on the price return of 430 stocks from market open to close. The lead-lag metric that is captured by the entry :math:`\\mathbf{A}_{i,j}` in each network encodes a measure that quantifies the extent to which stock i leads stock j, and is obtained by computing the linear regression coefficient when regressing the time series (of length 245) of daily returns of stock i against the lag-one version of the time series (of length 245) of the daily returns of stock j. Specifically, the paper uses the beta coefficient of the corresponding simple linear regression, to serve as the one-day lead-lag metric. The resulting  matrix is asymmetric and signed, rendering it amenable to a signed directed network interpretation. The initial matrix is dense, but could be sparsified if we load the data with a sparsity level that only keeps the edges with the largest magnitudes. 

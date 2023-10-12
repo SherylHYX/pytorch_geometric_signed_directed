@@ -17,6 +17,7 @@ It builds on open-source deep-learning and graph processing libraries.
    notes/introduction
    notes/case_study
    notes/resources
+   notes/datasets
 
 .. toctree::
    :glob:
