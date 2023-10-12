@@ -1,4 +1,4 @@
-Introduction
+Real-World Data Set Descriptions
 =======================
 
 PyTorch Geometric Signed Directed provides data loaders for various real-world data sets. These data loaders include
@@ -43,7 +43,7 @@ monthly traffic of the web page. The resulting networks have 2,277 and 5,201 nod
 - ``WikiCS``: from the paper `Wiki-cs: A wikipedia-based benchmark for graph neural networks <https://arxiv.org/abs/2007.02901>`_, which is a directed network whose nodes correspond to Computer Science articles, and edges are based on hyperlinks. This network has 10 classes resenting different branches of the field. The resulting network has 11,701 nodes and 297,110 edges.
 
 - ``Lead-Lag``: from the paper `Detection and clustering of lead-lag networks for multivariate time series with an application to financial markets <https://ora.ox.ac.uk/objects/uuid:a27991df-cf1e-4280-b1da-525c0c15dfa2>`_, which contains yearly lead-lag matrices from 269 stocks from 2001 to 2019. Each lead-lag matrix is built from a time series of daily price log returns. The lead-lag metric for entry (i,j) in the network encodes a measure of the extent to which stock i leads stock j, and is obtained by applying a functional that computes the signed normalized area under the curve (auc) of the standard cross-correlation function (ccf). The resulting matrix is skew-symmetric, and entry (i,j) quantifies the extent to which stock i leads or lags stocks j, thus leading to a directed network interpretation.
-Starting from the skew-symmetric matrix, authors of the paper `DIGRAC: Digraph Clustering Based on Flow Imbalance<https://proceedings.mlr.press/v198/he22b.html>`_ further convert negative entries to zero, so that the resulting directed network can be directly fed into other methods; 
+Starting from the skew-symmetric matrix, authors of the paper `DIGRAC: Digraph Clustering Based on Flow Imbalance <https://proceedings.mlr.press/v198/he22b.html>`_ further convert negative entries to zero, so that the resulting directed network can be directly fed into other methods; 
 note that this step does not throw away any information, and is pursued only to render the representation of the directed network consistent with the format expected by all methods compared. The average number of edges is 29,159.
 
 Signed Real-World Data Sets 
