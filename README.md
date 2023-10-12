@@ -11,7 +11,7 @@
   <img width="90%" src="https://raw.githubusercontent.com/SherylHYX/pytorch_geometric_signed_directed/master/docs/source/_static/img/text_logo.jpg?sanitize=true" />
 </p>
 
-**[Documentation](https://pytorch-geometric-signed-directed.readthedocs.io)** | **[Case Study](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/case_study.html)** | **[Installation](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/installation.html)** | **[Data Structures](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/introduction.html#data-structures)** | **[External Resources](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/resources.html)** | **[Paper](https://arxiv.org/pdf/2202.10793.pdf)**
+**[Documentation](https://pytorch-geometric-signed-directed.readthedocs.io)** | **[Case Study](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/case_study.html)** | **[Data Set Descriptions](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/datasets.html)** | **[Installation](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/installation.html)** | **[Data Structures](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/introduction.html#data-structures)** | **[External Resources](https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/resources.html)** | **[Paper](https://arxiv.org/pdf/2202.10793.pdf)**
 
 -----------------------------------------------------
 
