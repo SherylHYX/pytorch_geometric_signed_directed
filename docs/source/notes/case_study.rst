@@ -83,7 +83,7 @@ For the second snippet, we first initialize the cross-entropy loss function as p
         (torch.argmax(prob, dim=1)).cpu()[mask])
         return test_ari
 
-In the third snippet, we define the training and evaluation functions. Setting the model to be trainable, we obtain node embedding matrix Z and cluster assignment probablities prob and its logarithm log_prob with a forward pass of the model instance. We then obtain the probablistic balanced normalized cut loss, triplet loss, and cross entropy loss. The weighted sum of the three losses then serves as the training loss value. We then backpropagate and update the model parameters. After that, we calculate the Adjusted Rand Index (ARI) \cite{hubert1985comparing} of the training samples. Finally, we return the loss value as well as the training ARI score.
+In the third snippet, we define the training and evaluation functions. Setting the model to be trainable, we obtain node embedding matrix Z and cluster assignment probablities prob and its logarithm log_prob with a forward pass of the model instance. We then obtain the probabilistic balanced normalized cut loss, triplet loss, and cross entropy loss. The weighted sum of the three losses then serves as the training loss value. We then backpropagate and update the model parameters. After that, we calculate the Adjusted Rand Index (ARI) \cite{hubert1985comparing} of the training samples. Finally, we return the loss value as well as the training ARI score.
 
 For the evaluation function (named ``test``), we do not set the model to be trainable. With a forward pass, we obtain the probability assignment matrix. Taking argmax for the probabilities, we obtain test ARI result. Finally, we return the result.
 

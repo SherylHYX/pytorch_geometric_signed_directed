@@ -5,7 +5,7 @@ from ..general.scipy_sparse_to_torch_sparse import scipy_sparse_to_torch_sparse
 
 
 class Prob_Balanced_Ratio_Loss(torch.nn.Module):
-    r"""An implementation of the probablistic balanced ratio cut loss function from the
+    r"""An implementation of the probabilistic balanced ratio cut loss function from the
     `SSSNET: Semi-Supervised Signed Network Clustering <https://arxiv.org/pdf/2110.06623.pdf>`_ paper.
 
     Args:
@@ -21,7 +21,7 @@ class Prob_Balanced_Ratio_Loss(torch.nn.Module):
         self.mat = scipy_sparse_to_torch_sparse(mat)
 
     def forward(self, prob: torch.FloatTensor) -> torch.Tensor:
-        """Making a forward pass of the probablistic balanced ratio cut loss function.
+        """Making a forward pass of the probabilistic balanced ratio cut loss function.
 
         Arg types:
             * prob (PyTorch FloatTensor) - Prediction probability matrix made by the model
