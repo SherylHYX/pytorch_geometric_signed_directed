@@ -2,6 +2,7 @@ version: 2
 
 build:
    image: latest
+   os: linux
 
 python:
    version: 3.7
