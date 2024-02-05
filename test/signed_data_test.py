@@ -292,6 +292,35 @@ def test_load_signed_real_data():
         assert signed_dataset.is_signed
 
 
+def test_connectivity():
+    seed = 0
+    dataset_name = 'bitcoin_otc'
+
+    # Load data using torch geometric signed directed data loader
+    data = load_signed_real_data(dataset=dataset_name)
+
+    # Create several train, val, test splits
+
+    signed_datasets = data.link_split(prob_val=0.1,
+                                      prob_test=0.1,
+                                      task='sign',
+                                      maintain_connect=True,
+                                      seed=seed,
+                                      splits=1)
+
+    # check that all nodes in validation and test have at least an edge in the training set
+    for split_id in signed_datasets:
+        val_nodes = torch.unique(torch.flatten(signed_datasets[split_id]['val']['edges']))
+        for node_id in val_nodes:
+            node_id_mask = torch.logical_or(signed_datasets[split_id]['train']['edges'][:, 0] == node_id,
+                                            signed_datasets[split_id]['train']['edges'][:, 1] == node_id)
+            assert node_id_mask.sum().item() > 0, f'[VAL] node id: {node_id} has no incident edges in training set'
+        test_nodes = torch.unique(torch.flatten(signed_datasets[split_id]['test']['edges']))
+        for node_id in test_nodes:
+            node_id_mask = torch.logical_or(signed_datasets[split_id]['train']['edges'][:, 0] == node_id,
+                                            signed_datasets[split_id]['train']['edges'][:, 1] == node_id)
+
+            assert node_id_mask.sum().item() > 0, f'[TEST] node id: {node_id} has no incident edges in training set'
 
 def test_SSBM():
     num_nodes = 1000
