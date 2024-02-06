@@ -36,7 +36,7 @@ def fast_appr_power(A, alpha=0.1, max_iter=100,
     personalize = personalize.reshape(n, 1)
     s = 1/(1+alpha)/n * personalize
     z_T = ((alpha*(1+alpha)) * (r != 0) + ((1-alpha)/(1+alpha)+alpha*(1+alpha))
-           * (r == 0))[scipy.newaxis, :]
+           * (r == 0))[np.newaxis, :]
     W = (1-alpha) * A.T @ D_1
     x = s
     oldx = np.zeros((n, 1))
