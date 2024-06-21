@@ -18,7 +18,7 @@ jobs:
         os: [windows-latest, ubuntu-latest]
         torch-version: [2.0.0]
         include:
-          - torch-version: 2.0.0
+          - torch-version: 2.3.0
 
     steps:
     - uses: actions/checkout@v2
