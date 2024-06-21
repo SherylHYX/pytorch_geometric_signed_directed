@@ -11,7 +11,7 @@ If you find *PyTorch Geometric Signed Directed* useful in your research, please 
 
 .. code-block:: latex
 
-    >@inproceedings{he2024pytorch,
+    @inproceedings{he2024pytorch,
         title={Pytorch Geometric Signed Directed: A software package on graph neural networks for signed and directed graphs},
         author={He, Yixuan and Zhang, Xitong and Huang, Junjie and Rozemberczki, Benedek and Cucuringu, Mihai and Reinert, Gesine},
         booktitle={Learning on Graphs Conference},
