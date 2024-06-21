@@ -31,6 +31,6 @@ preferred-citation:
     given-names: "Mihai"
   - family-names: "Reinert"
     given-names: "Gesine"
-  journal: "arXiv preprint arXiv:2202.10793"
+  journal: "Learning on Graphs Conference"
   title: "PyTorch Geometric Signed Directed: A Software Package on Graph Neural Networks for Signed and Directed Graphs"
-  year: 2022
+  year: 2024

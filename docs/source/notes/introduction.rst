@@ -11,12 +11,14 @@ If you find *PyTorch Geometric Signed Directed* useful in your research, please 
 
 .. code-block:: latex
 
-    >@article{he2022pytorch,
-            title={{PyTorch Geometric Signed Directed: A Software Package on Graph Neural Networks for Signed and Directed Graphs}},
-            author={He, Yixuan and Zhang, Xitong and Huang, Junjie and Rozemberczki, Benedek and Cucuringu, Mihai and Reinert, Gesine},
-            journal={arXiv preprint arXiv:2202.10793},
-            year={2022}
-            }
+    >@inproceedings{he2024pytorch,
+        title={Pytorch Geometric Signed Directed: A software package on graph neural networks for signed and directed graphs},
+        author={He, Yixuan and Zhang, Xitong and Huang, Junjie and Rozemberczki, Benedek and Cucuringu, Mihai and Reinert, Gesine},
+        booktitle={Learning on Graphs Conference},
+        pages={12--1},
+        year={2024},
+        organization={PMLR}
+        }
 
 We briefly overview the fundamental concepts and features of PyTorch Geometric Signed Directed through simple examples.
 
