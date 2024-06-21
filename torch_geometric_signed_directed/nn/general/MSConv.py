@@ -16,7 +16,7 @@ class MSConv(MessagePassing):
     Args:
         in_channels (int): Size of each input sample.
         out_channels (int): Size of each output sample.
-        K (int): Order of the Chebyshev polynomial minus 1, i.e., Chebyshev filter size :math:`K`.
+        K (int): Order of the Chebyshev polynomial plus 1, i.e., Chebyshev filter size :math:`K`.
         q (float, optional): Initial value of the phase parameter, 0 <= q <= 0.25. Default: 0.25.
         trainable_q (bool, optional): whether to set q to be trainable or not. (default: :obj:`False`)
         normalization (str, optional): The normalization scheme for the magnetic
