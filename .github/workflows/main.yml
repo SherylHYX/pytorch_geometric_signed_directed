@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7, 3.8, 3.9]
-        os: [macos-12, ubuntu-latest]
+        os: [ubuntu-latest]
         torch-version: [2.3.0]
         include:
           - torch-version: 2.3.0
