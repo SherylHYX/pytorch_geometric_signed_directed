@@ -57,8 +57,7 @@ def get_magnetic_Laplacian(edge_index: torch.LongTensor, edge_weight: Optional[t
     sym_attr = torch.cat([edge_weight, edge_weight], dim=0)
     edge_attr = torch.stack([sym_attr, theta_attr], dim=1)
 
-    edge_index_sym, edge_attr = coalesce(edge_index, edge_attr, num_nodes,
-                                         num_nodes, "add")
+    edge_index_sym, edge_attr = coalesce(edge_index, edge_attr, num_nodes, "add")
 
     edge_weight_sym = edge_attr[:, 0]
     edge_weight_sym = edge_weight_sym/2

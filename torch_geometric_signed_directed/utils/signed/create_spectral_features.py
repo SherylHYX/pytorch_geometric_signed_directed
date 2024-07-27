@@ -27,7 +27,7 @@ def create_spectral_features(
     edge_index = torch.cat([edge_index, torch.stack([col, row])], dim=1)
     val = torch.cat([val, val], dim=0)
 
-    edge_index, val = coalesce(edge_index, val, N, N)
+    edge_index, val = coalesce(edge_index, val, N)
     val = val - 1
 
     # Borrowed from:
