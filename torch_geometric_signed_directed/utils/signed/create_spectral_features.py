@@ -2,7 +2,7 @@
 import torch
 import scipy.sparse as sp
 from sklearn.decomposition import TruncatedSVD
-from torch_sparse import coalesce
+from torch_geometric.utils import coalesce
 
 
 def create_spectral_features(
