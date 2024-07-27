@@ -1,6 +1,6 @@
 from typing import Optional, Callable
 import os.path as osp
-from torch_sparse import coalesce
+from torch_geometric.utils import coalesce
 
 import torch
 import numpy as np

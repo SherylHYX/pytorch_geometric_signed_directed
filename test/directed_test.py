@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.sparse as sp
 import torch
-from torch_sparse import SparseTensor
+from torch_geometric.typing import SparseTensor
 
 from torch_geometric_signed_directed.nn import (
     DiGCN_node_classification, DiGCN_Inception_Block_node_classification,
