@@ -16,9 +16,9 @@ install_requires = [
     "scipy"
 ]
 
-setup_requires = ["pytest-runner"]
-
-tests_require = ["pytest", "pytest-cov", "mock"]
+extras_require = {
+    "test": ["pytest", "pytest-cov", "mock"]
+}
 
 keywords = [
     "machine-learning",
