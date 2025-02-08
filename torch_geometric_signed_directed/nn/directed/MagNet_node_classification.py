@@ -15,7 +15,7 @@ class MagNet_node_classification(nn.Module):
     Args:
         num_features (int): Size of each input sample.
         hidden (int, optional): Number of hidden channels.  Default: 2.
-        K (int, optional): Order of the Chebyshev polynomial plus 1, i.e., Chebyshev filter size :math:`K`.  Default: 2.
+        K (int, optional): Order of the Chebyshev polynomial, i.e., Chebyshev filter size minus 1 :math:`K`.  Default: 1.
         q (float, optional): Initial value of the phase parameter, 0 <= q <= 0.25. Default: 0.25.
         label_dim (int, optional): Number of output classes.  Default: 2.
         activation (bool, optional): whether to use activation function or not. (default: :obj:`False`)
