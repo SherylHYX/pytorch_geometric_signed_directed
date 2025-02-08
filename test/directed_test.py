@@ -58,7 +58,7 @@ def test_MagNet():
         num_nodes, num_classes
     )
 
-    model = MagNet_node_classification(X.shape[1], K=3, label_dim=num_classes, layer=3, trainable_q=True,
+    model = MagNet_node_classification(X.shape[1], K=2, label_dim=num_classes, layer=3, trainable_q=True,
                                        activation=True, hidden=2, dropout=0.5, cached=True).to(device)
     preds = model(X, X, edge_index, edge_weight)
 
@@ -71,7 +71,7 @@ def test_MagNet():
         num_nodes, num_classes
     )
     assert model.Chebs[0].__repr__(
-    ) == 'MagNetConv(3, 2, K=3, normalization=sym)'
+    ) == 'MagNetConv(3, 2, filter size=3, normalization=sym)'
 
     model.reset_parameters()
 
@@ -98,7 +98,7 @@ def test_MagNet_Link():
         len(link_data[0]['train']['edges']), num_classes
     )
 
-    model = MagNet_link_prediction(data.x.shape[1], K=3, label_dim=num_classes, layer=3, trainable_q=True,
+    model = MagNet_link_prediction(data.x.shape[1], K=2, label_dim=num_classes, layer=3, trainable_q=True,
                                    activation=True, hidden=2, dropout=0.5).to(device)
     preds = model(data.x, data.x, link_data[0]['graph'], query_edges=link_data[0]['train']['edges'],
                   edge_weight=link_data[0]['weights'])
@@ -107,7 +107,7 @@ def test_MagNet_Link():
         len(link_data[0]['train']['edges']), num_classes
     )
     assert model.Chebs[0].__repr__(
-    ) == 'MagNetConv(3, 2, K=3, normalization=sym)'
+    ) == 'MagNetConv(3, 2, filter size=3, normalization=sym)'
 
     num_classes = 3
     link_data = link_class_split(
