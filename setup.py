@@ -53,8 +53,7 @@ setup(
     download_url='{}/archive/{}.tar.gz'.format(url, __version__),
     keywords=keywords,
     install_requires=install_requires,
-    setup_requires=setup_requires,
-    tests_require=tests_require,
+    extras_require=extras_require,
     python_requires=">=3.7",
     classifiers=[
         "Intended Audience :: Developers",
