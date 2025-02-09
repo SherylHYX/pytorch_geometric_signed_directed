@@ -16,7 +16,7 @@ class MSConv(MessagePassing):
     Args:
         in_channels (int): Size of each input sample.
         out_channels (int): Size of each output sample.
-        K (int): Order of the Chebyshev polynomial plus 1, i.e., Chebyshev filter size :math:`K`.
+        K (int): Order of the Chebyshev polynomial, i.e., Chebyshev filter size minus 1 :math:`K`.
         q (float, optional): Initial value of the phase parameter, 0 <= q <= 0.25. Default: 0.25.
         trainable_q (bool, optional): whether to set q to be trainable or not. (default: :obj:`False`)
         normalization (str, optional): The normalization scheme for the magnetic
@@ -59,7 +59,7 @@ class MSConv(MessagePassing):
             self.q = Parameter(torch.Tensor(1).fill_(q))
         else:
             self.q = q
-        self.weight = Parameter(torch.Tensor(K, in_channels, out_channels))
+        self.weight = Parameter(torch.Tensor(K+1, in_channels, out_channels))
 
         if bias:
             self.bias = Parameter(torch.Tensor(out_channels))
@@ -234,6 +234,6 @@ class MSConv(MessagePassing):
         return norm.view(-1, 1) * x_j
 
     def __repr__(self):
-        return '{}({}, {}, K={}, normalization={})'.format(
+        return '{}({}, {}, filter size={}, normalization={})'.format(
             self.__class__.__name__, self.in_channels, self.out_channels,
             self.weight.size(0), self.normalization)
