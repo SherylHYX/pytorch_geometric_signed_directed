@@ -258,7 +258,7 @@ pip install torch-geometric-signed-directed
 **Running tests**
 
 ```
-$ python setup.py test
+$ pytest
 ```
 --------------------------------------------------------------------------------
 
