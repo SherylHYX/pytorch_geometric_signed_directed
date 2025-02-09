@@ -135,7 +135,7 @@ def test_MSGNN():
         num_nodes, num_classes
     )
 
-    model = MSGNN_node_classification(q=0.25, K=3, num_features=X.shape[1], hidden=2, label_dim=num_classes, 
+    model = MSGNN_node_classification(q=0.25, K=2, num_features=X.shape[1], hidden=2, label_dim=num_classes, 
         dropout=0.5, cached=True, normalization=None).to(device)
     _, _, _, preds = model(X, X, edge_index=edge_index, 
                     edge_weight=edge_weight)
@@ -150,7 +150,7 @@ def test_MSGNN():
         num_nodes, num_classes
     )
     assert model.Chebs[0].__repr__(
-    ) == 'MSConv(3, 2, K=3, normalization=None)'
+    ) == 'MSConv(3, 2, filter size=3, normalization=None)'
 
     model.reset_parameters()
 
@@ -167,7 +167,7 @@ def test_MSGNN_Link():
     data = SignedData(x=X, edge_index=edge_index, edge_weight=edge_weight)
     link_data = link_class_split(data, splits=2, task="four_class_signed_digraph", prob_val=0.15, prob_test=0.1, seed=10, device=device)
 
-    model = MSGNN_link_prediction(q=0.25, K=3, num_features=num_features, hidden=2, label_dim=num_classes, \
+    model = MSGNN_link_prediction(q=0.25, K=2, num_features=num_features, hidden=2, label_dim=num_classes, \
             trainable_q = False, dropout=0.5, cached=True).to(device)
     preds = model(data.x, data.x, edge_index=link_data[0]['graph'], query_edges=link_data[0]['train']['edges'],
                   edge_weight=link_data[0]['weights'])
@@ -183,7 +183,7 @@ def test_MSGNN_Link():
         len(link_data[0]['train']['edges']), num_classes
     )
     assert model.Chebs[0].__repr__(
-    ) == 'MSConv(3, 2, K=3, normalization=sym)'
+    ) == 'MSConv(3, 2, filter size=3, normalization=sym)'
 
     num_classes = 5
     link_data = link_class_split(data, splits=2, task="five_class_signed_digraph", prob_val=0.15, prob_test=0.1, seed=10, device=device)

@@ -15,7 +15,7 @@ class MagNet_link_prediction(nn.Module):
     Args:
         num_features (int): Size of each input sample.
         hidden (int, optional): Number of hidden channels.  Default: 2.
-        K (int, optional): Order of the Chebyshev polynomial plus 1, i.e., Chebyshev filter size :math:`K`.  Default: 2.
+        K (int, optional): Order of the Chebyshev polynomial, i.e., Chebyshev filter size minus 1 :math:`K`.  Default: 1.
         q (float, optional): Initial value of the phase parameter, 0 <= q <= 0.25. Default: 0.25.
         label_dim (int, optional): Number of output classes.  Default: 2.
         activation (bool, optional): whether to use activation function or not. (default: :obj:`True`)
@@ -36,7 +36,7 @@ class MagNet_link_prediction(nn.Module):
             learning scenarios. (default: :obj:`False`)
     """
 
-    def __init__(self, num_features: int, hidden: int = 2, q: float = 0.25, K: int = 2, label_dim: int = 2,
+    def __init__(self, num_features: int, hidden: int = 2, q: float = 0.25, K: int = 1, label_dim: int = 2,
                  activation: bool = True, trainable_q: bool = False, layer: int = 2, dropout: float = 0.5, normalization: str = 'sym', cached: bool = False):
         super(MagNet_link_prediction, self).__init__()
 
