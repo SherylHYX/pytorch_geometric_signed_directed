@@ -1,6 +1,6 @@
 networkx
 numpy
-torch
+https://download.pytorch.org/whl/cpu/torch-1.13.0%2Bcpu-cp39-cp39-linux_x86_64.whl
 torch_scatter
 torch_sparse
 torch_geometric==2.0.3
