@@ -16,7 +16,7 @@ PyTorch Geometric Signed Directed's testing is located under `test/`.
 Run the entire test suite with
 
 ```
-python setup.py test
+pytest
 ```
 
 ## Submitting changes
