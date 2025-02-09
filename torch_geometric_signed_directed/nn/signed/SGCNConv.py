@@ -5,7 +5,8 @@ import torch
 from torch import Tensor
 import torch.nn.functional as F
 from torch_geometric.nn.dense.linear import Linear
-from torch_sparse import SparseTensor, matmul
+from torch_geometric.typing import SparseTensor
+from torch_geometric.utils import spmm
 from torch_geometric.nn.conv import MessagePassing
 
 
@@ -130,7 +131,7 @@ class SGCNConv(MessagePassing):
     def message_and_aggregate(self, adj_t: SparseTensor,
                               x: PairTensor) -> Tensor:
         adj_t = adj_t.set_value(None, layout=None)
-        return matmul(adj_t, x[0], reduce=self.aggr)
+        return spmm(adj_t, x[0], reduce=self.aggr)
 
     def __repr__(self) -> str:
         return (f'{self.__class__.__name__}({self.in_dim}, '

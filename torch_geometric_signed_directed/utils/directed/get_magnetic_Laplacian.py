@@ -1,9 +1,7 @@
 from typing import Optional
 
 import torch
-from torch_scatter import scatter_add
-from torch_sparse import coalesce
-from torch_geometric.utils import add_self_loops, remove_self_loops, to_scipy_sparse_matrix
+from torch_geometric.utils import add_self_loops, remove_self_loops, to_scipy_sparse_matrix, coalesce, scatter
 from torch_geometric.utils.num_nodes import maybe_num_nodes
 import numpy as np
 from scipy.sparse.linalg import eigsh
@@ -59,14 +57,13 @@ def get_magnetic_Laplacian(edge_index: torch.LongTensor, edge_weight: Optional[t
     sym_attr = torch.cat([edge_weight, edge_weight], dim=0)
     edge_attr = torch.stack([sym_attr, theta_attr], dim=1)
 
-    edge_index_sym, edge_attr = coalesce(edge_index, edge_attr, num_nodes,
-                                         num_nodes, "add")
+    edge_index_sym, edge_attr = coalesce(edge_index, edge_attr, num_nodes, "add")
 
     edge_weight_sym = edge_attr[:, 0]
     edge_weight_sym = edge_weight_sym/2
 
     row, col = edge_index_sym[0], edge_index_sym[1]
-    deg = scatter_add(edge_weight_sym, row, dim=0, dim_size=num_nodes)
+    deg = scatter(edge_weight_sym, row, dim=0, dim_size=num_nodes, reduce='sum')
 
     edge_weight_q = torch.exp(1j * 2 * np.pi * q * edge_attr[:, 1])
 

@@ -1,8 +1,7 @@
 from typing import Union, Optional, Tuple
 
 import torch
-from torch_geometric.utils import add_self_loops
-from torch_scatter import scatter_add
+from torch_geometric.utils import add_self_loops, scatter
 import scipy
 import numpy as np
 import scipy.sparse as sp
@@ -104,7 +103,7 @@ def cal_fast_appr(alpha: float, edge_index: torch.LongTensor,
 
     # sys normalization
     row, col = edge_index
-    deg = scatter_add(edge_weight, row, dim=0, dim_size=num_nodes)
+    deg = scatter(edge_weight, row, dim=0, dim_size=num_nodes, reduce='sum')
     deg_inv_sqrt = deg.pow(-0.5)
     deg_inv_sqrt[deg_inv_sqrt == float('inf')] = 0
 
@@ -137,7 +136,7 @@ def get_appr_directed_adj(alpha: float, edge_index: torch.LongTensor,
     edge_index, edge_weight = add_self_loops(
         edge_index, edge_weight, fill_value, num_nodes)
     row, col = edge_index
-    deg = scatter_add(edge_weight, row, dim=0, dim_size=num_nodes)
+    deg = scatter(edge_weight, row, dim=0, dim_size=num_nodes, reduce='sum')
     deg_inv = deg.pow(-1)
     deg_inv[deg_inv == float('inf')] = 0
     p = deg_inv[row] * edge_weight
@@ -189,7 +188,7 @@ def get_appr_directed_adj(alpha: float, edge_index: torch.LongTensor,
 
     # row normalization
     row, col = edge_index
-    deg = scatter_add(edge_weight, row, dim=0, dim_size=num_nodes)
+    deg = scatter(edge_weight, row, dim=0, dim_size=num_nodes, reduce='sum')
     deg_inv_sqrt = deg.pow(-0.5)
     deg_inv_sqrt[deg_inv_sqrt == float('inf')] = 0
 
@@ -221,7 +220,7 @@ def get_second_directed_adj(edge_index: torch.LongTensor,
     edge_index, edge_weight = add_self_loops(
         edge_index, edge_weight, fill_value, num_nodes)
     row, col = edge_index
-    deg = scatter_add(edge_weight, row, dim=0, dim_size=num_nodes)
+    deg = scatter(edge_weight, row, dim=0, dim_size=num_nodes, reduce='sum')
     deg_inv = deg.pow(-1)
     deg_inv[deg_inv == float('inf')] = 0
     p = deg_inv[row] * edge_weight
@@ -248,7 +247,7 @@ def get_second_directed_adj(edge_index: torch.LongTensor,
 
     # row normalization
     row, col = edge_index
-    deg = scatter_add(edge_weight, row, dim=0, dim_size=num_nodes)
+    deg = scatter(edge_weight, row, dim=0, dim_size=num_nodes, reduce='sum')
     deg_inv_sqrt = deg.pow(-0.5)
     deg_inv_sqrt[deg_inv_sqrt == float('inf')] = 0
 

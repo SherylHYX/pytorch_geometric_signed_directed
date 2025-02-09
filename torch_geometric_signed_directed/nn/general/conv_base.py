@@ -3,10 +3,9 @@ from typing import Optional, Tuple
 import torch
 from torch import Tensor
 from torch_geometric.typing import Adj, OptTensor
-from torch_scatter import scatter_add
-from torch_sparse import SparseTensor
+from torch_geometric.typing import SparseTensor
 from torch_geometric.nn.conv import MessagePassing
-from torch_geometric.utils import add_remaining_self_loops
+from torch_geometric.utils import add_remaining_self_loops, scatter
 from torch_geometric.utils.num_nodes import maybe_num_nodes
 
 
@@ -26,7 +25,7 @@ def conv_norm_rw(edge_index, fill_value=0.5, edge_weight=None, num_nodes=None,
         edge_weight = tmp_edge_weight
 
     row = edge_index[0]
-    row_deg = scatter_add(edge_weight, row, dim=0, dim_size=num_nodes)
+    row_deg = scatter(edge_weight, row, dim=0, dim_size=num_nodes, reduce='sum')
     deg_inv = row_deg.pow_(-1)
     deg_inv.masked_fill_(deg_inv == float('inf'), 0)
     return edge_index, deg_inv[row] * edge_weight

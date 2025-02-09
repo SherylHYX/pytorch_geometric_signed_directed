@@ -8,7 +8,6 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 install_requires = [
     "torch",
-    "torch_sparse",
     "scikit-learn",
     "torch_geometric",
     "numpy",

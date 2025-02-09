@@ -1,6 +1,6 @@
 from typing import Optional, Callable
 import os.path as osp
-from torch_sparse import coalesce
+from torch_geometric.utils import coalesce
 
 import torch
 import numpy as np
@@ -69,7 +69,7 @@ class WikipediaNetwork(InMemoryDataset):
             data = f.read().split('\n')[1:-1]
             data = [[int(v) for v in r.split('\t')] for r in data]
             edge_index = torch.tensor(data, dtype=torch.long).t().contiguous()
-            edge_index, _ = coalesce(edge_index, None, x.size(0), x.size(0))
+            edge_index, _ = coalesce(edge_index, None, x.size(0))
 
         train_masks, val_masks, test_masks = [], [], []
         for f in self.raw_paths[2:]:

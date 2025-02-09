@@ -2,7 +2,8 @@ from typing import Optional, Tuple
 from torch_geometric.typing import Adj, OptTensor
 
 from torch import Tensor
-from torch_sparse import SparseTensor, matmul
+from torch_geometric.typing import SparseTensor
+from torch_geometric.utils import spmm
 from torch_geometric.nn.conv import MessagePassing
 from torch_geometric.nn.conv.gcn_conv import gcn_norm
 
@@ -99,4 +100,4 @@ class DGCNConv(MessagePassing):
         return x_j if edge_weight is None else edge_weight.view(-1, 1) * x_j
 
     def message_and_aggregate(self, adj_t: SparseTensor, x: Tensor) -> Tensor:
-        return matmul(adj_t, x, reduce=self.aggr)
+        return spmm(adj_t, x, reduce=self.aggr)
