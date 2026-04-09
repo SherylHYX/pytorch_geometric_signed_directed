@@ -19,7 +19,7 @@ extensions = [
     'sphinx.ext.githubpages',
 ]
 
-master_doc = 'modules/root'
+master_doc = 'index'
 source_suffix = '.rst'
 
 html_theme = 'sphinx_rtd_theme'
