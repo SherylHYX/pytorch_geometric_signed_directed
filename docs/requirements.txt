@@ -1,4 +1,6 @@
-sphinx==7.0
+sphinx
 sphinx-rtd-theme
 sphinx-autoapi
-Jinja2>=3.0
+numpy
+scipy
+networkx
