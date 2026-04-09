@@ -1,9 +1,15 @@
 import datetime
 import doctest
+import os
+import sys
+
 import sphinx_rtd_theme
 
+sys.path.insert(0, os.path.abspath('../../'))
+
 extensions = [
-    'autoapi.extension',
+    'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
@@ -14,29 +20,28 @@ extensions = [
 
 source_suffix = '.rst'
 master_doc = 'index'
-author = 'Yixuan He'
+
 project = 'PyTorch Geometric Signed Directed'
+author = 'Yixuan He'
 copyright = '{}, {}'.format(datetime.datetime.now().year, author)
 
 html_theme = 'sphinx_rtd_theme'
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_theme_options = {
     'collapse_navigation': False,
     'display_version': True,
     'logo_only': True,
+    'navigation_depth': 2,
 }
-
-doctest_default_flags = doctest.NORMALIZE_WHITESPACE
-intersphinx_mapping = {'python': ('https://docs.python.org/', None)}
 
 html_logo = '_static/img/text_logo.jpg'
 html_static_path = ['_static']
 html_context = {'css_files': ['_static/css/custom.css']}
-add_module_names = False
 
-autoapi_type = 'python'
-autoapi_dirs = ['../../torch_geometric_signed_directed/']
-autoapi_keep_files = True
-autoapi_generate_api_docs = True
+doctest_default_flags = doctest.NORMALIZE_WHITESPACE
+intersphinx_mapping = {'python': ('https://docs.python.org/', None)}
+add_module_names = False
+autosummary_generate = True
 
 autodoc_mock_imports = [
     'torch',
@@ -44,6 +49,9 @@ autodoc_mock_imports = [
     'torch_sparse',
     'torch_scatter',
 ]
+
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
 
 def setup(app):
     def skip(app, what, name, obj, skip, options):
