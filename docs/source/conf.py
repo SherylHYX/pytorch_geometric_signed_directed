@@ -19,7 +19,7 @@ extensions = [
 ]
 
 source_suffix = '.rst'
-master_doc = 'index'
+master_doc = 'modules/root'
 
 project = 'PyTorch Geometric Signed Directed'
 author = 'Yixuan He'
