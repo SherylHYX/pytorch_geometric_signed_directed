@@ -1,21 +1,25 @@
-PyTorch Geometric Signed Directed Documentation
-===============================================
+PyTorch Geometric Signed Directed
+=================================
 
-PyTorch Geometric Signed Directed is a signed and directed graph neural
-network extension library for PyTorch Geometric.
+PyTorch Geometric Signed Directed provides graph neural network models for signed and directed graphs built on PyTorch Geometric.
+
+Quick Links
+-----------
 
 .. toctree::
    :maxdepth: 1
-   :caption: Notes
+   :caption: Getting Started
 
    notes/installation
    notes/introduction
-   notes/case_study
-   notes/resources
    notes/datasets
 
 .. toctree::
    :maxdepth: 1
-   :caption: Package Reference
+   :caption: Reference
 
-   modules/root
+   notes/case_study
+   notes/resources
+   modules/model
+   modules/data
+   modules/utils

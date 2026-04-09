@@ -25,10 +25,10 @@ source_suffix = '.rst'
 html_theme = 'sphinx_rtd_theme'
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_theme_options = {
-    'collapse_navigation': False,
-    'display_version': True,
-    'logo_only': True,
-    'navigation_depth': 2,
+    "collapse_navigation": True,
+    "display_version": True,
+    "logo_only": False,
+    "navigation_depth": 2,
 }
 
 html_logo = '_static/img/text_logo.jpg'
