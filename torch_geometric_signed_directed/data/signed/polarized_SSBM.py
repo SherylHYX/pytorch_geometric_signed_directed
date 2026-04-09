@@ -115,7 +115,7 @@ def polarized_SSBM(total_n: int = 100, num_com: int = 3, N: int = 30, K: int = 2
         conflict_groups[perm[i]] = conflict_groups_old[i]
     # now fix the network connectedness and degree
     # first we fix connectedness
-    G = nx.from_scipy_sparse_matrix(large_A_p-large_A_n)
+    G = nx.from_scipy_sparse_array(large_A_p-large_A_n)
     largest_cc = max(nx.connected_components(G), key=len)
     A_p_new = sp.lil_matrix(large_A_p[list(largest_cc)][:, list(largest_cc)])
     A_n_new = sp.lil_matrix(large_A_n[list(largest_cc)][:, list(largest_cc)])

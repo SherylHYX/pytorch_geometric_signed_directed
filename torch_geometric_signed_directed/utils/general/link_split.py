@@ -238,7 +238,7 @@ def link_class_split(data: torch_geometric.data.Data, size: int = None, splits: 
     A_undirected = to_scipy_sparse_matrix(undirect_edge_index)
     if maintain_connect:
         assert ratio == 1, "ratio should be 1.0 if maintain_connect=True"
-        G = nx.from_scipy_sparse_matrix(
+        G = nx.from_scipy_sparse_array(
             A_undirected, create_using=nx.Graph, edge_attribute='weight')
         mst = list(tree.minimum_spanning_edges(
             G, algorithm="kruskal", data=False))

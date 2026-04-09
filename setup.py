@@ -11,7 +11,7 @@ install_requires = [
     "scikit-learn",
     "torch_geometric",
     "numpy",
-    "networkx<2.7",
+    "networkx>=2.7",
     "scipy"
 ]
 

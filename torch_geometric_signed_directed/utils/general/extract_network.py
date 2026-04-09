@@ -21,13 +21,13 @@ def extract_network(A: sp.spmatrix, labels: Union[np.array, LongTensor, None] = 
         * **A** (scipy sparse matrix) - Adjacency matrix after fixing degrees and obtaining a connected netework.
         * **labels** (numpy array) - Node labels after fixing degrees and obtaining a connected netework.
     """
-    G = nx.from_scipy_sparse_matrix(A, create_using=nx.DiGraph)
+    G = nx.from_scipy_sparse_array(A, create_using=nx.DiGraph)
     largest_cc = max(nx.weakly_connected_components(G))
     A_new = A[list(largest_cc)][:, list(largest_cc)]
     labels_new = None
     if labels is not None:
         labels_new = labels[list(largest_cc)]
-    G0 = nx.from_scipy_sparse_matrix(A_new, create_using=nx.DiGraph)
+    G0 = nx.from_scipy_sparse_array(A_new, create_using=nx.DiGraph)
     flag = True
     iter_num = 0
     keep = []
@@ -47,7 +47,7 @@ def extract_network(A: sp.spmatrix, labels: Union[np.array, LongTensor, None] = 
                 lowest_degree -= 1
                 print('Nothing to keep, reducing lowest_degree by one to be {}!'.format(
                     lowest_degree))
-                G0 = nx.from_scipy_sparse_matrix(
+                G0 = nx.from_scipy_sparse_array(
                     A_new, create_using=nx.DiGraph)
                 break
 
