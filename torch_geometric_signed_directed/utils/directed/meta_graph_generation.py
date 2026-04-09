@@ -51,7 +51,7 @@ def meta_graph_generation(F_style: str = 'cyclic', K: int = 4, eta: float = 0.05
             for i in range(K-1):
                 for j in range(i+1, K):
                     direction = np.random.randint(
-                        2, size=1)  # random direction
+                        2)  # random direction
                     F[i, j] = direction * (1 - eta) + (1-direction) * eta
                     F[j, i] = 1 - F[i, j]
         else:
