@@ -1,13 +1,29 @@
 PyTorch Geometric Signed Directed
 =================================
 
-Signed and directed graph neural network utilities for PyTorch Geometric.
-
 .. contents:: Contents
    :local:
 
-Package API
------------
+Data Structures
+---------------
 
-.. autoapi-tree::
-   :nosignatures:
+.. toctree::
+   :maxdepth: 1
+
+   data
+
+Models
+------
+
+.. toctree::
+   :maxdepth: 1
+
+   model
+
+Utilities
+---------
+
+.. toctree::
+   :maxdepth: 1
+
+   utils

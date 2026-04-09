@@ -11,7 +11,7 @@ author = 'Yixuan He'
 copyright = f'{datetime.datetime.now().year}, {author}'
 
 extensions = [
-    'autoapi.extension',
+    'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
@@ -39,22 +39,20 @@ intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
 }
 
-autoapi_type = 'python'
-autoapi_dirs = [os.path.abspath('../../torch_geometric_signed_directed')]
-autoapi_file_patterns = ['*.py']
-autoapi_root = 'modules/_autoapi'
-autoapi_keep_files = True
-autoapi_add_toctree_entry = False
-autoapi_options = [
-    'members',
-    'undoc-members',
-    'show-inheritance',
-    'show-module-summary',
-    'special-members',
-    'imported-members',
+add_module_names = False
+autodoc_mock_imports = [
+    'torch',
+    'torch_geometric',
+    'torch_sparse',
+    'torch_scatter',
 ]
 
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+
 def setup(app):
-    app.add_css_file('css/custom.css')
+    def skip(app, what, name, obj, skip, options):
+        members = ['__init__', '__repr__', '__weakref__', '__dict__', '__module__']
+        return True if name in members else skip
+
+    app.connect('autodoc-skip-member', skip)
