@@ -1,4 +1,4 @@
-from typing import Optional, Callable
+xfrom typing import Optional, Callable
 
 import torch
 import numpy as np
@@ -90,7 +90,10 @@ class Citeseer(InMemoryDataset):
         self.url = (
             'https://github.com/SherylHYX/pytorch_geometric_signed_directed/raw/main/datasets/citeseer.npz')
         super().__init__(root, transform, pre_transform)
-        self.data, self.slices = torch.load(self.processed_paths[0])
+        try:
+            self.data, self.slices = torch.load(self.processed_paths[0], weights_only=False)
+        except TypeError:
+            self.data, self.slices = torch.load(self.processed_paths[0])
 
     @property
     def raw_file_names(self):
