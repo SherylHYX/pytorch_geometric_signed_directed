@@ -28,7 +28,10 @@ class Telegram(InMemoryDataset):
         self.url = (
             'https://github.com/SherylHYX/pytorch_geometric_signed_directed/raw/main/datasets/telegram')
         super().__init__(root, transform, pre_transform)
-        self.data, self.slices = torch.load(self.processed_paths[0])
+        try:
+            self.data, self.slices = torch.load(self.processed_paths[0], weights_only=False)
+        except TypeError:
+            self.data, self.slices = torch.load(self.processed_paths[0])
 
     @property
     def raw_file_names(self):

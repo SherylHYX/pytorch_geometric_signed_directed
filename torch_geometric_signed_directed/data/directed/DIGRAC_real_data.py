@@ -27,7 +27,10 @@ class DIGRAC_real_data(InMemoryDataset):
         url = ('https://github.com/SherylHYX/pytorch_geometric_signed_directed/raw/main/datasets/'+name+'.npz')
         self.url = url
         super().__init__(root, transform, pre_transform)
-        self.data, self.slices = torch.load(self.processed_paths[0])
+        try:
+            self.data, self.slices = torch.load(self.processed_paths[0], weights_only=False)
+        except TypeError:
+            self.data, self.slices = torch.load(self.processed_paths[0])
 
     @property
     def raw_file_names(self):

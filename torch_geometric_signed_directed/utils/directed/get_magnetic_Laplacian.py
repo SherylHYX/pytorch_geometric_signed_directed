@@ -89,5 +89,5 @@ def get_magnetic_Laplacian(edge_index: torch.LongTensor, edge_weight: Optional[t
         L = to_scipy_sparse_matrix(edge_index, edge_weight, num_nodes)
 
         lambda_max = eigsh(L, k=1, which='LM', return_eigenvectors=False)
-        lambda_max = float(lambda_max.real)
+        lambda_max = float(np.asarray(lambda_max).real.item())
         return edge_index, edge_weight.real, edge_weight.imag, lambda_max

@@ -38,7 +38,10 @@ class SDGNN_real_data(InMemoryDataset):
         self.root = root
 
         super().__init__(root, transform, pre_transform)
-        self.data, self.slices = torch.load(self.processed_paths[0])
+        try:
+            self.data, self.slices = torch.load(self.processed_paths[0], weights_only=False)
+        except TypeError:
+            self.data, self.slices = torch.load(self.processed_paths[0])
 
     @property
     def raw_dir(self) -> str:

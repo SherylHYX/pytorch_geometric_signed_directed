@@ -27,7 +27,10 @@ class SSSNET_real_data(InMemoryDataset):
         self.name = name
         self.url = self._generate_url(name)
         super().__init__(root, transform, pre_transform)
-        self.data, self.slices = torch.load(self.processed_paths[0])
+        try:
+            self.data, self.slices = torch.load(self.processed_paths[0], weights_only=False)
+        except TypeError:
+            self.data, self.slices = torch.load(self.processed_paths[0])
 
     def _generate_url(self, name: str) -> Tuple:
         if name.lower() == 'sampson':

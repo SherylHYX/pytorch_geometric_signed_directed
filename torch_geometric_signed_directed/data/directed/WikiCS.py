@@ -24,7 +24,10 @@ class WikiCS(InMemoryDataset):
     def __init__(self, root: str, transform: Optional[Callable] = None, pre_transform: Optional[Callable] = None):
         self.url = 'https://github.com/pmernyei/wiki-cs-dataset/raw/master/dataset'
         super(WikiCS, self).__init__(root, transform, pre_transform)
-        self.data, self.slices = torch.load(self.processed_paths[0])
+        try:
+            self.data, self.slices = torch.load(self.processed_paths[0], weights_only=False)
+        except TypeError:
+            self.data, self.slices = torch.load(self.processed_paths[0])
 
     @property
     def raw_file_names(self):
