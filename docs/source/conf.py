@@ -18,6 +18,11 @@ extensions = [
     'sphinx.ext.githubpages',
 ]
 
+napoleon_google_docstring = True
+napoleon_numpy_docstring = True
+napoleon_use_param = False
+napoleon_use_rtype = False
+
 master_doc = 'index'
 source_suffix = '.rst'
 
