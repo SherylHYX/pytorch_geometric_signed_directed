@@ -59,10 +59,3 @@ Documentation
 
    * - :doc:`Utils API <modules/utils>`
      - Objective functions, metrics, and utility helpers.
-
-Indices and Tables
-------------------
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

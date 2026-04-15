@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
 url = "https://github.com/SherylHYX/pytorch_geometric_signed_directed"
-__version__ = '1.0.1'
+__version__ = '1.1.0'
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -47,7 +47,7 @@ setup(
     long_description_content_type="text/markdown",
     include_package_data=True,
     author="Yixuan He",
-    author_email="yixuan.he@balliol.ox.ac.uk",
+    author_email="Yixuan.He@asu.edu",
     url=url,
     download_url='{}/archive/{}.tar.gz'.format(url, __version__),
     keywords=keywords,
