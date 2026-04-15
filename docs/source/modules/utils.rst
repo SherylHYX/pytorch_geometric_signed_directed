@@ -7,86 +7,84 @@ PyTorch Geometric Signed Directed Utils
 Task-Specific Objectives and Evaluation Methods
 --------------
 
-.. autoapimodule:: torch_geometric_signed_directed.utils.signed.prob_balanced_normalized_loss
+.. autoapiclass:: torch_geometric_signed_directed.utils.signed.prob_balanced_normalized_loss.Prob_Balanced_Normalized_Loss
     :members:
     :exclude-members:
 
-.. autoapimodule:: torch_geometric_signed_directed.utils.signed.prob_balanced_ratio_loss
+.. autoapiclass:: torch_geometric_signed_directed.utils.signed.prob_balanced_ratio_loss.Prob_Balanced_Ratio_Loss
     :members:
     :exclude-members:
 
-.. autoapimodule:: torch_geometric_signed_directed.utils.signed.unhappy_ratio
+.. autoapiclass:: torch_geometric_signed_directed.utils.signed.unhappy_ratio.Unhappy_Ratio
     :members:
     :exclude-members:
 
-.. autoapimodule:: torch_geometric_signed_directed.utils.signed.link_sign_loss
+.. autoapiclass:: torch_geometric_signed_directed.utils.signed.link_sign_loss.Sign_Triangle_Loss
     :members:
     :exclude-members:
 
-.. autoapimodule:: torch_geometric_signed_directed.utils.general.triplet_loss
+.. autoapiclass:: torch_geometric_signed_directed.utils.signed.link_sign_loss.Sign_Direction_Loss
     :members:
     :exclude-members:
 
-
-.. autoapimodule:: torch_geometric_signed_directed.utils.signed.link_sign_prediction_logistic_function
+.. autoapiclass:: torch_geometric_signed_directed.utils.signed.link_sign_loss.Sign_Product_Entropy_Loss
     :members:
     :exclude-members:
 
-.. autoapimodule:: torch_geometric_signed_directed.utils.general.link_sign_direction_prediction_logistic_function
+.. autoapiclass:: torch_geometric_signed_directed.utils.signed.link_sign_loss.Link_Sign_Product_Loss
     :members:
     :exclude-members:
 
-.. autoapimodule:: torch_geometric_signed_directed.utils.directed.prob_imbalance_loss
+.. autoapiclass:: torch_geometric_signed_directed.utils.signed.link_sign_loss.Link_Sign_Entropy_Loss
+    :members:
+    :exclude-members:
+
+.. autoapiclass:: torch_geometric_signed_directed.utils.signed.link_sign_loss.Sign_Structure_Loss
+    :members:
+    :exclude-members:
+
+.. autoapifunction:: torch_geometric_signed_directed.utils.general.triplet_loss.triplet_loss_node_classification
+
+
+.. autoapifunction:: torch_geometric_signed_directed.utils.signed.link_sign_prediction_logistic_function.link_sign_prediction_logistic_function
+
+.. autoapifunction:: torch_geometric_signed_directed.utils.general.link_sign_direction_prediction_logistic_function.link_sign_direction_prediction_logistic_function
+
+.. autoapiclass:: torch_geometric_signed_directed.utils.directed.prob_imbalance_loss.Prob_Imbalance_Loss
     :members:
     :exclude-members:
 
 Utilities and Preprocessing Methods
 --------------
 
-.. autoapimodule:: torch_geometric_signed_directed.utils.general.link_split
-    :members:
-    :exclude-members: undirected_label2directed_label
+.. autofunction:: torch_geometric_signed_directed.utils.general.link_split.link_class_split
 
-.. autoapimodule:: torch_geometric_signed_directed.utils.general.node_split
-    :members:
-    :exclude-members: get_train_val_test_seed_split, sample_per_class
+.. autoapifunction:: torch_geometric_signed_directed.utils.general.node_split.node_class_split
 
-.. autoapimodule:: torch_geometric_signed_directed.utils.directed.features_in_out
-    :members:
-    :exclude-members:
+.. autoapifunction:: torch_geometric_signed_directed.utils.directed.features_in_out.directed_features_in_out
 
-.. autoapimodule:: torch_geometric_signed_directed.utils.directed.get_magnetic_Laplacian
-    :members:
-    :exclude-members:
+.. autoapifunction:: torch_geometric_signed_directed.utils.directed.get_magnetic_Laplacian.get_magnetic_Laplacian
 
-.. autoapimodule:: torch_geometric_signed_directed.utils.directed.DiGCL_utils
-    :members:
-    :exclude-members:
+.. autoapifunction:: torch_geometric_signed_directed.utils.directed.DiGCL_utils.drop_feature
 
-.. autoapimodule:: torch_geometric_signed_directed.utils.directed.get_adjs_DiGCN
-    :members:
-    :exclude-members: fast_appr_power
+.. autoapifunction:: torch_geometric_signed_directed.utils.directed.DiGCL_utils.pred_digcl_node
 
-.. autoapimodule:: torch_geometric_signed_directed.utils.directed.meta_graph_generation
-    :members:
-    :exclude-members:
+.. autoapifunction:: torch_geometric_signed_directed.utils.directed.DiGCL_utils.pred_digcl_link
 
-.. autoapimodule:: torch_geometric_signed_directed.utils.general.extract_network
-    :members:
-    :exclude-members:
+.. autoapifunction:: torch_geometric_signed_directed.utils.directed.get_adjs_DiGCN.cal_fast_appr
 
-.. autoapimodule:: torch_geometric_signed_directed.utils.general.scipy_sparse_to_torch_sparse
-    :members:
-    :exclude-members:
+.. autoapifunction:: torch_geometric_signed_directed.utils.directed.get_adjs_DiGCN.get_appr_directed_adj
 
-.. autoapimodule:: torch_geometric_signed_directed.utils.general.in_out_degree
-    :members:
-    :exclude-members:
+.. autoapifunction:: torch_geometric_signed_directed.utils.directed.get_adjs_DiGCN.get_second_directed_adj
 
-.. autoapimodule:: torch_geometric_signed_directed.utils.general.get_magnetic_signed_Laplacian
-    :members:
-    :exclude-members:
+.. autoapifunction:: torch_geometric_signed_directed.utils.directed.meta_graph_generation.meta_graph_generation
 
-.. autoapimodule:: torch_geometric_signed_directed.signed.create_spectral_features
-    :members:
-    :exclude-members:
+.. autoapifunction:: torch_geometric_signed_directed.utils.general.extract_network.extract_network
+
+.. autoapifunction:: torch_geometric_signed_directed.utils.general.scipy_sparse_to_torch_sparse.scipy_sparse_to_torch_sparse
+
+.. autoapifunction:: torch_geometric_signed_directed.utils.general.in_out_degree.in_out_degree
+
+.. autoapifunction:: torch_geometric_signed_directed.utils.general.get_magnetic_signed_Laplacian.get_magnetic_signed_Laplacian
+
+.. autofunction:: torch_geometric_signed_directed.utils.signed.create_spectral_features.create_spectral_features
