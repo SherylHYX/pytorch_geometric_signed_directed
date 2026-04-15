@@ -9,6 +9,7 @@ author = 'Yixuan He'
 copyright = f'{datetime.datetime.now().year}, {author}'
 
 extensions = [
+    'autoapi.extension',
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
@@ -36,6 +37,17 @@ intersphinx_mapping = {
 }
 
 add_module_names = False
+autoapi_type = 'python'
+autoapi_dirs = ['../../torch_geometric_signed_directed']
+autoapi_add_toctree_entry = False
+autoapi_python_class_content = 'both'
+autoapi_options = [
+    'members',
+    'undoc-members',
+    'show-inheritance',
+    'show-module-summary',
+]
+
 autodoc_mock_imports = [
     'torch',
     'torch_geometric',

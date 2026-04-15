@@ -4,8 +4,13 @@ PyTorch Geometric Signed Directed Models
 .. contents:: Contents
     :local:
 
-Directed Undirected Network Models and Layers
+Directed (Unsigned) Network Models and Layers
 --------------
+
+This section documents directed graph models and core directed convolution
+layers available in PyTorch Geometric Signed Directed. Each entry includes the
+class/function signature and parameter documentation extracted from source
+docstrings.
 
 .. autoapimodule:: torch_geometric_signed_directed.nn.directed.MagNet_node_classification
     :members:
@@ -70,6 +75,9 @@ Directed Undirected Network Models and Layers
 Signed (Directed) Network Models and Layers
 --------------
 
+This section covers methods tailored to signed graphs (including signed
+directed settings), with links to model and layer level APIs.
+
 .. autoapimodule:: torch_geometric_signed_directed.nn.signed.SSSNET_node_clustering
     :members:
     :exclude-members:
@@ -118,6 +126,9 @@ Signed (Directed) Network Models and Layers
 
 Auxiliary Methods and Layers
 --------------
+
+This section contains supporting layers and helper operations used by the
+directed and signed model families.
 
 .. autoapimodule:: torch_geometric_signed_directed.nn.directed.complex_relu
     :members:
