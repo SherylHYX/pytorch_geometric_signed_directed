@@ -2,8 +2,6 @@ import datetime
 import os
 import sys
 
-import sphinx_rtd_theme
-
 sys.path.insert(0, os.path.abspath('../../'))
 
 project = 'PyTorch Geometric Signed Directed'
@@ -23,17 +21,15 @@ master_doc = 'index'
 source_suffix = '.rst'
 
 html_theme = 'sphinx_rtd_theme'
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_theme_options = {
-    "collapse_navigation": True,
-    "display_version": True,
-    "logo_only": False,
+    "collapse_navigation": False,
+    "logo_only": True,
     "navigation_depth": 2,
 }
 
 html_logo = '_static/img/text_logo.jpg'
 html_static_path = ['_static']
-html_context = {'css_files': ['_static/css/custom.css']}
+html_css_files = ['css/custom.css']
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),

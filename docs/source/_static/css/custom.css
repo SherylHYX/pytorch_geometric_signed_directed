@@ -3,11 +3,77 @@
   background-color: #fff;
 }
 
+.wy-side-nav-search > a,
+.wy-side-nav-search .wy-dropdown > a {
+  display: block;
+  margin: 0 auto;
+}
+
+.wy-side-nav-search img.logo {
+  max-width: 240px;
+  width: 100%;
+  height: auto;
+  margin: 0 auto 0.4rem auto;
+}
+
 .wy-side-nav-search > div.version {
   color: #000;
 }
 
-/* Justify the text. */
+/* Match the cleaner reading width used by polished RTD docs. */
+.wy-nav-content {
+  max-width: 980px;
+}
+
+.wy-nav-content-wrap {
+  background: #fcfcfd;
+}
+
+.wy-nav-content {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.rst-content {
+  line-height: 1.65;
+}
+
+.rst-content h1 {
+  margin-bottom: 0.3em;
+}
+
+.rst-content h2,
+.rst-content h3 {
+  margin-top: 1.4em;
+}
+
+.rst-content p {
+  margin-bottom: 0.9em;
+}
+
+.rst-content table.docutils {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.rst-content table.docutils thead th {
+  background: #f2f5f9;
+}
+
+.wy-menu-vertical header,
+.wy-menu-vertical p.caption {
+  color: #4a5568;
+  letter-spacing: 0.02em;
+}
+
+.wy-menu-vertical li.current > a {
+  font-weight: 600;
+}
+
+/* Keep tables and code blocks inside the content area on narrow screens. */
+.wy-table-responsive table td,
+.wy-table-responsive table th {
+  white-space: normal;
+}
 
 .section #basic-2-flip-flop-synchronizer{
      text-align:justify;
