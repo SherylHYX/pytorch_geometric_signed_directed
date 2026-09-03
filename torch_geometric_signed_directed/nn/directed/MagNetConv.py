@@ -19,8 +19,9 @@ class MagNetConv(MessagePassing):
     Args:
         in_channels (int): Size of each input sample.
         out_channels (int): Size of each output sample.
-        K (int): Order of the Chebyshev polynomial, i.e., Chebyshev filter size minus 1 :math:`K`.
-        q (float, optional): Initial value of the phase parameter, 0 <= q <= 0.25. Default: 0.25.
+        K (int): Order of the Chebyshev polynomial. The Chebyshev filter
+            contains :math:`K + 1` terms.
+        q (float, optional): Initial value of the phase parameter. Default: 0.25.
         trainable_q (bool, optional): whether to set q to be trainable or not. (default: :obj:`False`)
         normalization (str, optional): The normalization scheme for the magnetic
             Laplacian (default: :obj:`sym`):
@@ -34,27 +35,35 @@ class MagNetConv(MessagePassing):
             the __norm__ matrix on first execution, and will use the
             cached version for further executions.
             This parameter should only be set to :obj:`True` in transductive
-            learning scenarios. (default: :obj:`False`)
+            learning scenarios. Caching is bypassed when :obj:`q` is
+            trainable. (default: :obj:`False`)
         bias (bool, optional): If set to :obj:`False`, the layer will not learn
             an additive bias. (default: :obj:`True`)
+        max_q (float, optional): Maximum value of a trainable phase parameter.
+            A trainable :obj:`q` is clamped to :math:`[0, \mathrm{max\_q}]`
+            before each forward pass. (default: :obj:`0.25`)
         **kwargs (optional): Additional arguments of
             :class:`torch_geometric.nn.conv.MessagePassing`.
     """
 
     def __init__(self, in_channels: int, out_channels: int, K: int, q: float, trainable_q: bool,
-                 normalization: str = 'sym', cached: bool = False, bias: bool = True, **kwargs):
+                 normalization: str = 'sym', cached: bool = False, bias: bool = True,
+                 max_q: float = 0.25, **kwargs):
         kwargs.setdefault('aggr', 'add')
+        kwargs.setdefault('flow', 'target_to_source')
         super(MagNetConv, self).__init__(**kwargs)
 
         assert K > 0
         assert normalization in [None, 'sym'], 'Invalid normalization'
-        kwargs.setdefault('flow', 'target_to_source')
+        if max_q < 0:
+            raise ValueError('max_q must be non-negative')
 
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.normalization = normalization
         self.cached = cached
         self.trainable_q = trainable_q
+        self.max_q = max_q
         if trainable_q:
             self.q = Parameter(torch.Tensor(1).fill_(q))
         else:
@@ -95,7 +104,8 @@ class MagNetConv(MessagePassing):
             * lambda_max (optional, but mandatory if normalization is None) - Largest eigenvalue of Laplacian.
 
         Return types:
-            * edge_index_real, edge_index_imag, edge_weight_real, edge_weight_imag (PyTorch Float Tensor) - Magnetic laplacian tensor: real and imaginary edge indices and weights.
+            * edge_index (PyTorch Long Tensor) - Magnetic Laplacian edge indices.
+            * edge_weight (PyTorch Complex Tensor) - Complex magnetic Laplacian edge weights.
         """
         edge_index, edge_weight = remove_self_loops(edge_index, edge_weight)
 
@@ -103,21 +113,17 @@ class MagNetConv(MessagePassing):
             edge_index, edge_weight, normalization, dtype, num_nodes, q
         )
 
-        edge_weight_real = (2.0 * edge_weight_real) / lambda_max
-        edge_weight_real.masked_fill_(edge_weight_real == float("inf"), 0)
-        edge_index_imag = edge_index.clone()
-
-        edge_index_real, edge_weight_real = add_self_loops(
-            edge_index, edge_weight_real, fill_value=-1.0, num_nodes=num_nodes
+        edge_weight = torch.complex(edge_weight_real, edge_weight_imag)
+        edge_weight = (2.0 * edge_weight) / lambda_max
+        edge_weight = torch.where(
+            torch.isinf(edge_weight), torch.zeros_like(edge_weight), edge_weight
         )
-        assert edge_weight_real is not None
+        edge_index, edge_weight = add_self_loops(
+            edge_index, edge_weight, fill_value=-1.0, num_nodes=num_nodes
+        )
+        assert edge_weight is not None
 
-        edge_weight_imag = (2.0 * edge_weight_imag) / lambda_max
-        edge_weight_imag.masked_fill_(edge_weight_imag == float("inf"), 0)
-
-        assert edge_weight_imag is not None
-
-        return edge_index_real, edge_index_imag, edge_weight_real, edge_weight_imag
+        return edge_index, edge_weight
 
     def forward(
         self,
@@ -139,33 +145,36 @@ class MagNetConv(MessagePassing):
             * out_real, out_imag (PyTorch Float Tensor) - Hidden state tensor for all nodes, with shape (N_nodes, F_out).
         """
         if self.trainable_q:
-            self.q = Parameter(torch.clamp(self.q, 0, 0.25))
+            # Project the parameter without replacing it, so optimizers retain
+            # their reference and gradients continue to update q.
+            with torch.no_grad():
+                self.q.clamp_(0, self.max_q)
+        q = self.q
+        use_cache = self.cached and not self.trainable_q
 
-        if self.cached and self.cached_result is not None:
+        if use_cache and self.cached_result is not None:
             if edge_index.size(1) != self.cached_num_edges:
                 raise RuntimeError(
                     'Cached {} number of edges, but found {}. Please '
                     'disable the caching behavior of this layer by removing '
                     'the `cached=True` argument in its constructor.'.format(
                         self.cached_num_edges, edge_index.size(1)))
-            if self.q != self.cached_q:
+            q_value = q.detach().item() if isinstance(q, torch.Tensor) else q
+            if q_value != self.cached_q:
                 raise RuntimeError(
                     'Cached q is {}, but found {} in input. Please '
                     'disable the caching behavior of this layer by removing '
                     'the `cached=True` argument in its constructor.'.format(
-                        self.cached_q, self.q))
-        if not self.cached or self.cached_result is None:
+                        self.cached_q, q_value))
+        if not use_cache or self.cached_result is None:
             self.cached_num_edges = edge_index.size(1)
-            if self.trainable_q:
-                self.cached_q = self.q.detach().item()
-            else:
-                self.cached_q = self.q
+            self.cached_q = q.detach().item() if isinstance(q, torch.Tensor) else q
             if self.normalization != 'sym' and lambda_max is None:
                 if self.trainable_q:
                     raise RuntimeError(
                         'Cannot train q while not calculating maximum eigenvalue of Laplacian!')
                 _, _, _, lambda_max = get_magnetic_Laplacian(
-                    edge_index, edge_weight, None, q=self.q, return_lambda_max=True
+                    edge_index, edge_weight, None, q=q, return_lambda_max=True
                 )
 
             if lambda_max is None:
@@ -175,78 +184,37 @@ class MagNetConv(MessagePassing):
                 lambda_max = torch.tensor(lambda_max, dtype=x_real.dtype,
                                           device=x_real.device)
             assert lambda_max is not None
-            edge_index_real, edge_index_imag, norm_real, norm_imag = self.__norm__(edge_index, x_real.size(self.node_dim),
-                                                             edge_weight, self.q, self.normalization,
-                                                             lambda_max, dtype=x_real.dtype)
-            self.cached_result = edge_index_real, edge_index_imag, norm_real, norm_imag
+            edge_index_lap, norm = self.__norm__(
+                edge_index, x_real.size(self.node_dim), edge_weight, q,
+                self.normalization, lambda_max, dtype=x_real.dtype
+            )
+            self.cached_result = edge_index_lap, norm
 
-        edge_index_real, edge_index_imag, norm_real, norm_imag = self.cached_result
+        edge_index_lap, norm = self.cached_result
 
-        Tx_0_real_real = x_real
-        Tx_0_imag_imag = x_imag
-        Tx_0_imag_real = x_real
-        Tx_0_real_imag = x_imag
-        out_real_real = torch.matmul(Tx_0_real_real, self.weight[0])
-        out_imag_imag = torch.matmul(Tx_0_imag_imag, self.weight[0])
-        out_imag_real = torch.matmul(Tx_0_imag_real, self.weight[0])
-        out_real_imag = torch.matmul(Tx_0_real_imag, self.weight[0])
+        x = torch.complex(x_real, x_imag)
+        weight = self.weight.to(x.dtype)
+        Tx_0 = x
+        out = torch.matmul(Tx_0, weight[0])
 
         # propagate_type: (x: Tensor, norm: Tensor)
         if self.weight.size(0) > 1:
-            Tx_1_real_real = self.propagate(
-                edge_index_real, x=x_real, norm=norm_real, size=None)
-            out_real_real = out_real_real + \
-                torch.matmul(Tx_1_real_real, self.weight[1])
-            Tx_1_imag_imag = self.propagate(
-                edge_index_imag, x=x_imag, norm=norm_imag, size=None)
-            out_imag_imag = out_imag_imag + \
-                torch.matmul(Tx_1_imag_imag, self.weight[1])
-            Tx_1_imag_real = self.propagate(
-                edge_index_real, x=x_real, norm=norm_real, size=None)
-            out_imag_real = out_imag_real + \
-                torch.matmul(Tx_1_imag_real, self.weight[1])
-            Tx_1_real_imag = self.propagate(
-                edge_index_imag, x=x_imag, norm=norm_imag, size=None)
-            out_real_imag = out_real_imag + \
-                torch.matmul(Tx_1_real_imag, self.weight[1])
+            Tx_1 = self.propagate(
+                edge_index_lap, x=Tx_0, norm=norm, size=None
+            )
+            out = out + torch.matmul(Tx_1, weight[1])
 
         for k in range(2, self.weight.size(0)):
-            Tx_2_real_real = self.propagate(
-                edge_index_real, x=Tx_1_real_real, norm=norm_real, size=None)
-            Tx_2_real_real = 2. * Tx_2_real_real - Tx_0_real_real
-            out_real_real = out_real_real + \
-                torch.matmul(Tx_2_real_real, self.weight[k])
-            Tx_0_real_real, Tx_1_real_real = Tx_1_real_real, Tx_2_real_real
-
-            Tx_2_imag_imag = self.propagate(
-                edge_index_imag, x=Tx_1_imag_imag, norm=norm_imag, size=None)
-            Tx_2_imag_imag = 2. * Tx_2_imag_imag - Tx_0_imag_imag
-            out_imag_imag = out_imag_imag + \
-                torch.matmul(Tx_2_imag_imag, self.weight[k])
-            Tx_0_imag_imag, Tx_1_imag_imag = Tx_1_imag_imag, Tx_2_imag_imag
-
-            Tx_2_imag_real = self.propagate(
-                edge_index_real, x=Tx_1_imag_real, norm=norm_real, size=None)
-            Tx_2_imag_real = 2. * Tx_2_imag_real - Tx_0_imag_real
-            out_imag_real = out_imag_real + \
-                torch.matmul(Tx_2_imag_real, self.weight[k])
-            Tx_0_imag_real, Tx_1_imag_real = Tx_1_imag_real, Tx_2_imag_real
-
-            Tx_2_real_imag = self.propagate(
-                edge_index_imag, x=Tx_1_real_imag, norm=norm_imag, size=None)
-            Tx_2_real_imag = 2. * Tx_2_real_imag - Tx_0_real_imag
-            out_real_imag = out_real_imag + \
-                torch.matmul(Tx_2_real_imag, self.weight[k])
-            Tx_0_real_imag, Tx_1_real_imag = Tx_1_real_imag, Tx_2_real_imag
-
-        out_real = out_real_real - out_imag_imag
-        out_imag = out_imag_real + out_real_imag
+            Tx_2 = 2. * self.propagate(
+                edge_index_lap, x=Tx_1, norm=norm, size=None
+            ) - Tx_0
+            out = out + torch.matmul(Tx_2, weight[k])
+            Tx_0, Tx_1 = Tx_1, Tx_2
 
         if self.bias is not None:
-            out_real += self.bias
-            out_imag += self.bias
+            out = out + torch.complex(self.bias, self.bias)
 
-        return out_real, out_imag
+        return out.real, out.imag
 
     def message(self, x_j, norm):
         return norm.view(-1, 1) * x_j

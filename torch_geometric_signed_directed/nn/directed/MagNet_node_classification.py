@@ -15,11 +15,14 @@ class MagNet_node_classification(nn.Module):
     Args:
         num_features (int): Size of each input sample.
         hidden (int, optional): Number of hidden channels.  Default: 2.
-        K (int, optional): Order of the Chebyshev polynomial, i.e., Chebyshev filter size minus 1 :math:`K`.  Default: 1.
-        q (float, optional): Initial value of the phase parameter, 0 <= q <= 0.25. Default: 0.25.
+        K (int, optional): Order of the Chebyshev polynomial. The Chebyshev
+            filter contains :math:`K + 1` terms. Default: 1.
+        q (float, optional): Initial value of the phase parameter. Default: 0.25.
         label_dim (int, optional): Number of output classes.  Default: 2.
         activation (bool, optional): whether to use activation function or not. (default: :obj:`False`)
         trainable_q (bool, optional): whether to set q to be trainable or not. (default: :obj:`False`)
+        max_q (float, optional): Maximum value of a trainable phase parameter.
+            (default: :obj:`0.25`)
         layer (int, optional): Number of MagNetConv layers. Deafult: 2.
         dropout (float, optional): Dropout value. (default: :obj:`False`)
         normalization (str, optional): The normalization scheme for the magnetic
@@ -38,12 +41,14 @@ class MagNet_node_classification(nn.Module):
     """
 
     def __init__(self, num_features: int, hidden: int = 2, q: float = 0.25, K: int = 1, label_dim: int = 2,
-                 activation: bool = False, trainable_q: bool = False, layer: int = 2, dropout: float = False, normalization: str = 'sym', cached: bool = False):
+                 activation: bool = False, trainable_q: bool = False, layer: int = 2, dropout: float = False, normalization: str = 'sym', cached: bool = False,
+                 max_q: float = 0.25):
         super(MagNet_node_classification, self).__init__()
 
         chebs = nn.ModuleList()
         chebs.append(MagNetConv(in_channels=num_features, out_channels=hidden, K=K,
-                                q=q, trainable_q=trainable_q, normalization=normalization, cached=cached))
+                                q=q, trainable_q=trainable_q, normalization=normalization, cached=cached,
+                                max_q=max_q))
         self.normalization = normalization
         self.activation = activation
         if self.activation:
@@ -51,7 +56,8 @@ class MagNet_node_classification(nn.Module):
 
         for _ in range(1, layer):
             chebs.append(MagNetConv(in_channels=hidden, out_channels=hidden, K=K,
-                                    q=q, trainable_q=trainable_q, normalization=normalization, cached=cached))
+                                    q=q, trainable_q=trainable_q, normalization=normalization, cached=cached,
+                                    max_q=max_q))
 
         self.Chebs = chebs
 

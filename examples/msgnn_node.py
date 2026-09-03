@@ -24,6 +24,8 @@ def parameter_parser():
     parser.add_argument('--dropout', type=float, default=0.5)
     parser.add_argument('--normalization', type=str, default='sym')
     parser.add_argument('--trainable_q', action='store_true')
+    parser.add_argument('--max_q', type=float, default=0.25,
+                        help='Maximum value for trainable q.')
     parser.add_argument('--method', type=str, default='MSGNN')
     parser.add_argument('--seed', type=int, default=0)
     parser.add_argument('--hidden', type=int, default=16)
@@ -197,7 +199,7 @@ res_array = np.zeros((args.runs, 3))
 for split in range(data.train_mask.shape[1]):
     best_model_path = os.path.join(dir_name, sub_dir_name, args.method, suffix, str(split) + '.pkl')
     model = MSGNN_node_classification(q=args.q, K=args.K_model, num_features=data.x.shape[1], hidden=args.hidden, label_dim=num_classes, 
-    dropout=args.dropout, cached=(not args.trainable_q)).to(device)
+    dropout=args.dropout, trainable_q=args.trainable_q, cached=(not args.trainable_q), max_q=args.max_q).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     train_index = data.train_mask[:, split].cpu().numpy()
     val_index = data.val_mask[:, split].cpu().numpy()

@@ -246,7 +246,9 @@ If you notice anything unexpected, please open an [issue](https://github.com/She
 
 **Installation**
 
-Binaries are provided for Python version >= 3.7 and NetworkX version >= 2.7.
+PyGSD 1.2.0 requires Python >= 3.10, PyTorch >= 2.4, PyG >= 2.6, and
+NetworkX >= 2.7. The current CPU reference environment uses Python 3.11 or
+3.12, PyTorch 2.11.0, and PyG 2.8.0.
 
 After installing [PyTorch](https://pytorch.org/get-started/locally/) and [PyG](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html), simply run
 
@@ -257,12 +259,11 @@ pip install torch-geometric-signed-directed
 
 **Running tests**
 
-```
-$ pytest
+```sh
+python -m pytest
 ```
 --------------------------------------------------------------------------------
 
 **License**
 
 - [MIT License](https://github.com/SherylHYX/pytorch_geometric_signed_directed/blob/master/LICENSE)
-

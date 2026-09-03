@@ -23,6 +23,8 @@ def parameter_parser():
     parser.add_argument('--dropout', type=float, default=0.5)
     parser.add_argument('--normalization', type=str, default='sym')
     parser.add_argument('--trainable_q', action='store_true')
+    parser.add_argument('--max_q', type=float, default=0.25,
+                        help='Maximum value for trainable q.')
     parser.add_argument('--emb_loss_coeff', type=float, default=0, help='Coefficient for the embedding loss term.')
     parser.add_argument('--method', type=str, default='MSGNN')
     parser.add_argument('--seed', type=int, default=0)
@@ -133,7 +135,7 @@ for split in list(link_data.keys()):
 
     X_img = X_real.clone()
     model = MSGNN_link_prediction(q=args.q, K=args.K, num_features=num_input_feat, hidden=args.hidden, label_dim=args.num_classes, \
-        trainable_q = args.trainable_q, dropout=args.dropout, normalization=args.normalization, cached=(not args.trainable_q)).to(device)
+        trainable_q = args.trainable_q, dropout=args.dropout, normalization=args.normalization, cached=(not args.trainable_q), max_q=args.max_q).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     
 

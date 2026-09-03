@@ -1,7 +1,6 @@
 import numpy as np
 import scipy.sparse as sp
 import torch
-from torch_sparse import SparseTensor
 from torch_geometric_signed_directed.nn import (
     SSSNET_node_clustering, SDGNN, SGCN, SiGAT, SNEA, SGCNConv, SNEAConv
 )
@@ -93,8 +92,8 @@ def test_SGCN():
     """
     x = torch.randn(4, 16)
     edge_index = torch.tensor([[0, 1, 2, 3], [0, 0, 1, 1]])
-    row, col = edge_index
-    adj = SparseTensor(row=row, col=col, sparse_sizes=(4, 4))
+    adj = torch.sparse_coo_tensor(
+        edge_index, torch.ones(edge_index.size(1)), size=(4, 4)).coalesce()
 
     conv1 = SGCNConv(16, 32, first_aggr=True)
     assert conv1.__repr__() == 'SGCNConv(16, 32, first_aggr=True)'
@@ -175,9 +174,6 @@ def test_SNEA():
     """
     x = torch.randn(4, 16)
     edge_index = torch.tensor([[0, 1, 2, 3], [0, 0, 1, 1]])
-    row, col = edge_index
-    adj = SparseTensor(row=row, col=col, sparse_sizes=(4, 4))
-
     conv1 = SNEAConv(16, 32, first_aggr=True)
     assert conv1.__repr__() == 'SNEAConv(16, 32, first_aggr=True)'
 
