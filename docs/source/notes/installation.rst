@@ -1,10 +1,17 @@
 Installation
 ============
 
-The installation of PyTorch Geometric Signed Directed requires the presence of certain prerequisites. These are described in great detail in the installation description of PyTorch Geometric. Please follow the instructions laid out `here <https://pytorch-geometric-signed-directed.readthedocs.io/en/latest/notes/installation.html>`_. You might also take a look at the `README file <https://github.com/SherylHYX/pytorch_geometric_signed_directed>`_ of the PyTorch Geometric Signed Directed repository.
-Binaries are provided for Python version >= 3.7, PyG version at least 2, and NetworkX version no earlier than 2.7.
+PyGSD 1.2.0 requires Python >= 3.10, PyTorch >= 2.4, PyG >= 2.6, and
+NetworkX >= 2.7. The current CPU reference environment uses Python 3.11 or
+3.12, PyTorch 2.11.0, and PyG 2.8.0.
 
-After installing `PyTorch <https://pytorch.org/get-started/locally/>`_ and `PyG <https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html>`_, simply run
+The PyTorch and PyG installation options depend on the operating system and
+accelerator. Follow the `PyTorch installation guide
+<https://pytorch.org/get-started/locally/>`_ and the `PyG installation guide
+<https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html>`_
+for the appropriate commands.
+
+After installing PyTorch and PyG, simply run
 
     .. code-block:: none
 
@@ -30,4 +37,3 @@ To check your current package version just simply run:
     .. code-block:: none
 
         $ pip freeze | grep torch-geometric-signed-directed
-

@@ -1,15 +1,15 @@
 from setuptools import find_packages, setup
 
 url = "https://github.com/SherylHYX/pytorch_geometric_signed_directed"
-__version__ = '1.1.1'
+__version__ = '1.2.0'
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 install_requires = [
-    "torch",
+    "torch>=2.4.0",
     "scikit-learn",
-    "torch_geometric",
+    "torch_geometric>=2.6.0",
     "numpy",
     "networkx>=2.7",
     "scipy"
@@ -53,11 +53,13 @@ setup(
     keywords=keywords,
     install_requires=install_requires,
     extras_require=extras_require,
-    python_requires=">=3.7",
+    python_requires=">=3.10",
     classifiers=[
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Build Tools",
         "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
     ],
 )

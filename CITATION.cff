@@ -1,6 +1,7 @@
 cff-version: 1.2.0
 message: "Please cite our paper if you find our work useful in your research."
 title: "PyTorch Geometric Signed Directed: A Software Package on Graph Neural Networks for Signed and Directed Graphs"
+version: "1.2.0"
 authors:
 - family-names: "He"
   given-names: "Yixuan"

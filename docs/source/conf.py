@@ -7,6 +7,8 @@ sys.path.insert(0, os.path.abspath('../../'))
 project = 'PyTorch Geometric Signed Directed'
 author = 'Yixuan He'
 copyright = f'{datetime.datetime.now().year}, {author}'
+version = '1.2.0'
+release = version
 
 extensions = [
     'autoapi.extension',
@@ -56,8 +58,6 @@ autoapi_options = [
 autodoc_mock_imports = [
     'torch',
     'torch_geometric',
-    'torch_sparse',
-    'torch_scatter',
 ]
 
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']

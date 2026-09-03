@@ -1,7 +1,6 @@
 import numpy as np
 import scipy.sparse as sp
 import torch
-from torch_sparse import SparseTensor
 
 from torch_geometric_signed_directed.nn import (
     DiGCN_node_classification, DiGCN_Inception_Block_node_classification,
@@ -196,8 +195,10 @@ def test_DGCN():
     edge_index = torch.tensor([[0, 0, 0, 1, 2, 3], [1, 2, 3, 0, 0, 0]])
     row, col = edge_index
     value = torch.rand(row.size(0))
-    adj2 = SparseTensor(row=row, col=col, value=value, sparse_sizes=(4, 4))
-    adj1 = adj2.set_value(None)
+    adj2 = torch.sparse_coo_tensor(
+        edge_index, value, size=(4, 4)).coalesce()
+    adj1 = torch.sparse_coo_tensor(
+        edge_index, torch.ones_like(value), size=(4, 4)).coalesce()
 
     conv = DGCNConv()
     out1 = conv(x, edge_index)

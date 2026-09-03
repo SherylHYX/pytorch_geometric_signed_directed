@@ -15,6 +15,9 @@ parser.add_argument('--epochs', type=int, default=200)
 parser.add_argument('--lr', type=float, default=1e-2)
 parser.add_argument('--K', type=int, default=1)
 parser.add_argument('--q', type=float, default=0.25)
+parser.add_argument('--trainable_q', action='store_true')
+parser.add_argument('--max_q', type=float, default=0.25,
+                    help='Upper bound for trainable q.')
 parser.add_argument('--weight_decay', type=float, default=0.0005)
 args = parser.parse_args()
 
@@ -52,7 +55,9 @@ data = load_directed_real_data(
 
 num_classes = (data.y.max() - data.y.min() + 1).cpu().numpy()
 model = MagNet_node_classification(
-    q=args.q, K=args.K, num_features=data.x.shape[1], hidden=16, label_dim=num_classes).to(device)
+    q=args.q, K=args.K, num_features=data.x.shape[1], hidden=16,
+    label_dim=num_classes, trainable_q=args.trainable_q,
+    cached=not args.trainable_q, max_q=args.max_q).to(device)
 criterion = nn.NLLLoss()
 
 for split in range(data.train_mask.shape[1]):
